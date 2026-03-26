@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run:*)",
+      "Bash(nvm list:*)",
+      "Read(//usr/local/bin/**)",
+      "Read(//Users/marvinchin/.nvm/versions/node/**)",
+      "Bash(brew list:*)",
+      "Bash(export NVM_DIR=\"$HOME/.nvm\")",
+      "Bash(source \"$NVM_DIR/nvm.sh\")",
+      "Bash(nvm use:*)",
+      "Bash(~/.nvm/versions/node/v22.15.0/bin/node --version)",
+      "mcp__ide__getDiagnostics",
+      "Read(//Users/marvinchin/.claude/**)",
+      "Bash(npx puppeteer:*)",
+      "Bash(npx playwright:*)",
+      "Bash(curl -s \"https://finethought.com.au/_next/static/css/d8d905f13a94ea20.css\")",
+      "Bash(npx tsc:*)",
+      "Bash(echo \"Exit code: $?\")",
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(echo \"tsc done, exit $?\")",
+      "Bash(git merge:*)",
+      "Bash(node scripts/download-assets.mjs)",
+      "Bash(npx:*)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
+      "Bash(playwright screenshot:*)",
+      "Bash(lsof -i :3001 -sTCP:LISTEN)",
+      "Bash(lsof -i :3000 -sTCP:LISTEN)",
+      "Bash(lsof -i :8080 -sTCP:LISTEN)",
+      "Bash(python3:*)"
+    ]
+  }
+}
