@@ -1,0 +1,790 @@
+@import "tailwindcss";
+
+/* ============================================================
+   FINETHOUGHT DESIGN TOKENS
+   ============================================================ */
+
+:root {
+  /* === DARK MODE (default) === */
+  --ft-bg: #282828;
+  --ft-bg-darker: #2b2b2b;
+  --ft-bg-panel-header: #3c3c3c;
+  --ft-bg-panel-inner: #3a3a3a;
+  --ft-border: #5e5e5e;
+  --ft-border-faint: #3a3a3a;
+  --ft-text-primary: #eaeaea;
+  --ft-text-secondary: #bababa;
+  --ft-text-muted: #898989;
+  --ft-text-faint: #575757;
+  --ft-text-faded-bg: #222;
+  --ft-accent: #aec6f6;
+  --ft-accent-strong: #2756c9;
+  --ft-interactive-highlight: #85abf2;
+  --ft-code-attr: #f09364;
+  --ft-code-notice-bg: #fbf3b2;
+  --ft-row-hover-blend: soft-light;
+  --ft-window-shadow: 0 0 1rem rgba(0, 0, 0, 0.5);
+
+  /* === SPACING === */
+  --ft-gutter-width: 1.75rem;    /* 28px — line number gutter */
+  --ft-gutter-border: 0.0625rem; /* 1px  — gutter right border */
+  --ft-nav-height-desktop: 1.6875rem; /* 27px */
+  --ft-nav-height-mobile: 2.25rem;    /* 36px */
+  --ft-info-panel-width: 25rem;       /* 400px */
+}
+
+/* Light mode overrides */
+.state-light-mode {
+  --ft-bg: #ffffff;
+  --ft-bg-darker: #f6f6f6;
+  --ft-bg-panel-header: #eef2f9;
+  --ft-bg-panel-inner: #eff3fd;
+  --ft-border: #d6e2fb;
+  --ft-border-faint: #d6e2fb;
+  --ft-text-primary: #282828;
+  --ft-text-secondary: #5c5c5c;
+  --ft-text-muted: #919191;
+  --ft-text-faint: #c5c5c5;
+  --ft-text-faded-bg: #f6f6f6;
+  --ft-accent: #2756c9;
+  --ft-accent-strong: #2756c9;
+  --ft-interactive-highlight: #aec6f6;
+  --ft-code-attr: #82184a;
+  --ft-code-notice-bg: #d6e2fb;
+  --ft-row-hover-blend: multiply;
+  --ft-window-shadow: 0 0 1rem rgba(0, 0, 0, 0.25);
+}
+
+/* ============================================================
+   GLOBAL RESET & BASE
+   ============================================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  overscroll-behavior: none;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--ft-bg);
+  color: var(--ft-text-secondary);
+  font-family: "neue-haas-grotesk-display", serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+/* No text selection across page */
+.c-page * {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* No focus outlines (custom focus handling) */
+*:focus {
+  outline: none !important;
+}
+
+/* ============================================================
+   TYPOGRAPHY UTILITIES
+   ============================================================ */
+
+/* Display / sans type (neue-haas-grotesk-display) */
+.c-sans {
+  font-family: "neue-haas-grotesk-display", serif;
+  font-weight: 600;
+}
+
+.c-sans__line {
+  display: block;
+  overflow: hidden;
+}
+
+.c-sans__line__content {
+  display: block;
+  font-family: "neue-haas-grotesk-display", serif;
+  font-weight: 600;
+  letter-spacing: -0.0325em;
+  line-height: 1em;
+  font-size: 1.4em;
+  margin-top: -0.1175em;
+  white-space: nowrap;
+  color: var(--ft-text-secondary);
+  transition: color 0.25s;
+}
+
+/* Color variants */
+.c-sans--color-1 .c-sans__line__content,
+.c-sans--color-1 { color: var(--ft-text-primary); }
+.c-sans--color-2 .c-sans__line__content,
+.c-sans--color-2 { color: var(--ft-text-secondary); }
+.c-sans--color-3 .c-sans__line__content,
+.c-sans--color-3 { color: var(--ft-text-muted); }
+
+/* Alignment */
+.c-sans--right { text-align: right; }
+.c-sans--center { text-align: center; }
+
+/* Large display size (JS-calculated, but CSS sets the container) */
+.c-sans--large .c-sans__line__content {
+  font-size: 1em; /* overridden by JS type scale */
+}
+
+/* Monospace / code type (code-saver) */
+.c-mono-type {
+  font-family: "code-saver", sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;   /* 12px */
+  line-height: 0.9375rem; /* 15px */
+  color: var(--ft-text-muted);
+  transition: color 0.25s;
+}
+
+@media (max-width: 22.5rem) {
+  .c-mono-type {
+    font-size: 0.6875rem;
+    line-height: 0.8125rem;
+  }
+}
+
+/* Line numbers */
+.c-mono-type--line-nums {
+  font-family: "code-saver", sans-serif;
+  font-weight: 400;
+  font-size: 0.625rem;
+  line-height: 0.9375rem;
+  color: var(--ft-text-muted);
+  text-align: right;
+  padding-right: 0.5rem;
+  transition: color 0.25s;
+}
+
+/* ASCII art */
+.c-ascii {
+  font-family: "code-saver", sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 0.9375rem;
+  color: var(--ft-text-muted);
+  white-space: pre;
+  transition: color 0.25s;
+}
+
+/* Editor content */
+.c-editor {
+  font-family: "code-saver", sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 0.9375rem;
+  color: var(--ft-text-muted);
+}
+
+/* ============================================================
+   GUI SHELL LAYOUT
+   ============================================================ */
+
+/* Outer fixed container simulating a desktop IDE */
+.c-gui {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  height: 100%;
+  background-color: var(--ft-bg);
+  transition: background-color 0.25s;
+}
+
+/* === MAIN PANEL === */
+.c-gui__panel--main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+/* === INFO SIDEBAR PANEL === */
+.c-gui__panel--info {
+  width: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  border-right: 0.0625rem solid var(--ft-border);
+  background-color: var(--ft-bg);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s linear 0.5s, border-color 0.25s, background-color 0.25s;
+  flex-shrink: 0;
+}
+
+.state-info-open .c-gui__panel--info {
+  width: var(--ft-info-panel-width);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   NAV TAB BAR
+   ============================================================ */
+
+.c-gui__panel__header {
+  display: flex;
+  align-items: stretch;
+  height: var(--ft-nav-height-desktop);
+  border-bottom: 0.0625rem solid var(--ft-border);
+  background-color: var(--ft-bg-panel-header);
+  flex-shrink: 0;
+  transition: height 0.25s, background-color 0.25s, border-color 0.25s;
+  position: relative;
+  z-index: 10;
+}
+
+.c-gui__panel__header__tabs {
+  display: flex;
+  align-items: stretch;
+  flex: 1;
+  overflow: hidden;
+}
+
+.c-gui__panel__header__tabs__tab {
+  display: flex;
+  align-items: center;
+  padding: 0 0.625rem;
+  font-family: "code-saver", sans-serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--ft-text-muted);
+  border-right: 0.0625rem solid var(--ft-border);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.25s, background-color 0.25s, border-color 0.25s;
+  border-bottom: 0.125rem solid transparent;
+}
+
+.c-gui__panel__header__tabs__tab--active {
+  color: var(--ft-text-secondary);
+  border-bottom-color: var(--ft-accent);
+  background-color: var(--ft-bg);
+}
+
+.state-mouse-events .c-gui__panel__header__tabs__tab:hover {
+  color: var(--ft-text-primary);
+  background: rgba(255, 255, 255, 0.075);
+}
+
+.state-light-mode.state-mouse-events .c-gui__panel__header__tabs__tab:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+/* Header action buttons */
+.c-gui__panel__header__actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.c-gui__panel__header__button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 100%;
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  color: var(--ft-text-muted);
+  transition: color 0.25s;
+}
+
+.c-gui__panel__header__button::before {
+  content: "";
+  position: absolute;
+  inset: 0.25rem;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0);
+  transition: background-color 0.25s;
+}
+
+.state-mouse-events .c-gui__panel__header__button:hover::before {
+  background-color: rgba(255, 255, 255, 0.075);
+}
+
+.state-light-mode.state-mouse-events .c-gui__panel__header__button:hover::before {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.c-gui__panel__header__button svg {
+  position: relative;
+  z-index: 1;
+  transition: color 0.25s, fill 0.25s;
+}
+
+.c-gui__panel__header__button--light-mode.state-active {
+  color: var(--ft-accent-strong);
+}
+
+.c-gui__panel__header__button--sidebar.state-active {
+  color: var(--ft-accent-strong);
+}
+
+/* ============================================================
+   PAGE CONTENT AREA
+   ============================================================ */
+
+.c-gui__panel__content {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Scrollable page container */
+.c-page {
+  position: absolute;
+  inset: 0;
+  overflow-y: scroll;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  overscroll-behavior: none;
+}
+
+.c-page::-webkit-scrollbar {
+  display: none;
+}
+
+/* Page inner layout: line numbers + content */
+.c-page__inner {
+  display: flex;
+  min-height: 100%;
+  position: relative;
+}
+
+/* Line numbers gutter */
+.c-page__lines-column {
+  width: var(--ft-gutter-width);
+  flex-shrink: 0;
+  border-right: var(--ft-gutter-border) solid var(--ft-border);
+  padding-top: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 0.375rem;
+  position: relative;
+  z-index: 2;
+  transition: border-color 0.25s;
+}
+
+/* Content column */
+.c-page__content-column {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+/* Background layer (where all content sits) */
+.c-page__background {
+  position: relative;
+  padding: 0.5rem 1rem;
+}
+
+/* ============================================================
+   DISPLAY TEXT (JS-SIZED)
+   ============================================================ */
+
+/* The large background display text ("Fine Thought", "Skills", "Projects")
+   is absolutely positioned and serves as a visual layer behind the code editor */
+
+.c-display-bg {
+  position: absolute;
+  pointer-events: none;
+  color: var(--ft-text-faded-bg);
+  font-family: "neue-haas-grotesk-display", serif;
+  font-weight: 600;
+  letter-spacing: -0.0325em;
+  line-height: 1em;
+  white-space: nowrap;
+  overflow: hidden;
+  transition: color 0.25s;
+}
+
+/* ============================================================
+   INTERACTIVE PROJECTS LIST
+   ============================================================ */
+
+/* The interactive overlay container covers the full page height */
+.c-interactive {
+  position: absolute;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none; /* links handle their own events */
+}
+
+/* Individual project row hit areas */
+.c-interactive__link {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  cursor: pointer;
+  pointer-events: auto;
+  text-decoration: none;
+  color: inherit;
+}
+
+.c-interactive__link__lines-column {
+  width: var(--ft-gutter-width);
+  flex-shrink: 0;
+  border-right: var(--ft-gutter-border) solid transparent;
+}
+
+/* Row hover background highlight */
+.c-interactive__link--background {
+  position: absolute;
+  inset: 0;
+  background-color: var(--ft-accent-strong);
+  mix-blend-mode: var(--ft-row-hover-blend);
+  opacity: 0;
+  transition: opacity 0.25s;
+  pointer-events: none;
+}
+
+.c-interactive__link.state-active .c-interactive__link--background {
+  opacity: 1;
+}
+
+/* Line numbers highlight on hover */
+.c-interactive__link.state-active .c-interactive__link__lines-column .c-mono-type--line-nums {
+  color: var(--ft-text-primary);
+}
+
+/* Project preview floating panel */
+.c-interactive__previews {
+  position: fixed;
+  right: 2rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 480px;
+  max-width: 33vw;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s;
+  z-index: 200;
+}
+
+.c-interactive__previews.state-visible {
+  opacity: 1;
+}
+
+/* Featured work media overlay */
+.c-featured-work {
+  position: relative;
+  border-radius: 0.25rem;
+  overflow: hidden;
+  background: var(--ft-bg-darker);
+  aspect-ratio: 16 / 9;
+  box-shadow: var(--ft-window-shadow);
+  transition: box-shadow 0.25s;
+}
+
+.c-featured-work__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.c-featured-work__hover-media {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+
+.c-featured-work__hover-media.state-hover {
+  opacity: 1;
+}
+
+.c-featured-work__hover-media video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(1);
+  transition: filter 0.6s;
+}
+
+.c-featured-work__hover-media.state-hover video {
+  filter: grayscale(0);
+}
+
+.c-featured-work__link {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.2);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.c-featured-work__link.state-hover {
+  opacity: 1;
+}
+
+.c-featured-work__link__text {
+  font-family: "code-saver", sans-serif;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--ft-text-primary);
+  letter-spacing: 0.05em;
+  background: rgba(0, 0, 0, 0.5);
+  padding: 0.375rem 0.75rem;
+  border-radius: 0.1875rem;
+}
+
+/* ============================================================
+   CODE EDITOR TABLE STYLE
+   ============================================================ */
+
+.c-editor-table {
+  font-family: "code-saver", sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  line-height: 0.9375rem;
+  color: var(--ft-text-muted);
+  white-space: pre;
+  transition: color 0.25s;
+}
+
+.c-editor-table__header {
+  color: var(--ft-text-secondary);
+  font-weight: 500;
+}
+
+.c-editor-table__label {
+  color: var(--ft-text-faint);
+}
+
+/* Links inside editor tables */
+.c-editor-table a,
+.c-mono-type a {
+  color: var(--ft-accent);
+  text-decoration: none;
+  transition: color 0.25s;
+}
+
+.c-editor-table a:hover,
+.c-mono-type a:hover {
+  color: var(--ft-text-primary);
+}
+
+/* ============================================================
+   LINK STYLES
+   ============================================================ */
+
+/* Arrow CTA links */
+.c-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-family: "code-saver", sans-serif;
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--ft-accent);
+  text-decoration: none;
+  cursor: pointer;
+  transition: color 0.25s;
+}
+
+.c-link:hover {
+  color: var(--ft-text-primary);
+}
+
+/* ============================================================
+   PAGE LOAD COVER
+   ============================================================ */
+
+.c-cover {
+  position: fixed;
+  inset: 0;
+  background-color: var(--ft-bg);
+  z-index: 9999;
+  opacity: 1;
+  transition: opacity 0.5s, left 0s linear 0.5s, background-color 0.25s;
+}
+
+.state-site-loaded .c-cover {
+  opacity: 0;
+  left: -9999px;
+}
+
+/* ============================================================
+   PAGE TRANSITION COVER
+   ============================================================ */
+
+.c-page__cover {
+  position: absolute;
+  inset: 0;
+  background-color: var(--ft-bg);
+  z-index: 500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s linear 0.25s, background-color 0.25s;
+}
+
+.c-page__cover.state-active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ============================================================
+   CONTEXT MENU
+   ============================================================ */
+
+.c-gui__context-menu {
+  position: fixed;
+  z-index: 9000;
+  background-color: var(--ft-bg-darker);
+  border: 0.0625rem solid var(--ft-border);
+  border-radius: 0.3125rem;
+  box-shadow: var(--ft-window-shadow);
+  padding: 0.25rem;
+  min-width: 12rem;
+  font-family: "code-saver", sans-serif;
+  font-size: 0.75rem;
+  transition: background-color 0.25s, border-color 0.25s;
+}
+
+.c-gui__context-menu__item {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  color: var(--ft-text-secondary);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.25s, color 0.25s;
+}
+
+.c-gui__context-menu__item:hover {
+  background-color: var(--ft-accent-strong);
+  color: var(--ft-text-primary);
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* Mobile (< 760px / 47.5rem) */
+@media (max-width: 47.4375rem) {
+  .c-gui {
+    /* Slide-in behavior handled by JS/state classes */
+    flex-direction: row;
+  }
+
+  .c-gui__panel--info {
+    /* On mobile, info panel is overlaid */
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    z-index: 1000;
+    transition: opacity 0.4s;
+  }
+
+  .c-gui__panel__header {
+    height: var(--ft-nav-height-mobile);
+  }
+
+  /* Hide interactive previews on mobile */
+  .c-interactive__previews {
+    display: none;
+  }
+}
+
+/* Tablet (760px – 1024px) */
+@media (min-width: 47.5rem) and (max-width: 63.9375rem) {
+  .c-gui {
+    flex-direction: column-reverse;
+  }
+
+  .c-gui__panel__header {
+    height: var(--ft-nav-height-mobile);
+  }
+
+  .c-gui__panel--info {
+    transition: opacity 0.4s linear 0.125s, border-color 0.25s, background-color 0.25s;
+  }
+}
+
+/* Desktop (≥ 1024px) */
+@media (min-width: 64rem) {
+  .c-gui__panel--info {
+    position: relative;
+    order: -1;
+    transition: opacity 0.4s linear 0.5s, border-color 0.25s, background-color 0.25s;
+  }
+
+  .state-info-open .c-gui__panel--info {
+    width: var(--ft-info-panel-width);
+  }
+
+  .c-interactive__previews {
+    display: block;
+  }
+}
+
+/* Small mobile */
+@media (max-width: 22.4375rem) {
+  .c-gui__panel__header {
+    height: 2rem;
+  }
+
+  .c-mono-type--line-nums {
+    font-size: 0.5rem;
+  }
+}
+
+/* Tiny mobile (< 280px) — hide line numbers */
+@media (max-width: 17.4375rem) {
+  .c-page__lines-column {
+    display: none;
+  }
+
+  .c-page__content-column {
+    width: 100%;
+  }
+}
+
+/* ============================================================
+   PROJECT PREVIEW PANEL (responsive visibility)
+   ============================================================ */
+
+.project-preview-panel {
+  display: none !important;
+}
+
+@media (min-width: 47.5rem) {
+  .project-preview-panel {
+    display: block !important;
+  }
+}
+
+/* ============================================================
+   TAILWIND COMPATIBILITY LAYER
+   ============================================================ */
+
+/* Keep tailwind utilities available for any shadcn components */
+@layer base {
+  * {
+    border-color: var(--ft-border);
+  }
+}
