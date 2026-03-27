@@ -1,0 +1,72 @@
+{
+  "sections": [
+    {
+      "classes": "",
+      "html": "<section data-astro-cid-kh7btl4r=\"\"> <p class=\"text-sm leading-relaxed\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nZachary, a Senior Product Designer / Design Engineer at <a href=\"https://warpstream.com\" target=\"_blank\" rel=\"noopener\" class=\"underline underline-offset-2 transition-colors duration-200\" style=\"color: var(--text-secondary); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">WarpStream</a> working on <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">product</code>, <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">ui/ux</code>, <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">frontend development</code>, <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">web</code> and <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">gtm</code> initiatives.\n</p> <p class=\"text-sm leading-relaxed mt-3\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nI'm entirely motivated by making sense of it all. In the existential sense.\n</p> </section>",
+      "styles": {
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "fontFamily": "Soehne, system-ui, sans-serif",
+        "lineHeight": "24px",
+        "color": "rgb(250, 250, 250)",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+        "margin": "48px 0px 0px",
+        "width": "576px",
+        "height": "80.25px",
+        "display": "block",
+        "flexDirection": "row",
+        "border": "0px solid rgb(229, 231, 235)",
+        "overflow": "visible",
+        "position": "static",
+        "opacity": "1",
+        "transition": "all"
+      }
+    },
+    {
+      "classes": "",
+      "html": "<section data-astro-cid-kh7btl4r=\"\"> <h2 class=\"text-xs font-semibold uppercase tracking-widest mb-4\" style=\"color: var(--text-primary);\" data-astro-cid-kh7btl4r=\"\">The Piano</h2> <p class=\"text-sm leading-relaxed mb-4\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nThe piano song on the homepage is a cover of Maxence Cyrin's solo piano rendition of the Pixies' \"Where Is My Mind,\" sourced from an <a href=\"https://onlinesequencer.net/\" target=\"_blank\" rel=\"noopener\" class=\"underline underline-offset-2 transition-colors duration-200\" style=\"color: var(--text-secondary); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">OnlineSequencer.net</a> arrangement whose protobuf-encoded note data was decoded with a custom Python script to extract all 527 note events. The sequencer runs at 80 BPM inside the <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">requestAnimationFrame</code> loop so audio and visuals fire in the same tick with zero drift. Each note plays through the <a href=\"https://musical-artifacts.com/artifacts/1883\" target=\"_blank\" rel=\"noopener\" class=\"underline underline-offset-2 transition-colors duration-200\" style=\"color: var(--text-secondary); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">MusyngKite</a> acoustic grand piano soundfont loaded via <a href=\"https://github.com/danigb/soundfont-player\" target=\"_blank\" rel=\"noopener\" data-astro-cid-kh7btl4r=\"\"><code class=\"text-xs px-1 py-0.5 rounded underline underline-offset-2 transition-colors duration-200\" style=\"background: var(--inline-code-bg, #e5e5e5); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">soundfont-player</code></a>, with volume shaping that boosts melody, cuts bass, and softens high notes.\n</p> <p class=\"text-sm leading-relaxed\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nEvery playing note maps its MIDI pitch to a ",
+      "styles": {
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "fontFamily": "Soehne, system-ui, sans-serif",
+        "lineHeight": "24px",
+        "color": "rgb(250, 250, 250)",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+        "margin": "48px 0px 0px",
+        "width": "576px",
+        "height": "298.25px",
+        "display": "block",
+        "flexDirection": "row",
+        "border": "0px solid rgb(229, 231, 235)",
+        "overflow": "visible",
+        "position": "static",
+        "opacity": "1",
+        "transition": "all"
+      }
+    },
+    {
+      "classes": "",
+      "html": "<section data-astro-cid-kh7btl4r=\"\"> <h2 class=\"text-xs font-semibold uppercase tracking-widest mb-4\" style=\"color: var(--text-primary);\" data-astro-cid-kh7btl4r=\"\">The Waveform</h2> <p class=\"text-sm leading-relaxed\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nThe background canvas draws a stacked-line waveform modeled after the <a href=\"https://en.wikipedia.org/wiki/Unknown_Pleasures#Artwork_and_design\" target=\"_blank\" rel=\"noopener\" class=\"underline underline-offset-2 transition-colors duration-200\" style=\"color: var(--text-secondary); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">Unknown Pleasures</a> album cover by Joy Division, itself a plot of radio pulses from the pulsar CP 1919. Each row is filled beneath its curve to occlude the row behind it, producing the same layered depth as the original. The waveform is continuously animated with layered sine functions that shift over time.\n</p> </section>",
+      "styles": {
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "fontFamily": "Soehne, system-ui, sans-serif",
+        "lineHeight": "24px",
+        "color": "rgb(250, 250, 250)",
+        "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+        "margin": "48px 0px 0px",
+        "width": "576px",
+        "height": "145.75px",
+        "display": "block",
+        "flexDirection": "row",
+        "border": "0px solid rgb(229, 231, 235)",
+        "overflow": "visible",
+        "position": "static",
+        "opacity": "1",
+        "transition": "all"
+      }
+    }
+  ],
+  "mainHtml": "  <div class=\"px-6 sm:px-8 mx-auto flex-1 flex flex-col w-full\" style=\"max-width: 80rem;\" data-astro-cid-kh7btl4r=\"\"> <div class=\"flex flex-col lg:flex-row gap-8 lg:gap-0 flex-1\" data-astro-cid-kh7btl4r=\"\"> <div class=\"lg:w-1/4 lg:pr-12 xl:pr-24 shrink-0 pt-12 sm:pt-20\" data-astro-cid-kh7btl4r=\"\"> <h1 class=\"text-2xl sm:text-3xl font-semibold tracking-tight mb-3\" style=\"color: var(--text-primary);\" data-astro-cid-kh7btl4r=\"\">\nAbout\n</h1> <p class=\"text-sm mb-8\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nExistentially ambiguous.\n</p> <div class=\"space-y-6\" data-astro-cid-kh7btl4r=\"\"> <details class=\"about-details\" open=\"\" data-astro-cid-kh7btl4r=\"\"> <summary class=\"tree-label\" data-astro-cid-kh7btl4r=\"\">Contact</summary> <ul class=\"tree-children\" data-astro-cid-kh7btl4r=\"\"> <li data-astro-cid-kh7btl4r=\"\"><a href=\"mailto:zach@wvrk.org\" class=\"about-link\" data-astro-cid-kh7btl4r=\"\"><svg class=\"w-3.5 h-3.5\" data-astro-cid-kh7btl4r=\"true\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z\"></path></svg> zach@wvrk.org</a></li> </ul> </details> <details class=\"about-details\" open=\"\" data-astro-cid-kh7btl4r=\"\"> <summary class=\"tree-label\" data-astro-cid-kh7btl4r=\"\">Links</summary> <ul class=\"tree-children\" data-astro-cid-kh7btl4r=\"\"> <li data-astro-cid-kh7btl4r=\"\"><a href=\"https://www.linkedin.com/in/zchry/\" target=\"_blank\" rel=\"noopener\" class=\"about-link\" data-astro-cid-kh7btl4r=\"\"><svg class=\"w-3.5 h-3.5\" data-astro-cid-kh7btl4r=\"true\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z\"></path></svg> LinkedIn</a></li> </ul> </details> </div> </div> <div class=\"hidden lg:block w-px shrink-0\" style=\"border-left: 1px solid var(--border);\" data-astro-cid-kh7btl4r=\"\"></div> <div class=\"lg:pl-12 xl:pl-24 flex-1 pt-2 lg:pt-20 pb-28 lg:pb-28\" data-astro-cid-kh7btl4r=\"\"> <div class=\"lg:max-w-xl space-y-12\" data-astro-cid-kh7btl4r=\"\"> <h1 class=\"text-2xl sm:text-3xl font-semibold tracking-tight !mb-[-2rem]\" style=\"color: var(--text-primary);\" data-astro-cid-kh7btl4r=\"\">Zachary</h1> <section data-astro-cid-kh7btl4r=\"\"> <p class=\"text-sm leading-relaxed\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nZachary, a Senior Product Designer / Design Engineer at <a href=\"https://warpstream.com\" target=\"_blank\" rel=\"noopener\" class=\"underline underline-offset-2 transition-colors duration-200\" style=\"color: var(--text-secondary); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">WarpStream</a> working on <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">product</code>, <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">ui/ux</code>, <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">frontend development</code>, <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">web</code> and <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">gtm</code> initiatives.\n</p> <p class=\"text-sm leading-relaxed mt-3\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nI'm entirely motivated by making sense of it all. In the existential sense.\n</p> </section> <section data-astro-cid-kh7btl4r=\"\"> <h2 class=\"text-xs font-semibold uppercase tracking-widest mb-4\" style=\"color: var(--text-primary);\" data-astro-cid-kh7btl4r=\"\">The Piano</h2> <p class=\"text-sm leading-relaxed mb-4\" style=\"color: var(--text-secondary);\" data-astro-cid-kh7btl4r=\"\">\nThe piano song on the homepage is a cover of Maxence Cyrin's solo piano rendition of the Pixies' \"Where Is My Mind,\" sourced from an <a href=\"https://onlinesequencer.net/\" target=\"_blank\" rel=\"noopener\" class=\"underline underline-offset-2 transition-colors duration-200\" style=\"color: var(--text-secondary); text-decoration-color: var(--border-hover);\" data-astro-cid-kh7btl4r=\"\">OnlineSequencer.net</a> arrangement whose protobuf-encoded note data was decoded with a custom Python script to extract all 527 note events. The sequencer runs at 80 BPM inside the <code class=\"text-xs px-1 py-0.5 rounded\" style=\"background: var(--inline-code-bg, #e5e5e5);\" data-astro-cid-kh7btl4r=\"\">requestAnimationFrame</code> loop so audio and visuals fire in the same",
+  "fullText": "Zach\nProjects\nWords\nAbout\nAbout\n\nExistentially ambiguous.\n\nCONTACT\nzach@wvrk.org\nLINKS\nLinkedIn\nZachary\n\nZachary, a Senior Product Designer / Design Engineer at WarpStream working on product, ui/ux, frontend development, web and gtm initiatives.\n\nI'm entirely motivated by making sense of it all. In the existential sense.\n\nTHE PIANO\n\nThe piano song on the homepage is a cover of Maxence Cyrin's solo piano rendition of the Pixies' \"Where Is My Mind,\" sourced from an OnlineSequencer.net arrangement whose protobuf-encoded note data was decoded with a custom Python script to extract all 527 note events. The sequencer runs at 80 BPM inside the requestAnimationFrame loop so audio and visuals fire in the same tick with zero drift. Each note plays through the MusyngKite acoustic grand piano soundfont loaded via soundfont-player, with volume shaping that boosts melody, cuts bass, and softens high notes.\n\nEvery playing note maps its MIDI pitch to a row on the Joy Division waveform and injects energy that decays over time, bleeding into neighboring rows so chords spread across the canvas. Simultaneous notes that collide on the same row get nudged apart so every note stays visible as the song ripples through. Low notes render warm, high notes cool.\n\nTHE WAVEFORM\n\nThe background canvas draws a stacked-line waveform modeled after the Unknown Pleasures album cover by Joy Division, itself a plot of radio pulses from the pulsar CP 1919. Each row is filled beneath its curve to occlude the row behind it, producing the same layered depth as the original. The waveform is continuously animated with layered sine functions that shift over time.\n\n© 2026 zchry\nLinkedIn\nRSS"
+}

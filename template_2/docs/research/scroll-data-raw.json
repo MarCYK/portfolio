@@ -1,0 +1,15 @@
+{
+  "y0": {
+    "classes": "relative z-50 flex flex-row items-center justify-between px-6 py-2.5 header-nav shrink-0 home-page",
+    "bg": "rgb(10, 10, 10)",
+    "height": 52,
+    "position": "relative"
+  },
+  "y100": {
+    "classes": "relative z-50 flex flex-row items-center justify-between px-6 py-2.5 header-nav shrink-0 home-page",
+    "bg": "rgb(10, 10, 10)",
+    "height": 52,
+    "position": "relative"
+  },
+  "pageHeight": 900
+}

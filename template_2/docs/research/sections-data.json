@@ -1,0 +1,76 @@
+{
+  "main": {
+    "tag": "main",
+    "classes": "flex-1 overflow-y-auto flex flex-col",
+    "text": null,
+    "styles": {
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "24px",
+      "color": "rgb(250, 250, 250)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "width": "1440px",
+      "height": "848px",
+      "display": "flex",
+      "flexDirection": "column",
+      "border": "0px solid rgb(229, 231, 235)",
+      "position": "static",
+      "opacity": "1",
+      "transition": "all"
+    },
+    "images": null,
+    "childCount": 2,
+    "children": [
+      {
+        "tag": "canvas",
+        "classes": "",
+        "text": null,
+        "styles": {
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "fontFamily": "Soehne, system-ui, sans-serif",
+          "lineHeight": "24px",
+          "color": "rgb(250, 250, 250)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "width": "1440px",
+          "height": "900px",
+          "display": "block",
+          "flexDirection": "row",
+          "border": "0px solid rgb(229, 231, 235)",
+          "overflow": "clip",
+          "position": "fixed",
+          "zIndex": "0",
+          "opacity": "1",
+          "transition": "all",
+          "cursor": "crosshair"
+        },
+        "images": null,
+        "childCount": 0,
+        "children": []
+      },
+      {
+        "tag": "script",
+        "classes": "",
+        "text": "(function () {\n  if (window.__gridInit) return;\n  window.__gridInit = true;\n\n  var canvas = document.getElementById(\"grid-canvas\");\n  if (!canvas) return;\n  var ctx = canvas.getContext(\"2d\");\n\n  var mouseY = -9999;\n  var isDown = false;\n  var hoverRow = -1;\n  var lastHoverRow = -1;\n  var mouseRow = ",
+        "styles": {
+          "fontSize": "16px",
+          "fontWeight": "400",
+          "fontFamily": "Soehne, system-ui, sans-serif",
+          "lineHeight": "24px",
+          "color": "rgb(250, 250, 250)",
+          "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "flexDirection": "row",
+          "border": "0px solid rgb(229, 231, 235)",
+          "overflow": "visible",
+          "position": "static",
+          "opacity": "1",
+          "transition": "all"
+        },
+        "images": null,
+        "childCount": 0,
+        "children": []
+      }
+    ]
+  }
+}

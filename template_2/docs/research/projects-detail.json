@@ -1,0 +1,249 @@
+{
+  "grid": {
+    "styles": {
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "24px",
+      "color": "rgb(250, 250, 250)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "width": "1280px",
+      "height": "236.75px",
+      "display": "grid",
+      "flexDirection": "row",
+      "gridTemplateColumns": "426px 426px 426px",
+      "borderRadius": "12px",
+      "border": "1px solid rgb(42, 42, 42)",
+      "borderTop": "1px solid rgb(42, 42, 42)",
+      "borderLeft": "1px solid rgb(42, 42, 42)",
+      "borderRight": "1px solid rgb(42, 42, 42)",
+      "borderBottom": "1px solid rgb(42, 42, 42)",
+      "overflow": "hidden",
+      "position": "static",
+      "opacity": "1",
+      "transition": "all",
+      "objectFit": "fill"
+    },
+    "classes": "project-grid current-grid"
+  },
+  "firstCard": {
+    "styles": {
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "24px",
+      "color": "rgb(250, 250, 250)",
+      "backgroundColor": "rgb(10, 10, 10)",
+      "background": "rgb(10, 10, 10) none repeat scroll 0% 0% / auto padding-box border-box",
+      "padding": "40px",
+      "paddingTop": "40px",
+      "paddingRight": "40px",
+      "paddingBottom": "40px",
+      "paddingLeft": "40px",
+      "width": "426px",
+      "height": "234.75px",
+      "display": "flex",
+      "flexDirection": "column",
+      "borderTop": "0px solid rgb(229, 231, 235)",
+      "borderLeft": "0px solid rgb(229, 231, 235)",
+      "borderRight": "1px solid rgb(42, 42, 42)",
+      "borderBottom": "0px none rgb(250, 250, 250)",
+      "overflow": "visible",
+      "position": "static",
+      "opacity": "1",
+      "transition": "all",
+      "cursor": "pointer",
+      "objectFit": "fill"
+    },
+    "classes": "project-card group",
+    "childrenClasses": [
+      "card-icon",
+      "card-content"
+    ]
+  },
+  "cardIcon": {
+    "styles": {
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "24px",
+      "color": "rgb(250, 250, 250)",
+      "backgroundColor": "rgb(10, 10, 10)",
+      "background": "rgb(10, 10, 10) none repeat scroll 0% 0% / auto padding-box border-box",
+      "margin": "0px 0px 20px",
+      "marginBottom": "20px",
+      "width": "48px",
+      "height": "48px",
+      "display": "flex",
+      "flexDirection": "row",
+      "justifyContent": "center",
+      "alignItems": "center",
+      "borderRadius": "12px",
+      "border": "1px solid rgb(42, 42, 42)",
+      "borderTop": "1px solid rgb(42, 42, 42)",
+      "borderLeft": "1px solid rgb(42, 42, 42)",
+      "borderRight": "1px solid rgb(42, 42, 42)",
+      "borderBottom": "1px solid rgb(42, 42, 42)",
+      "overflow": "visible",
+      "position": "static",
+      "opacity": "1",
+      "transition": "border-color 0.15s, box-shadow 0.15s",
+      "cursor": "pointer",
+      "objectFit": "fill"
+    },
+    "classes": "card-icon"
+  },
+  "cardContent": {
+    "styles": {
+      "fontSize": "16px",
+      "fontWeight": "400",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "24px",
+      "color": "rgb(250, 250, 250)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "width": "345px",
+      "height": "86.75px",
+      "display": "flex",
+      "flexDirection": "column",
+      "border": "0px solid rgb(229, 231, 235)",
+      "borderTop": "0px solid rgb(229, 231, 235)",
+      "borderLeft": "0px solid rgb(229, 231, 235)",
+      "borderRight": "0px solid rgb(229, 231, 235)",
+      "borderBottom": "0px solid rgb(229, 231, 235)",
+      "overflow": "visible",
+      "position": "static",
+      "opacity": "1",
+      "transition": "all",
+      "cursor": "pointer",
+      "objectFit": "fill"
+    },
+    "classes": "card-content"
+  },
+  "h1": {
+    "styles": {
+      "fontSize": "30px",
+      "fontWeight": "600",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "36px",
+      "letterSpacing": "-0.75px",
+      "color": "rgb(250, 250, 250)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "margin": "0px 0px 12px",
+      "marginBottom": "12px",
+      "width": "1216px",
+      "height": "36px",
+      "display": "block",
+      "flexDirection": "row",
+      "border": "0px solid rgb(229, 231, 235)",
+      "borderTop": "0px solid rgb(229, 231, 235)",
+      "borderLeft": "0px solid rgb(229, 231, 235)",
+      "borderRight": "0px solid rgb(229, 231, 235)",
+      "borderBottom": "0px solid rgb(229, 231, 235)",
+      "overflow": "visible",
+      "position": "static",
+      "opacity": "1",
+      "transition": "all",
+      "objectFit": "fill"
+    },
+    "text": "\nProjects\n"
+  },
+  "footer": {
+    "styles": {
+      "fontSize": "12px",
+      "fontWeight": "400",
+      "fontFamily": "Soehne, system-ui, sans-serif",
+      "lineHeight": "16px",
+      "color": "rgb(82, 82, 82)",
+      "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "padding": "24px 0px",
+      "paddingTop": "24px",
+      "paddingBottom": "24px",
+      "width": "1429px",
+      "height": "64px",
+      "display": "block",
+      "flexDirection": "row",
+      "border": "0px solid rgb(229, 231, 235)",
+      "borderTop": "0px solid rgb(229, 231, 235)",
+      "borderLeft": "0px solid rgb(229, 231, 235)",
+      "borderRight": "0px solid rgb(229, 231, 235)",
+      "borderBottom": "0px solid rgb(229, 231, 235)",
+      "overflow": "visible",
+      "position": "static",
+      "opacity": "1",
+      "transition": "all",
+      "objectFit": "fill"
+    },
+    "classes": "site-footer text-xs",
+    "innerHTML": " <div class=\"flex items-center justify-between px-6 sm:px-8 mx-auto w-full\" style=\"max-width: 80rem;\" data-astro-cid-sz7xmlte=\"\"> <span data-astro-cid-sz7xmlte=\"\">© 2026 zchry</span> <a href=\"/\" data-astro-cid-sz7xmlte=\"\"><svg class=\"footer-logo\" viewBox=\"0 0 512 464\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\" data-astro-cid-sz7xmlte=\"\"><rect width=\"295.603\" height=\"295.603\" transform=\"matrix(0.866025 0.5 -0.866025 0.5 256 167.508)\" fill=\"#FF0000\" data-astro-cid-sz7xmlte=\"\"></rect><path d=\"M"
+  },
+  "allCards": [
+    {
+      "classes": "project-card group",
+      "href": "https://erebus.org/",
+      "h2": "erebus.org",
+      "desc": "A cognition primitive.",
+      "date": "March 2026"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://wvrk.org/",
+      "h2": "wvrk.org",
+      "desc": "A laboratory for experimental AI work.",
+      "date": "February 2026"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://www.zchry.org/projects/milton",
+      "h2": "Milton",
+      "desc": "An LLM trained on Paradise Lost and nothing else.",
+      "date": "February 2026"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://www.instagram.com/worklibrary/",
+      "h2": "Work Library™",
+      "desc": "A curated collection of rare and interesting books, shared on Instagram and TikTok.",
+      "date": "September 2023"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://www.figma.com/community/plugin/1232402036106953267/Lissajous-Curves",
+      "h2": "Lissajous Curves",
+      "desc": "A Figma plugin for drawing Lissajous curves as live stroke vectors.",
+      "date": "June 2023"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://manufacturedhuman.webflow.io/",
+      "h2": "Manufactured Human",
+      "desc": "A DALL·E powered exploration of our perceptions of reality, presented without context.",
+      "date": "June 2022"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://solipsism.webflow.io/",
+      "h2": "Solipsism Wow!",
+      "desc": "A marketing campaign to promote the joyful philosophical concept of Solipsism — the idea that only one's mind is sure to exist.",
+      "date": "March 2022"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://www.instagram.com/roambyland",
+      "h2": "Roam By Land",
+      "desc": "An outdoor adventure journal documenting trips and time spent in nature.",
+      "date": "June 2021"
+    },
+    {
+      "classes": "project-card group",
+      "href": "https://www.zchry.org/projects/absurdly",
+      "h2": "Absurdly",
+      "desc": "Existentialism as a Service.",
+      "date": "June 2020"
+    }
+  ],
+  "archiveSection": {
+    "classes": "flex-1 pb-20 sm:pb-24",
+    "html": "<div class=\"flex-1 pb-20 sm:pb-24\" data-astro-cid-2hwget37=\"\"> <div class=\"work-grid-page\" data-astro-cid-2hwget37=\"\"> <header class=\"px-6 sm:px-8 pt-12 sm:pt-20 pb-10 sm:pb-14\" data-astro-cid-2hwget37=\"\"> <h1 class=\"text-2xl sm:text-3xl font-semibold tracking-tight mb-3\" style=\"color: var(--text-primary);\" data-astro-cid-2hwget37=\"\">\nProjects\n</h1> <p class=\"text-sm\" style=\"color: var(--text-secondary);\" data-astro-cid-2hwget37=\"\">\nThings I've built / building.\n</p> </header> <div class=\"project-grid current-grid\" data-astro-cid-2hwget37=\"\"> <a href=\"https://erebus.org\" target=\"_blank\" rel=\"noopener\" class=\"project-card group\" data-astro-cid-2hwget37=\"\"> <div class=\"card-icon\" data-astro-cid-2hwget37=\"\"> <svg class=\"w-7 h-7\" data-astro-cid-2hwget37=\"true\" xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 256 256\" fill=\"currentColor\"><path d=\"M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176"
+  },
+  "wordsTable": null
+}
