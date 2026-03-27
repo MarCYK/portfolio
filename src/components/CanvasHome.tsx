@@ -35,8 +35,9 @@ export default function CanvasHome() {
       const row = getRowAtY(canvas.height, clientY);
       if (row < 0 || row >= ROWS) return;
 
-      state.energy[row] = Math.min(state.energy[row] + 0.6, 3);
-      if (audio.soundEnabled) playNote(audio, row, 0.7);
+      const prev = state.energy[row];
+      state.energy[row] = Math.min(prev + 0.6, 3);
+      if (audio.soundEnabled && prev < 1.0 && state.energy[row] >= 1.0) playNote(audio, row, 0.7);
 
       if (!canvasDirty) {
         canvasDirty = true;

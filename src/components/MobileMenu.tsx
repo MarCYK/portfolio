@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { CaretRightIcon, CloseIcon, LogoDiamond } from './icons';
+import { LogoDiamond } from './icons';
+import { ChevronRight, X } from 'lucide-react';
 import { NAV_LINKS } from '@/data/navigation';
 
 export default function MobileMenu() {
@@ -24,14 +25,14 @@ export default function MobileMenu() {
           <LogoDiamond className="h-4" />
         </Link>
         <button className="header-icon" onClick={close} aria-label="Close menu">
-          <CloseIcon />
+          <X size={20} />
         </button>
       </div>
       <nav className="mobile-menu-nav">
         {NAV_LINKS.map(({ href, label }) => (
           <Link key={href} href={href} className="mobile-nav-link" onClick={close}>
             {label}
-            <CaretRightIcon className="mobile-nav-caret" />
+            <ChevronRight className="mobile-nav-caret" size={18} />
           </Link>
         ))}
       </nav>

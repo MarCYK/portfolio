@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import MobileMenu from '@/components/MobileMenu';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { EnvelopeOutlineIcon, LinkedInLogoIcon } from '@/components/icons';
+import { Mail, Linkedin } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'marcyk - About',
@@ -30,7 +30,7 @@ export default function AboutPage() {
                   <ul className="tree-children">
                     <li>
                       <a href="mailto:zach@wvrk.org" className="about-link">
-                        <EnvelopeOutlineIcon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                        <Mail size={14} style={{ flexShrink: 0 }} />
                         zach@wvrk.org
                       </a>
                     </li>
@@ -46,7 +46,7 @@ export default function AboutPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <LinkedInLogoIcon style={{ width: '14px', height: '14px', flexShrink: 0 }} />
+                        <Linkedin size={14} style={{ flexShrink: 0 }} />
                         LinkedIn
                       </a>
                     </li>

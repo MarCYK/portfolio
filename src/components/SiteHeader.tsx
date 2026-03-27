@@ -3,27 +3,21 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { LogoDiamond } from './icons';
 import {
-  BroadcastFillIcon,
-  BroadcastOutlineIcon,
-  EnvelopeFillIcon,
-  EnvelopeOutlineIcon,
-  HamburgerIcon,
-  HomeOutlineIcon,
-  LogoDiamond,
-  MoonOutlineIcon,
-  MusicNoteFillIcon,
-  MusicNoteOutlineIcon,
-  PaintBrushFillIcon,
-  PaintBrushOutlineIcon,
-  SpeakerFillIcon,
-  SpeakerOutlineIcon,
-  SpeakerSlashOutlineIcon,
-  SunHorizonFillIcon,
-  SunHorizonOutlineIcon,
-  SunOutlineIcon,
-  TrashOutlineIcon,
-} from './icons';
+  Home,
+  Mail,
+  Menu,
+  Moon,
+  Music,
+  Paintbrush,
+  Radio,
+  Sun,
+  Sunrise,
+  Trash2,
+  Volume2,
+  VolumeX,
+} from 'lucide-react';
 import { NAV_LINKS } from '@/data/navigation';
 
 export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolean }) {
@@ -140,8 +134,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const iconBarContent = (
     <>
       <a href="mailto:zach@wvrk.org" className="header-icon" aria-label="Email Zachary">
-        <EnvelopeOutlineIcon className="icon-outline" />
-        <EnvelopeFillIcon className="icon-fill" />
+        <Mail size={18} />
       </a>
       <span id="header-chord" className="hidden font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
       {isHomePage && (
@@ -153,8 +146,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
             onClick={toggleMusic}
             aria-label="Toggle music"
           >
-            <MusicNoteOutlineIcon className="icon-outline" />
-            <MusicNoteFillIcon className="icon-fill" />
+            <Music size={18} />
           </button>
           <button
             id="disco-toggle"
@@ -163,8 +155,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
             onClick={toggleDisco}
             aria-label="Toggle disco mode"
           >
-            <BroadcastOutlineIcon className="icon-outline" />
-            <BroadcastFillIcon className="icon-fill" />
+            <Radio size={18} />
           </button>
           <button
             id="sunset-toggle"
@@ -173,8 +164,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
             onClick={toggleSunset}
             aria-label="Toggle sunset mode"
           >
-            <SunHorizonOutlineIcon className="icon-outline" />
-            <SunHorizonFillIcon className="icon-fill" />
+            <Sunrise size={18} />
           </button>
           <div className="relative" ref={paletteRef}>
             <button
@@ -183,8 +173,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
               onClick={() => setPaletteOpen(!paletteOpen)}
               aria-label="Choose canvas color"
             >
-              <PaintBrushOutlineIcon className="icon-outline" />
-              <PaintBrushFillIcon className="icon-fill" />
+              <Paintbrush size={18} />
             </button>
             <div id="color-palette" className={`color-palette ${paletteOpen ? '' : 'hidden'}`}>
               <div className="color-palette-inner">
@@ -208,7 +197,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
             onClick={clearCanvas}
             aria-label="Clear canvas"
           >
-            <TrashOutlineIcon />
+            <Trash2 size={18} />
           </button>
         </>
       )}
@@ -219,17 +208,10 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         onClick={toggleSound}
         aria-label="Toggle sound"
       >
-        {soundEnabled ? (
-          <>
-            <SpeakerOutlineIcon className="icon-outline" />
-            <SpeakerFillIcon className="icon-fill" />
-          </>
-        ) : (
-          <SpeakerSlashOutlineIcon />
-        )}
+        {soundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
       </button>
       <button id="theme-toggle" type="button" className="header-icon" onClick={toggleTheme} aria-label="Toggle theme">
-        {isDark ? <SunOutlineIcon /> : <MoonOutlineIcon />}
+        {isDark ? <Sun size={18} /> : <Moon size={18} />}
       </button>
     </>
   );
@@ -255,7 +237,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         </div>
 
         <button type="button" className="hamburger-btn header-icon md:hidden" onClick={openMenu} aria-label="Open menu">
-          <HamburgerIcon />
+          <Menu size={20} />
         </button>
 
         <div className="icon-bar hidden items-center gap-3 md:flex">{iconBarContent}</div>
@@ -263,7 +245,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
 
       <div className="mobile-icon-bar">
         <Link href="/" className="header-icon" aria-label="Home">
-          <HomeOutlineIcon />
+          <Home size={20} />
         </Link>
         {iconBarContent}
       </div>

@@ -157,19 +157,6 @@ body {
   color: #000000;
 }
 
-.header-icon .icon-fill {
-  display: none;
-}
-
-.header-icon:hover .icon-outline,
-.header-icon.active .icon-outline {
-  display: none !important;
-}
-
-.header-icon:hover .icon-fill,
-.header-icon.active .icon-fill {
-  display: block !important;
-}
 
 .canvas-clear-btn {
   display: none;

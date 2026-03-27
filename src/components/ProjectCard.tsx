@@ -1,4 +1,4 @@
-import { ArrowUpRightIcon } from './icons';
+import { ArrowUpRight } from 'lucide-react';
 import type { Project } from '@/types';
 
 export default function ProjectCard({ title, description, date, href, external, icon }: Project) {
@@ -15,8 +15,9 @@ export default function ProjectCard({ title, description, date, href, external, 
           <h2 className="text-base font-semibold" style={{ color: 'var(--text-primary)' }}>
             {title}
           </h2>
-          <ArrowUpRightIcon
-            className="h-3.5 w-3.5 shrink-0 -translate-x-0.5 -translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
+          <ArrowUpRight
+            size={14}
+            className="shrink-0 -translate-x-0.5 -translate-y-0.5 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:translate-y-0 group-hover:opacity-100"
             style={{ color: 'var(--text-secondary)' }}
           />
         </div>

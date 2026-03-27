@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import MobileMenu from '@/components/MobileMenu';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { UserIcon, CalendarIcon, LinkIcon, ArrowLeftIcon } from '@/components/icons';
+import { User, Calendar, Link as LinkIcon, ArrowLeft } from 'lucide-react';
 import { recentPosts, archivePosts } from '@/data/posts';
 
 const allPosts = [...recentPosts, ...archivePosts];

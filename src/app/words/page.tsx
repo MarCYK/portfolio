@@ -3,7 +3,7 @@ import Link from 'next/link';
 import MobileMenu from '@/components/MobileMenu';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { ArrowRightIcon } from '@/components/icons';
+import { ArrowRight } from 'lucide-react';
 import { recentPosts, archivePosts } from '@/data/posts';
 import type { Post } from '@/types';
 
@@ -22,8 +22,9 @@ function WordsRow({ date, title, href }: Post) {
         >
           {title}
         </span>
-        <ArrowRightIcon
-          className="ml-4 h-3.5 w-3.5 shrink-0 -translate-x-2 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
+        <ArrowRight
+          size={14}
+          className="ml-4 shrink-0 -translate-x-2 opacity-0 transition-all duration-200 group-hover:translate-x-0 group-hover:opacity-100"
           style={{ color: 'var(--text-secondary)', flexShrink: 0 }}
         />
       </span>

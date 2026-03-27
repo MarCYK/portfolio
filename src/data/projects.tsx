@@ -1,15 +1,5 @@
 import type { Project } from '@/types';
-import {
-  BookOpenIcon,
-  BrainIcon,
-  CompassIcon,
-  FigmaLogoIcon,
-  FlaskIcon,
-  GlobeIcon,
-  InstagramLogoIcon,
-  MoleculeIcon,
-  SmileyIcon,
-} from '@/components/icons';
+import { Atom, BookOpen, Brain, Compass, Figma, FlaskConical, Globe, Instagram, Smile } from 'lucide-react';
 
 export const currentProjects: Project[] = [
   {
