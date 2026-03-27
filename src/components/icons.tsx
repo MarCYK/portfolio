@@ -260,6 +260,38 @@ export function SmileyIcon({ className, style }: { className?: string; style?: C
   );
 }
 
+export function UserIcon({ className, style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+      <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z" />
+    </svg>
+  );
+}
+
+export function CalendarIcon({ className, style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+      <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32Zm0,176H48V48H72v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V208Z" />
+    </svg>
+  );
+}
+
+export function LinkIcon({ className, style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+      <path d="M137.54,186.36a8,8,0,0,1,0,11.31l-9.94,10A56,56,0,0,1,48.38,128.4L72.5,104.28A56,56,0,0,1,149.31,102a8,8,0,1,1-10.64,12,40,40,0,0,0-54.85,1.63L59.7,139.72a40,40,0,0,0,56.58,56.58l9.94-9.94A8,8,0,0,1,137.54,186.36Zm70.08-138a56.06,56.06,0,0,0-79.22,0l-9.94,9.95a8,8,0,0,0,11.32,11.31l9.94-9.94a40,40,0,0,1,56.58,56.58L172.18,140.4A40,40,0,0,1,117.32,142,8,8,0,1,0,106.7,154a56,56,0,0,0,76.78-2.26l24.12-24.12A56.06,56.06,0,0,0,207.62,48.38Z" />
+    </svg>
+  );
+}
+
+export function ArrowLeftIcon({ className, style }: { className?: string; style?: CSSProperties }) {
+  return (
+    <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
+      <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z" />
+    </svg>
+  );
+}
+
 export function LinkedInLogoIcon({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
     <svg className={className} style={style} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor">
