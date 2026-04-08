@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import MobileMenu from '@/components/MobileMenu';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { Mail, Linkedin } from 'lucide-react';
+import { Link as LinkIcon, Mail } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'marcyk - About',
@@ -46,7 +46,7 @@ export default function AboutPage() {
                         target="_blank"
                         rel="noopener noreferrer"
                       >
-                        <Linkedin size={14} style={{ flexShrink: 0 }} />
+                        <LinkIcon size={14} style={{ flexShrink: 0 }} />
                         LinkedIn
                       </a>
                     </li>

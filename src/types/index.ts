@@ -7,6 +7,13 @@ export interface Project {
   href: string;
   external?: boolean;
   icon: ReactNode;
+  status?: string;
+  content?: string[];
+}
+
+export interface InternalProject extends Project {
+  external: false;
+  content: string[];
 }
 
 export interface Post {

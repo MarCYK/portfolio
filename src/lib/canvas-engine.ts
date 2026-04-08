@@ -1,11 +1,29 @@
 import { ROWS, MIDI_NOTES, SONG_DURATION, midiPitchToRow, midiToName } from './song-data';
 import type { AudioState } from './audio';
 
+export type CanvasTheme = 'dark' | 'light';
+
+export function getDefaultCanvasColors(theme: CanvasTheme): { bgColor: string; strokeColor: string } {
+  if (theme === 'light') {
+    return {
+      bgColor: '#ffffff',
+      strokeColor: 'rgba(23, 23, 23, 0.78)',
+    };
+  }
+
+  return {
+    bgColor: '#0a0a0a',
+    strokeColor: 'rgba(255, 255, 255, 0.85)',
+  };
+}
+
 export interface CanvasState {
   energy: Float32Array;
   timeOffset: number;
   strokeColor: string;
   bgColor: string;
+  theme: CanvasTheme;
+  customStrokeColor: string | null;
   discoMode: boolean;
   discoHue: number;
   sunsetMode: boolean;
@@ -14,12 +32,16 @@ export interface CanvasState {
   lastMusicElapsed: number;
 }
 
-export function createCanvasState(): CanvasState {
+export function createCanvasState(theme: CanvasTheme = 'dark'): CanvasState {
+  const defaults = getDefaultCanvasColors(theme);
+
   return {
     energy: new Float32Array(ROWS),
     timeOffset: 0,
-    strokeColor: 'rgba(255, 255, 255, 0.85)',
-    bgColor: '#0a0a0a',
+    strokeColor: defaults.strokeColor,
+    bgColor: defaults.bgColor,
+    theme,
+    customStrokeColor: null,
     discoMode: false,
     discoHue: 0,
     sunsetMode: false,
@@ -64,17 +86,19 @@ export function drawFrame(
   const fillExtend = rowSpacing * 3;
   const maxAmpBase = width < 640 ? width * 0.14 : Math.min(width, height) * 0.12;
   const edgePow = width < 640 ? 1.5 : width < 1024 ? 3 : width > 1800 ? 7 : 5;
+  const defaults = state.sunsetMode
+    ? { bgColor: '#fff8e8', strokeColor: 'rgba(80, 40, 0, 0.85)' }
+    : getDefaultCanvasColors(state.theme);
 
-  if (state.sunsetMode) {
-    state.bgColor = '#fff8e8';
-    state.strokeColor = state.discoMode ? `hsl(${state.discoHue}, 80%, 35%)` : 'rgba(80, 40, 0, 0.85)';
-  } else {
-    state.bgColor = '#0a0a0a';
-    state.strokeColor = state.discoMode ? `hsl(${state.discoHue}, 100%, 70%)` : 'rgba(255, 255, 255, 0.85)';
-  }
+  state.bgColor = defaults.bgColor;
 
   if (state.discoMode) {
     state.discoHue = (state.discoHue + 0.8) % 360;
+    state.strokeColor = state.sunsetMode ? `hsl(${state.discoHue}, 80%, 35%)` : `hsl(${state.discoHue}, 100%, 70%)`;
+  } else if (state.customStrokeColor) {
+    state.strokeColor = state.customStrokeColor;
+  } else {
+    state.strokeColor = defaults.strokeColor;
   }
 
   for (let index = 0; index < ROWS; index += 1) {

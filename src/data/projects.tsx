@@ -1,5 +1,5 @@
-import type { Project } from '@/types';
-import { Atom, BookOpen, Brain, Compass, Figma, FlaskConical, Globe, Instagram, Smile } from 'lucide-react';
+import type { InternalProject, Project } from '@/types';
+import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, PenTool, Smile } from 'lucide-react';
 
 export const currentProjects: Project[] = [
   {
@@ -8,7 +8,7 @@ export const currentProjects: Project[] = [
     date: 'March 2026',
     href: 'https://erebus.org',
     external: true,
-    icon: <MoleculeIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <Atom className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'wvrk.org',
@@ -16,7 +16,7 @@ export const currentProjects: Project[] = [
     date: 'February 2026',
     href: 'https://wvrk.org/',
     external: true,
-    icon: <FlaskIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <FlaskConical className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'Milton',
@@ -24,7 +24,12 @@ export const currentProjects: Project[] = [
     date: 'February 2026',
     href: '/projects/milton',
     external: false,
-    icon: <BookOpenIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    status: 'Prototype',
+    content: [
+      'Milton is a constrained language model experiment trained against a single literary source: Paradise Lost. The point is not breadth, but pressure. Restricting the corpus turns the model into a tool for style, voice, and interpretive distortion rather than general utility.',
+      'This placeholder page exists to keep the internal project route stable while the fuller write-up is still in progress. The next pass should document the training setup, evaluation criteria, and what the constraint revealed about model behavior.',
+    ],
+    icon: <BookOpen className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
 ];
 
@@ -35,7 +40,7 @@ export const archiveProjects: Project[] = [
     date: 'September 2023',
     href: 'https://www.instagram.com/worklibrary/',
     external: true,
-    icon: <InstagramLogoIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <Camera className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'Lissajous Curves',
@@ -43,7 +48,7 @@ export const archiveProjects: Project[] = [
     date: 'June 2023',
     href: 'https://www.figma.com/community/plugin/Lissajous-Curves',
     external: true,
-    icon: <FigmaLogoIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <PenTool className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'Manufactured Human',
@@ -51,7 +56,7 @@ export const archiveProjects: Project[] = [
     date: 'June 2022',
     href: 'https://manufacturedhuman.webflow.io/',
     external: true,
-    icon: <GlobeIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <Globe className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'Solipsism Wow!',
@@ -60,7 +65,7 @@ export const archiveProjects: Project[] = [
     date: 'March 2022',
     href: 'https://solipsism.webflow.io/',
     external: true,
-    icon: <BrainIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <Brain className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'Roam By Land',
@@ -68,7 +73,7 @@ export const archiveProjects: Project[] = [
     date: 'June 2021',
     href: 'https://www.instagram.com/roambyland',
     external: true,
-    icon: <CompassIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: <Compass className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
   {
     title: 'Absurdly',
@@ -76,6 +81,29 @@ export const archiveProjects: Project[] = [
     date: 'June 2020',
     href: '/projects/absurdly',
     external: false,
-    icon: <SmileyIcon className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    status: 'Archived',
+    content: [
+      'Absurdly was a small philosophical brand experiment built around the idea of treating existentialism like a playful internet service. The work sat somewhere between satire, identity design, and cultural packaging.',
+      'This placeholder page preserves the internal route and gives the project a stable home while the original assets and fuller retrospective are assembled.',
+    ],
+    icon: <Smile className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
 ];
+
+const allProjects = [...currentProjects, ...archiveProjects];
+
+function isInternalProject(project: Project): project is InternalProject {
+  return project.external === false && Array.isArray(project.content);
+}
+
+export function getInternalProjectBySlug(slug: string): InternalProject | null {
+  return (
+    allProjects.find(
+      (project): project is InternalProject => isInternalProject(project) && project.href === `/projects/${slug}`,
+    ) ?? null
+  );
+}
+
+export function getInternalProjectSlugs(): string[] {
+  return allProjects.filter(isInternalProject).map((project) => project.href.replace('/projects/', ''));
+}

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { ROWS } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
+import type { CanvasTheme } from '@/lib/canvas-engine';
 import { createCanvasState, drawFrame, getRowAtY } from '@/lib/canvas-engine';
 
 export default function CanvasHome() {
@@ -26,10 +27,15 @@ export default function CanvasHome() {
     window.addEventListener('resize', resize);
 
     const audio = createAudioState();
-    const state = createCanvasState();
+    const initialTheme: CanvasTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    const state = createCanvasState(initialTheme);
     let animFrameId: number;
     let isDrawing = false;
     let canvasDirty = false;
+
+    const stopDrawing = () => {
+      isDrawing = false;
+    };
 
     function handleDraw(_clientX: number, clientY: number) {
       const row = getRowAtY(canvas.height, clientY);
@@ -59,7 +65,6 @@ export default function CanvasHome() {
     const onMouseMove = (event: MouseEvent) => {
       if (isDrawing) handleDraw(event.clientX, event.clientY);
     };
-    const onMouseUp = () => { isDrawing = false; };
 
     // Touch events
     const onTouchStart = (event: TouchEvent) => {
@@ -70,14 +75,15 @@ export default function CanvasHome() {
     const onTouchMove = (event: TouchEvent) => {
       if (isDrawing) handleDraw(event.touches[0].clientX, event.touches[0].clientY);
     };
-    const onTouchEnd = () => { isDrawing = false; };
 
     canvas.addEventListener('mousedown', onMouseDown);
     canvas.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('mouseup', onMouseUp);
     canvas.addEventListener('touchstart', onTouchStart, { passive: true });
     canvas.addEventListener('touchmove', onTouchMove, { passive: true });
-    canvas.addEventListener('touchend', onTouchEnd);
+    window.addEventListener('mouseup', stopDrawing);
+    window.addEventListener('touchend', stopDrawing);
+    window.addEventListener('touchcancel', stopDrawing);
+    window.addEventListener('blur', stopDrawing);
 
     // Custom event handlers for header controls
     const onMusicToggle = async (event: Event) => {
@@ -101,10 +107,16 @@ export default function CanvasHome() {
     };
     const onColorChange = (event: Event) => {
       const color = (event as CustomEvent).detail.color;
-      state.strokeColor = color === 'default' ? 'rgba(255, 255, 255, 0.85)' : color;
+      state.customStrokeColor = color === 'default' ? null : color;
     };
     const onSoundToggle = (event: Event) => {
       audio.soundEnabled = (event as CustomEvent).detail.enabled;
+    };
+    const onThemeChange = (event: Event) => {
+      const theme = (event as CustomEvent<{ theme?: CanvasTheme }>).detail.theme;
+      if (theme === 'dark' || theme === 'light') {
+        state.theme = theme;
+      }
     };
 
     window.addEventListener('musicToggle', onMusicToggle);
@@ -113,6 +125,7 @@ export default function CanvasHome() {
     window.addEventListener('canvasClear', onCanvasClear);
     window.addEventListener('colorChange', onColorChange);
     window.addEventListener('soundToggle', onSoundToggle);
+    window.addEventListener('themeChange', onThemeChange);
 
     animFrameId = requestAnimationFrame(animate);
 
@@ -121,16 +134,19 @@ export default function CanvasHome() {
       window.removeEventListener('resize', resize);
       canvas.removeEventListener('mousedown', onMouseDown);
       canvas.removeEventListener('mousemove', onMouseMove);
-      canvas.removeEventListener('mouseup', onMouseUp);
       canvas.removeEventListener('touchstart', onTouchStart);
       canvas.removeEventListener('touchmove', onTouchMove);
-      canvas.removeEventListener('touchend', onTouchEnd);
+      window.removeEventListener('mouseup', stopDrawing);
+      window.removeEventListener('touchend', stopDrawing);
+      window.removeEventListener('touchcancel', stopDrawing);
+      window.removeEventListener('blur', stopDrawing);
       window.removeEventListener('musicToggle', onMusicToggle);
       window.removeEventListener('discoToggle', onDiscoToggle);
       window.removeEventListener('sunsetToggle', onSunsetToggle);
       window.removeEventListener('canvasClear', onCanvasClear);
       window.removeEventListener('colorChange', onColorChange);
       window.removeEventListener('soundToggle', onSoundToggle);
+      window.removeEventListener('themeChange', onThemeChange);
     };
   }, []);
 

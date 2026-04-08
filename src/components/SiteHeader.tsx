@@ -20,6 +20,8 @@ import {
 } from 'lucide-react';
 import { NAV_LINKS } from '@/data/navigation';
 
+type ThemeMode = 'dark' | 'light';
+
 export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolean }) {
   const pathname = usePathname();
   const [isDark, setIsDark] = useState(true);
@@ -32,11 +34,19 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const [activeSwatch, setActiveSwatch] = useState('default');
   const paletteRef = useRef<HTMLDivElement>(null);
 
+  const broadcastTheme = (theme: ThemeMode) => {
+    window.dispatchEvent(new CustomEvent('themeChange', { detail: { theme } }));
+  };
+
   useEffect(() => {
     const theme = localStorage.getItem('theme');
     if (theme === 'light') {
       setIsDark(false);
       document.documentElement.classList.remove('dark');
+      broadcastTheme('light');
+    } else {
+      document.documentElement.classList.add('dark');
+      broadcastTheme('dark');
     }
 
     const sound = localStorage.getItem('sound');
@@ -69,9 +79,11 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
     if (newDark) {
       document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
+      broadcastTheme('dark');
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+      broadcastTheme('light');
     }
   };
 

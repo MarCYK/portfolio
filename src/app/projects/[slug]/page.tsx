@@ -4,23 +4,21 @@ import { notFound } from 'next/navigation';
 import MobileMenu from '@/components/MobileMenu';
 import SiteFooter from '@/components/SiteFooter';
 import SiteHeader from '@/components/SiteHeader';
-import { User, Calendar, Link as LinkIcon, ArrowLeft } from 'lucide-react';
-import { recentPosts, archivePosts } from '@/data/posts';
+import { getInternalProjectBySlug, getInternalProjectSlugs } from '@/data/projects';
+import { ArrowLeft, Calendar } from 'lucide-react';
 
-const allPosts = [...recentPosts, ...archivePosts];
-
-function getPostBySlug(slug: string) {
-  return allPosts.find((p) => p.href === `/words/${slug}`) ?? null;
+export function generateStaticParams() {
+  return getInternalProjectSlugs().map((slug) => ({ slug }));
 }
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const post = getPostBySlug(params.slug);
-  return { title: post ? `marcyk - ${post.title}` : 'marcyk - Not Found' };
+  const project = getInternalProjectBySlug(params.slug);
+  return { title: project ? `marcyk - ${project.title}` : 'marcyk - Not Found' };
 }
 
-export default function PostPage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
-  if (!post || !post.content) notFound();
+export default function ProjectPage({ params }: { params: { slug: string } }) {
+  const project = getInternalProjectBySlug(params.slug);
+  if (!project) notFound();
 
   return (
     <>
@@ -29,35 +27,40 @@ export default function PostPage({ params }: { params: { slug: string } }) {
       <main id="scroll-root" className="flex flex-1 flex-col overflow-y-auto">
         <div className="mx-auto w-full max-w-2xl flex-1 px-6 sm:px-8">
           <article className="pb-16 pt-12 lg:pt-20">
+            <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border" style={{ borderColor: 'var(--border)' }}>
+              {project.icon}
+            </div>
+
             <h1
               className="mb-4 text-3xl font-bold tracking-tight sm:text-4xl"
               style={{ color: 'var(--text-primary)' }}
             >
-              {post.title}
+              {project.title}
             </h1>
 
+            <p className="mb-6 text-base leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+              {project.description}
+            </p>
+
             <div
-              className="mb-12 flex flex-wrap items-center gap-x-3 text-sm"
+              className="mb-12 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm"
               style={{ color: 'var(--text-tertiary)' }}
             >
-              {post.author && (
-                <span className="flex items-center gap-1.5">
-                  <User className="h-3.5 w-3.5" />
-                  {post.author}
-                </span>
-              )}
-              <span aria-hidden="true">&middot;</span>
               <span className="flex items-center gap-1.5">
                 <Calendar className="h-3.5 w-3.5" />
-                {post.date}
+                {project.date}
               </span>
-              <span aria-hidden="true">&middot;</span>
-              <LinkIcon className="h-3.5 w-3.5" />
+              {project.status && (
+                <>
+                  <span aria-hidden="true">&middot;</span>
+                  <span>{project.status}</span>
+                </>
+              )}
             </div>
 
             <div className="prose-content">
-              {post.content.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
+              {project.content.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
           </article>
@@ -66,12 +69,12 @@ export default function PostPage({ params }: { params: { slug: string } }) {
 
           <div className="py-8">
             <Link
-              href="/words"
+              href="/projects"
               className="inline-flex items-center gap-2 text-sm transition-colors hover:opacity-80"
               style={{ color: 'var(--text-secondary)' }}
             >
               <ArrowLeft className="h-4 w-4" />
-              Back to words
+              Back to projects
             </Link>
           </div>
         </div>
