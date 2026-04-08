@@ -5,6 +5,7 @@ import { ROWS } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
 import type { CanvasTheme } from '@/lib/canvas-engine';
 import { createCanvasState, drawFrame, getRowAtY } from '@/lib/canvas-engine';
+import { canvasEvents } from '@/lib/canvas-events';
 
 export default function CanvasHome() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -47,7 +48,7 @@ export default function CanvasHome() {
 
       if (!canvasDirty) {
         canvasDirty = true;
-        window.dispatchEvent(new CustomEvent('canvasDirty', { detail: { dirty: true } }));
+        canvasEvents.emit('canvasDirty', { dirty: true });
       }
     }
 
@@ -86,46 +87,37 @@ export default function CanvasHome() {
     window.addEventListener('blur', stopDrawing);
 
     // Custom event handlers for header controls
-    const onMusicToggle = async (event: Event) => {
+    const unsubMusic = canvasEvents.on('musicToggle', async (detail) => {
       await initAudio(audio);
-      state.musicPlaying = (event as CustomEvent).detail.active;
+      state.musicPlaying = detail.active;
       if (state.musicPlaying && audio.audioCtx) {
         state.musicStartTime = audio.audioCtx.currentTime;
         state.lastMusicElapsed = -1;
       }
-    };
-    const onDiscoToggle = (event: Event) => {
-      state.discoMode = (event as CustomEvent).detail.active;
-    };
-    const onSunsetToggle = (event: Event) => {
-      state.sunsetMode = (event as CustomEvent).detail.active;
-    };
-    const onCanvasClear = () => {
+    });
+    const unsubDisco = canvasEvents.on('discoToggle', (detail) => {
+      state.discoMode = detail.active;
+    });
+    const unsubSunset = canvasEvents.on('sunsetToggle', (detail) => {
+      state.sunsetMode = detail.active;
+    });
+    const unsubCanvasClear = canvasEvents.on('canvasClear', () => {
       state.energy.fill(0);
       canvasDirty = false;
-      window.dispatchEvent(new CustomEvent('canvasDirty', { detail: { dirty: false } }));
-    };
-    const onColorChange = (event: Event) => {
-      const color = (event as CustomEvent).detail.color;
-      state.customStrokeColor = color === 'default' ? null : color;
-    };
-    const onSoundToggle = (event: Event) => {
-      audio.soundEnabled = (event as CustomEvent).detail.enabled;
-    };
-    const onThemeChange = (event: Event) => {
-      const theme = (event as CustomEvent<{ theme?: CanvasTheme }>).detail.theme;
+      canvasEvents.emit('canvasDirty', { dirty: false });
+    });
+    const unsubColor = canvasEvents.on('colorChange', (detail) => {
+      state.customStrokeColor = detail.color === 'default' ? null : detail.color;
+    });
+    const unsubSound = canvasEvents.on('soundToggle', (detail) => {
+      audio.soundEnabled = detail.enabled;
+    });
+    const unsubTheme = canvasEvents.on('themeChange', (detail) => {
+      const theme = detail.theme;
       if (theme === 'dark' || theme === 'light') {
         state.theme = theme;
       }
-    };
-
-    window.addEventListener('musicToggle', onMusicToggle);
-    window.addEventListener('discoToggle', onDiscoToggle);
-    window.addEventListener('sunsetToggle', onSunsetToggle);
-    window.addEventListener('canvasClear', onCanvasClear);
-    window.addEventListener('colorChange', onColorChange);
-    window.addEventListener('soundToggle', onSoundToggle);
-    window.addEventListener('themeChange', onThemeChange);
+    });
 
     animFrameId = requestAnimationFrame(animate);
 
@@ -140,13 +132,13 @@ export default function CanvasHome() {
       window.removeEventListener('touchend', stopDrawing);
       window.removeEventListener('touchcancel', stopDrawing);
       window.removeEventListener('blur', stopDrawing);
-      window.removeEventListener('musicToggle', onMusicToggle);
-      window.removeEventListener('discoToggle', onDiscoToggle);
-      window.removeEventListener('sunsetToggle', onSunsetToggle);
-      window.removeEventListener('canvasClear', onCanvasClear);
-      window.removeEventListener('colorChange', onColorChange);
-      window.removeEventListener('soundToggle', onSoundToggle);
-      window.removeEventListener('themeChange', onThemeChange);
+      unsubMusic();
+      unsubDisco();
+      unsubSunset();
+      unsubCanvasClear();
+      unsubColor();
+      unsubSound();
+      unsubTheme();
     };
   }, []);
 

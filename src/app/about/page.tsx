@@ -1,8 +1,7 @@
 import type { Metadata } from 'next';
-import MobileMenu from '@/components/MobileMenu';
-import SiteFooter from '@/components/SiteFooter';
-import SiteHeader from '@/components/SiteHeader';
+import PageShell from '@/components/PageShell';
 import { Link as LinkIcon, Mail } from 'lucide-react';
+import { EMAIL, EMAIL_DISPLAY } from '@/data/constants';
 
 export const metadata: Metadata = {
   title: 'marcyk - About',
@@ -10,11 +9,8 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <>
-      <SiteHeader />
-      <MobileMenu />
-      <main id="scroll-root" className="flex flex-1 flex-col overflow-y-auto">
-        <div className="mx-auto flex w-full flex-1 flex-col px-6 sm:px-8" style={{ maxWidth: '80rem' }}>
+    <PageShell>
+      <div className="mx-auto flex w-full flex-1 flex-col px-6 sm:px-8" style={{ maxWidth: '80rem' }}>
           <div className="flex flex-1 flex-col gap-8 lg:flex-row lg:gap-0">
             <div className="shrink-0 pb-8 pt-12 lg:w-1/4 lg:pr-12 lg:pt-20 xl:pr-24">
               <h1 className="page-heading mb-3">
@@ -29,9 +25,9 @@ export default function AboutPage() {
                   <summary className="tree-label">Contact</summary>
                   <ul className="tree-children">
                     <li>
-                      <a href="mailto:zach@wvrk.org" className="about-link">
+                      <a href={`mailto:${EMAIL}`} className="about-link">
                         <Mail size={14} style={{ flexShrink: 0 }} />
-                        zach@wvrk.org
+                        {EMAIL_DISPLAY}
                       </a>
                     </li>
                   </ul>
@@ -114,8 +110,6 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-        <SiteFooter />
-      </main>
-    </>
+    </PageShell>
   );
 }

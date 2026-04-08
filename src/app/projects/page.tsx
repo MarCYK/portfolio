@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
-import MobileMenu from '@/components/MobileMenu';
+import PageShell from '@/components/PageShell';
 import ProjectCard from '@/components/ProjectCard';
-import SiteFooter from '@/components/SiteFooter';
-import SiteHeader from '@/components/SiteHeader';
 import { currentProjects, archiveProjects } from '@/data/projects';
 
 export const metadata: Metadata = {
@@ -11,10 +9,7 @@ export const metadata: Metadata = {
 
 export default function ProjectsPage() {
   return (
-    <>
-      <SiteHeader />
-      <MobileMenu />
-      <main id="scroll-root" className="flex flex-1 flex-col overflow-y-auto">
+    <PageShell>
         <div className="flex-1 pb-20 sm:pb-24">
           <div className="work-grid-page px-6 sm:px-8">
             <header className="pb-10 pt-12 sm:pb-14 sm:pt-20">
@@ -49,8 +44,6 @@ export default function ProjectsPage() {
             </div>
           </div>
         </div>
-        <SiteFooter />
-      </main>
-    </>
+    </PageShell>
   );
 }

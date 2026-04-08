@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import MobileMenu from '@/components/MobileMenu';
-import SiteFooter from '@/components/SiteFooter';
-import SiteHeader from '@/components/SiteHeader';
-import { getInternalProjectBySlug, getInternalProjectSlugs } from '@/data/projects';
+import PageShell from '@/components/PageShell';
+import { getInternalProjectBySlug, getInternalProjectSlugs } from '@/lib/projects';
 import { ArrowLeft, Calendar } from 'lucide-react';
 
 export function generateStaticParams() {
@@ -21,10 +19,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
   if (!project) notFound();
 
   return (
-    <>
-      <SiteHeader />
-      <MobileMenu />
-      <main id="scroll-root" className="flex flex-1 flex-col overflow-y-auto">
+    <PageShell>
         <div className="mx-auto w-full max-w-2xl flex-1 px-6 sm:px-8">
           <article className="pb-16 pt-12 lg:pt-20">
             <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl border" style={{ borderColor: 'var(--border)' }}>
@@ -78,8 +73,6 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
             </Link>
           </div>
         </div>
-        <SiteFooter />
-      </main>
-    </>
+    </PageShell>
   );
 }

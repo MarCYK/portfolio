@@ -1,17 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import MobileMenu from '@/components/MobileMenu';
-import SiteFooter from '@/components/SiteFooter';
-import SiteHeader from '@/components/SiteHeader';
+import PageShell from '@/components/PageShell';
 import { User, Calendar, Link as LinkIcon, ArrowLeft } from 'lucide-react';
-import { recentPosts, archivePosts } from '@/data/posts';
-
-const allPosts = [...recentPosts, ...archivePosts];
-
-function getPostBySlug(slug: string) {
-  return allPosts.find((p) => p.href === `/words/${slug}`) ?? null;
-}
+import { getPostBySlug } from '@/data/posts';
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const post = getPostBySlug(params.slug);
@@ -23,10 +15,7 @@ export default function PostPage({ params }: { params: { slug: string } }) {
   if (!post || !post.content) notFound();
 
   return (
-    <>
-      <SiteHeader />
-      <MobileMenu />
-      <main id="scroll-root" className="flex flex-1 flex-col overflow-y-auto">
+    <PageShell>
         <div className="mx-auto w-full max-w-2xl flex-1 px-6 sm:px-8">
           <article className="pb-16 pt-12 lg:pt-20">
             <h1
@@ -75,8 +64,6 @@ export default function PostPage({ params }: { params: { slug: string } }) {
             </Link>
           </div>
         </div>
-        <SiteFooter />
-      </main>
-    </>
+    </PageShell>
   );
 }

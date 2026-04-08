@@ -5,14 +5,13 @@ import Link from 'next/link';
 import { LogoDiamond } from './icons';
 import { ChevronRight, X } from 'lucide-react';
 import { NAV_LINKS } from '@/data/navigation';
+import { canvasEvents } from '@/lib/canvas-events';
 
 export default function MobileMenu() {
   const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
-    const handler = () => setIsOpen((open) => !open);
-    window.addEventListener('menuToggle', handler);
-    return () => window.removeEventListener('menuToggle', handler);
+    return canvasEvents.on('menuToggle', () => setIsOpen((open) => !open));
   }, []);
 
   const close = () => setIsOpen(false);

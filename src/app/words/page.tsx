@@ -1,8 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import MobileMenu from '@/components/MobileMenu';
-import SiteFooter from '@/components/SiteFooter';
-import SiteHeader from '@/components/SiteHeader';
+import PageShell from '@/components/PageShell';
 import { ArrowRight } from 'lucide-react';
 import { recentPosts, archivePosts } from '@/data/posts';
 import type { Post } from '@/types';
@@ -34,10 +32,7 @@ function WordsRow({ date, title, href }: Post) {
 
 export default function WordsPage() {
   return (
-    <>
-      <SiteHeader />
-      <MobileMenu />
-      <main id="scroll-root" className="flex flex-1 flex-col overflow-y-auto">
+    <PageShell>
         <div className="mx-auto flex w-full flex-1 flex-col px-6 sm:px-8" style={{ maxWidth: '80rem' }}>
           <div className="flex flex-1 flex-col gap-8 lg:flex-row lg:gap-0">
             <div className="shrink-0 pt-12 lg:w-1/4 lg:pr-12 lg:pt-20 xl:pr-24">
@@ -82,8 +77,6 @@ export default function WordsPage() {
             </div>
           </div>
         </div>
-        <SiteFooter />
-      </main>
-    </>
+    </PageShell>
   );
 }

@@ -41,3 +41,9 @@ export const archivePosts: Post[] = [
   },
   { date: 'Jan 5, 2023', title: 'The Revision Hole', href: '/words/revision-hole' },
 ];
+
+const allPosts = [...recentPosts, ...archivePosts];
+
+export function getPostBySlug(slug: string): Post | null {
+  return allPosts.find((p) => p.href === `/words/${slug}`) ?? null;
+}

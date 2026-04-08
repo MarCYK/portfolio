@@ -1,4 +1,4 @@
-import type { InternalProject, Project } from '@/types';
+import type { Project } from '@/types';
 import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, PenTool, Smile } from 'lucide-react';
 
 export const currentProjects: Project[] = [
@@ -89,21 +89,3 @@ export const archiveProjects: Project[] = [
     icon: <Smile className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   },
 ];
-
-const allProjects = [...currentProjects, ...archiveProjects];
-
-function isInternalProject(project: Project): project is InternalProject {
-  return project.external === false && Array.isArray(project.content);
-}
-
-export function getInternalProjectBySlug(slug: string): InternalProject | null {
-  return (
-    allProjects.find(
-      (project): project is InternalProject => isInternalProject(project) && project.href === `/projects/${slug}`,
-    ) ?? null
-  );
-}
-
-export function getInternalProjectSlugs(): string[] {
-  return allProjects.filter(isInternalProject).map((project) => project.href.replace('/projects/', ''));
-}
