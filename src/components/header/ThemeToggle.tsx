@@ -9,17 +9,16 @@ type ThemeMode = 'dark' | 'light';
 export { type ThemeMode };
 
 export function useTheme() {
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    if (typeof window === 'undefined') {
+      return true;
+    }
+    return localStorage.getItem('theme') !== 'light';
+  });
 
   useEffect(() => {
-    const theme = localStorage.getItem('theme');
-    if (theme === 'light') {
-      setIsDark(false);
-      document.documentElement.classList.remove('dark');
-    } else {
-      document.documentElement.classList.add('dark');
-    }
-  }, []);
+    document.documentElement.classList.toggle('dark', isDark);
+  }, [isDark]);
 
   const broadcastTheme = (theme: ThemeMode) => {
     canvasEvents.emit('themeChange', { theme });
@@ -30,11 +29,9 @@ export function useTheme() {
     setIsDark(newDark);
 
     if (newDark) {
-      document.documentElement.classList.add('dark');
       localStorage.setItem('theme', 'dark');
       broadcastTheme('dark');
     } else {
-      document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
       broadcastTheme('light');
     }

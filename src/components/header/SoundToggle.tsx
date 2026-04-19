@@ -1,18 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { canvasEvents } from '@/lib/canvas-events';
 
 export function useSound() {
-  const [soundEnabled, setSoundEnabled] = useState(true);
-
-  useEffect(() => {
-    const sound = localStorage.getItem('sound');
-    if (sound === 'disabled') {
-      setSoundEnabled(false);
+  const [soundEnabled, setSoundEnabled] = useState(() => {
+    if (typeof window === 'undefined') {
+      return true;
     }
-  }, []);
+    return localStorage.getItem('sound') !== 'disabled';
+  });
 
   const toggleSound = () => {
     const newEnabled = !soundEnabled;
