@@ -13,7 +13,11 @@ export function useTheme() {
     if (typeof window === 'undefined') {
       return true;
     }
-    return localStorage.getItem('theme') !== 'light';
+    try {
+      return localStorage.getItem('theme') !== 'light';
+    } catch {
+      return true;
+    }
   });
 
   useEffect(() => {
@@ -29,10 +33,18 @@ export function useTheme() {
     setIsDark(newDark);
 
     if (newDark) {
-      localStorage.setItem('theme', 'dark');
+      try {
+        localStorage.setItem('theme', 'dark');
+      } catch {
+        // Ignore persistence failures; UI state still updates.
+      }
       broadcastTheme('dark');
     } else {
-      localStorage.setItem('theme', 'light');
+      try {
+        localStorage.setItem('theme', 'light');
+      } catch {
+        // Ignore persistence failures; UI state still updates.
+      }
       broadcastTheme('light');
     }
   };

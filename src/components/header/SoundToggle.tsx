@@ -9,13 +9,21 @@ export function useSound() {
     if (typeof window === 'undefined') {
       return true;
     }
-    return localStorage.getItem('sound') !== 'disabled';
+    try {
+      return localStorage.getItem('sound') !== 'disabled';
+    } catch {
+      return true;
+    }
   });
 
   const toggleSound = () => {
     const newEnabled = !soundEnabled;
     setSoundEnabled(newEnabled);
-    localStorage.setItem('sound', newEnabled ? 'enabled' : 'disabled');
+    try {
+      localStorage.setItem('sound', newEnabled ? 'enabled' : 'disabled');
+    } catch {
+      // Ignore persistence failures; in-memory state still updates.
+    }
     canvasEvents.emit('soundToggle', { enabled: newEnabled });
   };
 
