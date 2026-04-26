@@ -8,6 +8,9 @@ const inter = Inter({
   display: 'swap',
 });
 
+// zchry font mapping:
+// - Soehne: local/proprietary fallback chain declared in globals.css
+// - IBM Plex Mono: loaded from Google via next/font/google
 const ibmPlexMono = IBM_Plex_Mono({
   variable: '--font-ibm-plex-mono',
   subsets: ['latin'],

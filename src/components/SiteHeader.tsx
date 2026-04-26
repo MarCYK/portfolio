@@ -1,8 +1,9 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Mail, Menu } from 'lucide-react';
+import { Home, Mail, Menu, Music } from 'lucide-react';
 import { LogoDiamond } from './icons';
 import { NAV_LINKS } from '@/data/navigation';
 import { canvasEvents } from '@/lib/canvas-events';
@@ -17,6 +18,27 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const pathname = usePathname();
   const { isDark, toggleTheme } = useTheme();
   const { soundEnabled, toggleSound } = useSound();
+  const [showNotes, setShowNotes] = useState(false);
+  const [noteHistory, setNoteHistory] = useState<string[]>([]);
+
+  useEffect(() => {
+    const unsubNote = canvasEvents.on('notePlayed', (detail) => {
+      setNoteHistory(prev => {
+        const newHistory = [...prev, detail.note];
+        return newHistory.slice(-4);
+      });
+    });
+    const unsubMusic = canvasEvents.on('musicToggle', (detail) => {
+      setShowNotes(detail.active);
+      if (!detail.active) {
+        setNoteHistory([]);
+      }
+    });
+    return () => {
+      unsubNote();
+      unsubMusic();
+    };
+  }, []);
 
   const openMenu = () => {
     canvasEvents.emit('menuToggle', undefined);
@@ -24,10 +46,16 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
 
   const iconBarContent = (
     <>
-      <a href={`mailto:${EMAIL}`} className="header-icon" aria-label="Email Zachary">
+      {!showNotes && <a href={`mailto:${EMAIL}`} className="header-icon" aria-label="Email Zachary">
         <Mail size={18} />
-      </a>
-      <span id="header-chord" className="hidden font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }} />
+      </a>}
+      {showNotes && (
+        <div className="flex items-center gap-2 px-2">
+          <span className="font-mono" style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>
+            {noteHistory.join(' · ')}
+          </span>
+        </div>
+      )}
       {isHomePage && <CanvasToolbar />}
       <SoundToggle enabled={soundEnabled} onToggle={toggleSound} />
       <ThemeToggle isDark={isDark} onToggle={toggleTheme} />

@@ -8,6 +8,7 @@ type EventMap = {
   canvasDirty: { dirty: boolean };
   colorChange: { color: string };
   menuToggle: undefined;
+  notePlayed: { note: string };
 };
 
 type EventHandler<T> = (detail: T) => void;

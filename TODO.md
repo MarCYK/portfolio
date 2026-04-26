@@ -1,7 +1,0 @@
-- move to yaml for easy editing and maintenance in the future
-- fix the sound
-- add colours, should fill
-- fix ui bugs
-  - fix the white mode
-  - fix the 
-  - 

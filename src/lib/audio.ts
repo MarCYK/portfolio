@@ -31,9 +31,9 @@ export async function initAudio(state: AudioState): Promise<void> {
   }
 }
 
-export function playNote(state: AudioState, rowIndex: number, velocity = 0.8): void {
+export function playNote(state: AudioState, rowIndex: number, velocity = 0.8, totalRows = 30): void {
   if (!state.player || !state.soundEnabled || !state.audioCtx) return;
-  const note = rowToNote(rowIndex);
+  const note = rowToNote(rowIndex, totalRows);
   try {
     state.player.play(note, state.audioCtx.currentTime, { duration: 0.6, gain: velocity });
   } catch {

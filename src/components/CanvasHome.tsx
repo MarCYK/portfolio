@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
-import { ROWS } from '@/lib/song-data';
+import { computeRows } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
 import type { CanvasTheme } from '@/lib/canvas-engine';
-import { createCanvasState, drawFrame, getRowAtY } from '@/lib/canvas-engine';
+import { createCanvasState, drawFrame, getRowAtY, updateRows } from '@/lib/canvas-engine';
 import { canvasEvents } from '@/lib/canvas-events';
 
 export default function CanvasHome() {
@@ -20,31 +20,42 @@ export default function CanvasHome() {
     const canvas: HTMLCanvasElement = canvasEl;
     const ctx: CanvasRenderingContext2D = ctxEl;
 
+    const audio = createAudioState();
+    const initialTheme: CanvasTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+    const state = createCanvasState(initialTheme);
+
     const resize = () => {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
+      const drawableHeight = Math.max(0, canvas.height - 52);
+      updateRows(state, computeRows(drawableHeight));
     };
     resize();
     window.addEventListener('resize', resize);
 
-    const audio = createAudioState();
-    const initialTheme: CanvasTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-    const state = createCanvasState(initialTheme);
     let animFrameId: number;
     let isDrawing = false;
     let canvasDirty = false;
+    let lastRow = -1;
 
     const stopDrawing = () => {
       isDrawing = false;
+      lastRow = -1;
     };
 
     function handleDraw(_clientX: number, clientY: number) {
-      const row = getRowAtY(canvas.height, clientY);
-      if (row < 0 || row >= ROWS) return;
+      const row = getRowAtY(canvas.height, clientY, state.rows);
+      if (row < 0 || row >= state.rows) return;
 
-      const prev = state.energy[row];
-      state.energy[row] = Math.min(prev + 0.6, 3);
-      if (audio.soundEnabled && prev < 1.0 && state.energy[row] >= 1.0) playNote(audio, row, 0.7);
+      // Pluck on row crossing — fire once per string, like strumming
+      if (row !== lastRow) {
+        state.rowGlow[row] = 1.0;
+        if (audio.soundEnabled) {
+          const velocity = lastRow === -1 ? 0.7 : Math.min(0.4 + Math.abs(row - lastRow) * 0.1, 0.9);
+          playNote(audio, row, velocity, state.rows);
+        }
+        lastRow = row;
+      }
 
       if (!canvasDirty) {
         canvasDirty = true;
@@ -58,9 +69,9 @@ export default function CanvasHome() {
     }
 
     // Mouse events
-    const onMouseDown = (event: MouseEvent) => {
+    const onMouseDown = async (event: MouseEvent) => {
       isDrawing = true;
-      initAudio(audio);
+      await initAudio(audio);
       handleDraw(event.clientX, event.clientY);
     };
     const onMouseMove = (event: MouseEvent) => {
@@ -68,9 +79,9 @@ export default function CanvasHome() {
     };
 
     // Touch events
-    const onTouchStart = (event: TouchEvent) => {
+    const onTouchStart = async (event: TouchEvent) => {
       isDrawing = true;
-      initAudio(audio);
+      await initAudio(audio);
       handleDraw(event.touches[0].clientX, event.touches[0].clientY);
     };
     const onTouchMove = (event: TouchEvent) => {
@@ -103,6 +114,7 @@ export default function CanvasHome() {
     });
     const unsubCanvasClear = canvasEvents.on('canvasClear', () => {
       state.energy.fill(0);
+      state.rowGlow.fill(0);
       canvasDirty = false;
       canvasEvents.emit('canvasDirty', { dirty: false });
     });

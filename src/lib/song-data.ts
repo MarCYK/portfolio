@@ -1,4 +1,6 @@
-export const ROWS = 30;
+export const MAX_ROWS = 30;
+export const MIN_ROWS = 10;
+export const TARGET_ROW_SPACING = 32;
 
 export const PENTATONIC_NOTES = [
   'C3', 'E3', 'G3', 'B3', 'D4', 'E4', 'G4', 'B4', 'D5', 'E5', 'G5',
@@ -26,14 +28,19 @@ export const MIDI_NOTES: [number, number, number][] = [
 
 export const SONG_DURATION = 40;
 
-export function rowToNote(rowIndex: number): string {
-  const noteIndex = ROWS - 1 - rowIndex;
+export function computeRows(drawableHeight: number): number {
+  const idealRows = Math.floor(drawableHeight / TARGET_ROW_SPACING);
+  return Math.max(MIN_ROWS, Math.min(MAX_ROWS, idealRows));
+}
+
+export function rowToNote(rowIndex: number, totalRows: number): string {
+  const noteIndex = totalRows - 1 - rowIndex;
   return PENTATONIC_NOTES[Math.min(noteIndex, PENTATONIC_NOTES.length - 1)];
 }
 
-export function midiPitchToRow(midi: number): number {
+export function midiPitchToRow(midi: number, totalRows: number): number {
   const normalized = Math.max(0, Math.min(1, (midi - 48) / 48));
-  return Math.floor((1 - normalized) * (ROWS - 1));
+  return Math.floor((1 - normalized) * (totalRows - 1));
 }
 
 export function midiToName(midi: number): string {
