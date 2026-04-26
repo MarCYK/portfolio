@@ -49,9 +49,39 @@ src/
 └── .eslintrc.json              # ESLint configuration
 ```
 
-## Key Patterns
+## Key Architectural Patterns
 
-- **App Router**: All pages use the Next.js 13 App Router convention (`app/` directory with `page.tsx` files).
-- **Client Components**: The home page canvas is loaded client-side only via `next/dynamic` with `ssr: false`.
-- **Shared Layout**: Subpages (about, projects, words) share SiteHeader, SiteFooter, and MobileMenu components.
-- **Audio + Canvas**: The home page features an interactive canvas visualization with audio playback driven by MIDI/pentatonic note data.
+### Layer Boundaries
+
+1. **Data Layer** (`data/`): Pure data, no UI concerns, no React imports
+   - `projects.ts`: Exports project data with icon keys (strings), not React components
+   - `types/index.ts`: Interfaces use `string` for icon, not `ReactNode`
+
+2. **UI Layer** (`components/`): Pure UI, imports data/lib as needed
+   - `icons.tsx`: Maps icon keys to Lucide React components
+   - `ProjectCard.tsx`: Renders project using icon map lookup
+
+3. **Context Layer** (`contexts/`): Cross-component state without window globals
+   - `CanvasContext.tsx`: Event bus replacing `window` CustomEvent API
+
+4. **Business Logic Layer** (`lib/`): Pure utilities, no UI dependencies
+   - `canvas-engine.ts`: Canvas rendering logic
+   - `audio.ts`: Audio playback state
+
+### Client-Only Components
+
+The home page canvas is loaded client-side only via `next/dynamic` with `ssr: false`.
+
+### Event Architecture
+
+Canvas controls use React context instead of window events:
+- Components emit events via `emit(eventName, detail)`
+- Components subscribe via `on(eventName, handler)` returning unsubscribe function
+- Clean, typed event map with TypeScript interfaces
+
+## Migration from Window Events
+
+Previously used `window.addEventListener` with CustomEvent API for cross-component communication:
+- Replaced with `CanvasContext` provider pattern
+- All canvas events now typed and scoped to React component tree
+- No global window event listeners (safer for SSR and testing)

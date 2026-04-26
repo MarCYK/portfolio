@@ -2,13 +2,14 @@
 
 import { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
-import { canvasEvents } from '@/lib/canvas-events';
+import { useCanvas } from '@/contexts/CanvasContext';
 
 type ThemeMode = 'dark' | 'light';
 
 export { type ThemeMode };
 
 export function useTheme() {
+  const { emit } = useCanvas();
   const [isDark, setIsDark] = useState(() => {
     if (typeof window === 'undefined') {
       return true;
@@ -25,7 +26,7 @@ export function useTheme() {
   }, [isDark]);
 
   const broadcastTheme = (theme: ThemeMode) => {
-    canvasEvents.emit('themeChange', { theme });
+    emit('themeChange', { theme });
   };
 
   const toggleTheme = () => {

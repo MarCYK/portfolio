@@ -69,6 +69,7 @@
   --border-hover: var(--border-visible);
   --inline-code-bg: var(--surface3);
   --header-bg: var(--background);
+  --header-muted: rgba(0, 0, 0, 0.4);
 }
 
 .dark {
@@ -103,6 +104,7 @@
   --border-hover: var(--border-visible);
   --inline-code-bg: var(--surface2);
   --header-bg: var(--background);
+  --header-muted: rgba(255, 255, 255, 0.5);
 }
 
 * {
@@ -139,7 +141,7 @@ body {
 }
 
 .header-nav.home-page {
-  border-bottom: 1px solid var(--border);
+  border-bottom: none;
 }
 
 body.sunset-active {
@@ -168,7 +170,7 @@ body.sunset-active .zach-logo {
 }
 
 .nav-link {
-  color: var(--text2);
+  color: var(--header-muted);
   transition: color var(--duration-fast) var(--ease-fast);
   font-size: var(--text-body-sm);
   font-family: var(--font-body);
@@ -179,7 +181,7 @@ body.sunset-active .zach-logo {
 }
 
 .nav-link.active {
-  color: var(--accent);
+  color: var(--text1);
 }
 
 .nav-link:focus-visible,
@@ -202,7 +204,7 @@ body.sunset-active .zach-logo {
 }
 
 .header-icon {
-  color: var(--text2);
+  color: var(--header-muted);
   transition: color var(--duration-fast) var(--ease-fast);
   cursor: pointer;
   background: none;
@@ -218,7 +220,7 @@ body.sunset-active .zach-logo {
 }
 
 .header-icon.active {
-  color: var(--accent);
+  color: var(--text1);
 }
 
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Music, Paintbrush, Radio, Sunrise, Trash2 } from 'lucide-react';
-import { canvasEvents } from '@/lib/canvas-events';
+import { useCanvas } from '@/contexts/CanvasContext';
 
 const SWATCHES = [
   { color: 'default', background: 'linear-gradient(135deg, #fff 50%, #000 50%)' },
@@ -16,6 +16,7 @@ const SWATCHES = [
 ];
 
 export default function CanvasToolbar() {
+  const { emit, on } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
   const [discoActive, setDiscoActive] = useState(false);
   const [sunsetActive, setSunsetActive] = useState(false);
@@ -25,8 +26,8 @@ export default function CanvasToolbar() {
   const paletteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    return canvasEvents.on('canvasDirty', (detail) => setCanvasDirty(detail.dirty));
-  }, []);
+    return on('canvasDirty', (detail) => setCanvasDirty(detail.dirty));
+  }, [on]);
 
   useEffect(() => {
     const handler = (event: MouseEvent) => {
@@ -41,19 +42,19 @@ export default function CanvasToolbar() {
   const toggleMusic = () => {
     const newActive = !musicActive;
     setMusicActive(newActive);
-    canvasEvents.emit('musicToggle', { active: newActive });
+    emit('musicToggle', { active: newActive });
   };
 
   const toggleDisco = () => {
     const newActive = !discoActive;
     setDiscoActive(newActive);
-    canvasEvents.emit('discoToggle', { active: newActive });
+    emit('discoToggle', { active: newActive });
   };
 
   const toggleSunset = () => {
     const newActive = !sunsetActive;
     setSunsetActive(newActive);
-    canvasEvents.emit('sunsetToggle', { active: newActive });
+    emit('sunsetToggle', { active: newActive });
     if (newActive) {
       document.body.classList.add('sunset-active');
     } else {
@@ -62,13 +63,13 @@ export default function CanvasToolbar() {
   };
 
   const clearCanvas = () => {
-    canvasEvents.emit('canvasClear', undefined);
+    emit('canvasClear', undefined);
     setCanvasDirty(false);
   };
 
   const selectSwatch = (color: string) => {
     setActiveSwatch(color);
-    canvasEvents.emit('colorChange', { color });
+    emit('colorChange', { color });
   };
 
   return (

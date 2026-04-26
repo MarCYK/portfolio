@@ -5,9 +5,10 @@ import { computeRows } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
 import type { CanvasTheme } from '@/lib/canvas-engine';
 import { createCanvasState, drawFrame, getRowAtY, updateRows } from '@/lib/canvas-engine';
-import { canvasEvents } from '@/lib/canvas-events';
+import { useCanvas } from '@/contexts/CanvasContext';
 
 export default function CanvasHome() {
+  const { emit, on } = useCanvas();
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -59,7 +60,7 @@ export default function CanvasHome() {
 
       if (!canvasDirty) {
         canvasDirty = true;
-        canvasEvents.emit('canvasDirty', { dirty: true });
+        emit('canvasDirty', { dirty: true });
       }
     }
 
@@ -98,7 +99,7 @@ export default function CanvasHome() {
     window.addEventListener('blur', stopDrawing);
 
     // Custom event handlers for header controls
-    const unsubMusic = canvasEvents.on('musicToggle', async (detail) => {
+    const unsubMusic = on('musicToggle', async (detail) => {
       await initAudio(audio);
       state.musicPlaying = detail.active;
       if (state.musicPlaying && audio.audioCtx) {
@@ -106,25 +107,25 @@ export default function CanvasHome() {
         state.lastMusicElapsed = -1;
       }
     });
-    const unsubDisco = canvasEvents.on('discoToggle', (detail) => {
+    const unsubDisco = on('discoToggle', (detail) => {
       state.discoMode = detail.active;
     });
-    const unsubSunset = canvasEvents.on('sunsetToggle', (detail) => {
+    const unsubSunset = on('sunsetToggle', (detail) => {
       state.sunsetMode = detail.active;
     });
-    const unsubCanvasClear = canvasEvents.on('canvasClear', () => {
+    const unsubCanvasClear = on('canvasClear', () => {
       state.energy.fill(0);
       state.rowGlow.fill(0);
       canvasDirty = false;
-      canvasEvents.emit('canvasDirty', { dirty: false });
+      emit('canvasDirty', { dirty: false });
     });
-    const unsubColor = canvasEvents.on('colorChange', (detail) => {
+    const unsubColor = on('colorChange', (detail) => {
       state.customStrokeColor = detail.color === 'default' ? null : detail.color;
     });
-    const unsubSound = canvasEvents.on('soundToggle', (detail) => {
+    const unsubSound = on('soundToggle', (detail) => {
       audio.soundEnabled = detail.enabled;
     });
-    const unsubTheme = canvasEvents.on('themeChange', (detail) => {
+    const unsubTheme = on('themeChange', (detail) => {
       const theme = detail.theme;
       if (theme === 'dark' || theme === 'light') {
         state.theme = theme;
@@ -152,7 +153,7 @@ export default function CanvasHome() {
       unsubSound();
       unsubTheme();
     };
-  }, []);
+  }, [emit, on]);
 
   return (
     <canvas

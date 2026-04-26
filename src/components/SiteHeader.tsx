@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Home, Mail, Menu, Music } from 'lucide-react';
 import { LogoDiamond } from './icons';
 import { NAV_LINKS } from '@/data/navigation';
-import { canvasEvents } from '@/lib/canvas-events';
+import { useCanvas } from '@/contexts/CanvasContext';
 import { EMAIL } from '@/data/constants';
 import { useTheme } from './header/ThemeToggle';
 import ThemeToggle from './header/ThemeToggle';
@@ -18,17 +18,18 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const pathname = usePathname();
   const { isDark, toggleTheme } = useTheme();
   const { soundEnabled, toggleSound } = useSound();
+  const { emit, on } = useCanvas();
   const [showNotes, setShowNotes] = useState(false);
   const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
   useEffect(() => {
-    const unsubNote = canvasEvents.on('notePlayed', (detail) => {
+    const unsubNote = on('notePlayed', (detail) => {
       setNoteHistory(prev => {
         const newHistory = [...prev, detail.note];
         return newHistory.slice(-4);
       });
     });
-    const unsubMusic = canvasEvents.on('musicToggle', (detail) => {
+    const unsubMusic = on('musicToggle', (detail) => {
       setShowNotes(detail.active);
       if (!detail.active) {
         setNoteHistory([]);
@@ -38,10 +39,10 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       unsubNote();
       unsubMusic();
     };
-  }, []);
+  }, [on]);
 
   const openMenu = () => {
-    canvasEvents.emit('menuToggle', undefined);
+    emit('menuToggle', undefined);
   };
 
   const iconBarContent = (

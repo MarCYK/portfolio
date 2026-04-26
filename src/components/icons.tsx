@@ -1,13 +1,33 @@
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
+import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, PenTool, Smile } from 'lucide-react';
 
 export function LogoDiamond({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
-    <svg className={className} style={style} viewBox="0 0 512 464" fill="none">
-      <rect width="295.603" height="295.603" transform="matrix(0.866025 0.5 -0.866025 0.5 256 167.508)" fill="#FF0000" />
-      <path d="M256 167.508L0 315.31L256 0V167.508Z" fill="#FF0000" />
-      <path d="M256 167.508L512 315.31L256 0V167.508Z" fill="#FF8181" />
-      <path d="M256 463.111L0 315.31L256 0V463.111Z" fill="#FF8181" />
-      <path d="M256 463.111L512 315.31L256 0V463.111Z" fill="#FF0000" />
-    </svg>
+    <img
+      src="/favicon.png"
+      alt=""
+      aria-hidden="true"
+      className={className}
+      style={{
+        display: 'inline-block',
+        flexShrink: 0,
+        verticalAlign: 'middle',
+        objectFit: 'contain',
+        ...style,
+      }}
+      draggable={false}
+    />
   );
 }
+
+export const PROJECT_ICONS: Record<string, ReactNode> = {
+  atom: <Atom className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  flask: <FlaskConical className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  book: <BookOpen className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  camera: <Camera className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  pen: <PenTool className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  globe: <Globe className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  brain: <Brain className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  compass: <Compass className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+  smile: <Smile className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+};

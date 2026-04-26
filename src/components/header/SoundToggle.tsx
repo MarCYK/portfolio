@@ -2,9 +2,10 @@
 
 import { useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
-import { canvasEvents } from '@/lib/canvas-events';
+import { useCanvas } from '@/contexts/CanvasContext';
 
 export function useSound() {
+  const { emit } = useCanvas();
   const [soundEnabled, setSoundEnabled] = useState(() => {
     if (typeof window === 'undefined') {
       return true;
@@ -24,7 +25,7 @@ export function useSound() {
     } catch {
       // Ignore persistence failures; in-memory state still updates.
     }
-    canvasEvents.emit('soundToggle', { enabled: newEnabled });
+    emit('soundToggle', { enabled: newEnabled });
   };
 
   return { soundEnabled, toggleSound };
@@ -35,7 +36,7 @@ export default function SoundToggle({ enabled, onToggle }: { enabled: boolean; o
     <button
       id="sound-toggle"
       type="button"
-      className={`header-icon ${enabled ? 'active' : ''}`}
+      className="header-icon"
       onClick={onToggle}
       aria-label="Toggle sound"
     >

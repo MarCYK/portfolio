@@ -1,5 +1,4 @@
 import type { Project } from '@/types';
-import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, PenTool, Smile } from 'lucide-react';
 
 export const currentProjects: Project[] = [
   {
@@ -8,7 +7,7 @@ export const currentProjects: Project[] = [
     date: 'March 2026',
     href: 'https://erebus.org',
     external: true,
-    icon: <Atom className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'atom',
   },
   {
     title: 'wvrk.org',
@@ -16,7 +15,7 @@ export const currentProjects: Project[] = [
     date: 'February 2026',
     href: 'https://wvrk.org/',
     external: true,
-    icon: <FlaskConical className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'flask',
   },
   {
     title: 'Milton',
@@ -29,7 +28,7 @@ export const currentProjects: Project[] = [
       'Milton is a constrained language model experiment trained against a single literary source: Paradise Lost. The point is not breadth, but pressure. Restricting the corpus turns the model into a tool for style, voice, and interpretive distortion rather than general utility.',
       'This placeholder page exists to keep the internal project route stable while the fuller write-up is still in progress. The next pass should document the training setup, evaluation criteria, and what the constraint revealed about model behavior.',
     ],
-    icon: <BookOpen className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'book',
   },
 ];
 
@@ -40,7 +39,7 @@ export const archiveProjects: Project[] = [
     date: 'September 2023',
     href: 'https://www.instagram.com/worklibrary/',
     external: true,
-    icon: <Camera className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'camera',
   },
   {
     title: 'Lissajous Curves',
@@ -48,7 +47,7 @@ export const archiveProjects: Project[] = [
     date: 'June 2023',
     href: 'https://www.figma.com/community/plugin/Lissajous-Curves',
     external: true,
-    icon: <PenTool className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'pen',
   },
   {
     title: 'Manufactured Human',
@@ -56,7 +55,7 @@ export const archiveProjects: Project[] = [
     date: 'June 2022',
     href: 'https://manufacturedhuman.webflow.io/',
     external: true,
-    icon: <Globe className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'globe',
   },
   {
     title: 'Solipsism Wow!',
@@ -65,7 +64,7 @@ export const archiveProjects: Project[] = [
     date: 'March 2022',
     href: 'https://solipsism.webflow.io/',
     external: true,
-    icon: <Brain className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'brain',
   },
   {
     title: 'Roam By Land',
@@ -73,7 +72,7 @@ export const archiveProjects: Project[] = [
     date: 'June 2021',
     href: 'https://www.instagram.com/roambyland',
     external: true,
-    icon: <Compass className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'compass',
   },
   {
     title: 'Absurdly',
@@ -86,6 +85,6 @@ export const archiveProjects: Project[] = [
       'Absurdly was a small philosophical brand experiment built around the idea of treating existentialism like a playful internet service. The work sat somewhere between satire, identity design, and cultural packaging.',
       'This placeholder page preserves the internal route and gives the project a stable home while the original assets and fuller retrospective are assembled.',
     ],
-    icon: <Smile className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
+    icon: 'smile',
   },
 ];

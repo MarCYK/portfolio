@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { IBM_Plex_Mono, Inter } from 'next/font/google';
+import { CanvasProvider } from '@/contexts/CanvasContext';
 import './globals.css';
 
 const inter = Inter({
@@ -34,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${inter.variable} ${ibmPlexMono.variable} dark`}>
       <body className="flex flex-col overflow-hidden" style={{ height: '100svh' }}>
-        {children}
+        <CanvasProvider>{children}</CanvasProvider>
       </body>
     </html>
   );

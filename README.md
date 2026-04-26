@@ -9,9 +9,8 @@ A personal portfolio site built with Next.js, featuring an interactive canvas-ba
 ## Quick Start
 
 ```bash
-cd src
 bun install
-bun dev
+bun run dev
 ```
 
 Visit `http://localhost:3000`
@@ -34,11 +33,12 @@ Visit `http://localhost:3000`
 
 ```plaintext
 src/
-├── app/              # Next.js pages
-├── components/        # React components
-├── lib/              # Core utilities
-├── data/             # Static data
-└── types/            # Type definitions
+├── app/                  # Next.js pages
+├── components/           # React components
+├── contexts/             # React context providers
+├── lib/                  # Core utilities
+├── data/                 # Static data
+└── types/                # Type definitions
 ```
 
 ## License

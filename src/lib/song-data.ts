@@ -1,6 +1,6 @@
-export const MAX_ROWS = 30;
-export const MIN_ROWS = 10;
-export const TARGET_ROW_SPACING = 32;
+export const MAX_ROWS = 48;
+export const MIN_ROWS = 16;
+export const TARGET_ROW_SPACING = 24;
 
 export const PENTATONIC_NOTES = [
   'C3', 'E3', 'G3', 'B3', 'D4', 'E4', 'G4', 'B4', 'D5', 'E5', 'G5',
