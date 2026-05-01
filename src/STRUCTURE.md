@@ -1,87 +1,74 @@
-# src/ Folder Structure
+# Source Structure
 
-A Next.js 13 portfolio site (App Router) built with React 18, TypeScript, and Tailwind CSS. Uses Bun as the package manager.
+This document covers the code under `src/` only. Repository-level config
+and static assets live one level above in the project root.
 
-```
+```text
 src/
-├── app/                        # Next.js App Router pages
-│   ├── layout.tsx              # Root layout (Inter + IBM Plex Mono fonts, dark mode)
-│   ├── page.tsx                # Home page — renders SiteHeader, MobileMenu, CanvasHome
-│   ├── globals.css             # Global styles (Tailwind imports + custom CSS)
-│   ├── about/
-│   │   └── page.tsx            # About page
-│   ├── projects/
-│   │   └── page.tsx            # Projects listing page
-│   └── words/
-│       └── page.tsx            # Blog/words listing page
-│
-├── components/                 # React components
-│   ├── CanvasHome.tsx          # Canvas-based animated home visualization (client-only, dynamically imported)
-│   ├── MobileMenu.tsx          # Mobile navigation menu
-│   ├── ProjectCard.tsx         # Card component for individual projects
-│   ├── SiteHeader.tsx          # Site header/navigation bar
-│   ├── SiteFooter.tsx          # Site footer
-│   └── icons.tsx               # SVG icon components
-│
-├── data/                       # Static data
-│   ├── navigation.ts           # Nav links: Projects, Words, About
-│   ├── projects.tsx            # Project entries (title, description, date, href, icon)
-│   └── posts.ts                # Blog post entries (recent + archive)
-│
-├── lib/                        # Utility/engine modules
-│   ├── audio.ts                # Audio playback via soundfont-player
-│   ├── canvas-engine.ts        # Canvas rendering engine for home animation
-│   └── song-data.ts            # Musical note/MIDI data for the canvas visualization
-│
-├── types/                      # TypeScript type definitions
-│   ├── index.ts                # Project and Post interfaces
-│   └── soundfont-player.d.ts   # Type declarations for soundfont-player
-│
-├── public/                     # Static assets
-│   └── favicon.png
-│
-├── next.config.js              # Next.js configuration
-├── tailwind.config.ts          # Tailwind CSS configuration
-├── tsconfig.json               # TypeScript configuration
-├── postcss.config.js           # PostCSS configuration
-├── package.json                # Dependencies and scripts
-├── bun.lock                    # Bun lockfile
-└── .eslintrc.json              # ESLint configuration
+├── app/
+│   ├── about/page.tsx
+│   ├── globals.css
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── projects/page.tsx
+│   ├── projects/[slug]/page.tsx
+│   ├── words/page.tsx
+│   └── words/[slug]/page.tsx
+├── components/
+│   ├── header/CanvasToolbar.tsx
+│   ├── header/SoundToggle.tsx
+│   ├── header/ThemeToggle.tsx
+│   ├── CanvasHome.tsx
+│   ├── MobileMenu.tsx
+│   ├── PageShell.tsx
+│   ├── ProjectCard.tsx
+│   ├── SiteFooter.tsx
+│   ├── SiteHeader.tsx
+│   └── icons.tsx
+├── contexts/
+│   └── CanvasContext.tsx
+├── data/
+│   ├── constants.ts
+│   ├── navigation.ts
+│   ├── posts.ts
+│   └── projects.ts
+├── lib/
+│   ├── audio.ts
+│   ├── canvas-engine.ts
+│   ├── canvas-events.ts
+│   ├── projects.ts
+│   └── song-data.ts
+└── types/
+    ├── index.ts
+    └── soundfont-player.d.ts
 ```
 
-## Key Architectural Patterns
+## Boundary Rules
 
-### Layer Boundaries
+- `app/` owns route entry points, metadata, and top-level composition.
+- `components/` owns presentational and interactive UI pieces.
+- `contexts/` owns shared cross-component state and typed event channels.
+- `data/` owns static content and navigation definitions.
+- `lib/` owns behavior, helpers, and rendering logic.
+- `types/` owns shared TypeScript interfaces and declarations.
 
-1. **Data Layer** (`data/`): Pure data, no UI concerns, no React imports
-   - `projects.ts`: Exports project data with icon keys (strings), not React components
-   - `types/index.ts`: Interfaces use `string` for icon, not `ReactNode`
+## Current Interaction Model
 
-2. **UI Layer** (`components/`): Pure UI, imports data/lib as needed
-   - `icons.tsx`: Maps icon keys to Lucide React components
-   - `ProjectCard.tsx`: Renders project using icon map lookup
+`CanvasContext.tsx` is the active event layer for canvas-related controls.
+Use `emit()` and `on()` from `useCanvas()` for new interactions that span
+header controls, the landing page canvas, and shared UI state.
 
-3. **Context Layer** (`contexts/`): Cross-component state without window globals
-   - `CanvasContext.tsx`: Event bus replacing `window` CustomEvent API
+If you are touching animation or audio behavior, start with these files:
 
-4. **Business Logic Layer** (`lib/`): Pure utilities, no UI dependencies
-   - `canvas-engine.ts`: Canvas rendering logic
-   - `audio.ts`: Audio playback state
+- `components/CanvasHome.tsx`
+- `contexts/CanvasContext.tsx`
+- `lib/canvas-engine.ts`
+- `lib/audio.ts`
+- `lib/song-data.ts`
 
-### Client-Only Components
+## Notes
 
-The home page canvas is loaded client-side only via `next/dynamic` with `ssr: false`.
-
-### Event Architecture
-
-Canvas controls use React context instead of window events:
-- Components emit events via `emit(eventName, detail)`
-- Components subscribe via `on(eventName, handler)` returning unsubscribe function
-- Clean, typed event map with TypeScript interfaces
-
-## Migration from Window Events
-
-Previously used `window.addEventListener` with CustomEvent API for cross-component communication:
-- Replaced with `CanvasContext` provider pattern
-- All canvas events now typed and scoped to React component tree
-- No global window event listeners (safer for SSR and testing)
+- Static assets live in the repository root `public/` directory, not in
+  `src/`.
+- Framework config files such as `next.config.js`, `tsconfig.json`, and
+  `eslint.config.mjs` live in the repository root.

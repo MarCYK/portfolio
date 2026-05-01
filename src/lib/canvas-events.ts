@@ -2,8 +2,11 @@ type EventMap = {
   themeChange: { theme: 'dark' | 'light' };
   soundToggle: { enabled: boolean };
   musicToggle: { active: boolean };
-  discoToggle: { active: boolean };
+  spokenToggle: { active: boolean };
+  airToggle: { active: boolean };
+  airStatus: { error: string | null };
   sunsetToggle: { active: boolean };
+  paintToggle: { active: boolean };
   canvasClear: undefined;
   canvasDirty: { dirty: boolean };
   colorChange: { color: string };

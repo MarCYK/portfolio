@@ -1,13 +1,16 @@
 'use client';
 
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, useRef, type ReactNode } from 'react';
 
 type CanvasEventType =
   | 'themeChange'
   | 'soundToggle'
   | 'musicToggle'
-  | 'discoToggle'
+  | 'spokenToggle'
+  | 'airToggle'
+  | 'airStatus'
   | 'sunsetToggle'
+  | 'paintToggle'
   | 'canvasClear'
   | 'canvasDirty'
   | 'colorChange'
@@ -18,8 +21,11 @@ type EventMap = {
   themeChange: { theme: 'dark' | 'light' };
   soundToggle: { enabled: boolean };
   musicToggle: { active: boolean };
-  discoToggle: { active: boolean };
+  spokenToggle: { active: boolean };
+  airToggle: { active: boolean };
+  airStatus: { error: string | null };
   sunsetToggle: { active: boolean };
+  paintToggle: { active: boolean };
   canvasClear: undefined;
   canvasDirty: { dirty: boolean };
   colorChange: { color: string };
@@ -37,37 +43,39 @@ interface CanvasContextValue {
 const CanvasContext = createContext<CanvasContextValue | null>(null);
 
 export function CanvasProvider({ children }: { children: ReactNode }) {
-  const handlers = new Map<CanvasEventType, Set<EventHandler<unknown>>>();
+  const handlersRef = useRef(new Map<CanvasEventType, Set<EventHandler<unknown>>>());
 
-  function emit<K extends keyof EventMap>(name: K, detail: EventMap[K]): void {
-    const eventHandlers = handlers.get(name as CanvasEventType);
-    if (eventHandlers) {
+  const value = useMemo<CanvasContextValue>(() => {
+    const emit: CanvasContextValue['emit'] = (name, detail) => {
+      const eventHandlers = handlersRef.current.get(name as CanvasEventType);
+      if (!eventHandlers) return;
+
       eventHandlers.forEach((handler) => {
-        (handler as EventHandler<EventMap[K]>)(detail);
+        (handler as EventHandler<typeof detail>)(detail);
       });
-    }
-  }
-
-  function on<K extends keyof EventMap>(
-    name: K,
-    handler: EventHandler<EventMap[K]>
-  ): () => void {
-    if (!handlers.has(name as CanvasEventType)) {
-      handlers.set(name as CanvasEventType, new Set());
-    }
-    const handlersSet = handlers.get(name as CanvasEventType)!;
-    handlersSet.add(handler as EventHandler<unknown>);
-
-    return () => {
-      handlersSet.delete(handler as EventHandler<unknown>);
-      if (handlersSet.size === 0) {
-        handlers.delete(name as CanvasEventType);
-      }
     };
-  }
+
+    const on: CanvasContextValue['on'] = (name, handler) => {
+      if (!handlersRef.current.has(name as CanvasEventType)) {
+        handlersRef.current.set(name as CanvasEventType, new Set());
+      }
+
+      const handlersSet = handlersRef.current.get(name as CanvasEventType)!;
+      handlersSet.add(handler as EventHandler<unknown>);
+
+      return () => {
+        handlersSet.delete(handler as EventHandler<unknown>);
+        if (handlersSet.size === 0) {
+          handlersRef.current.delete(name as CanvasEventType);
+        }
+      };
+    };
+
+    return { emit, on };
+  }, []);
 
   return (
-    <CanvasContext.Provider value={{ emit, on }}>
+    <CanvasContext.Provider value={value}>
       {children}
     </CanvasContext.Provider>
   );

@@ -15,6 +15,20 @@ export default function MobileMenu() {
     return on('menuToggle', () => setIsOpen((open) => !open));
   }, [on]);
 
+  useEffect(() => {
+    const canvas = document.getElementById('grid-canvas') as HTMLCanvasElement | null;
+
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (canvas) {
+      canvas.style.pointerEvents = isOpen ? 'none' : 'auto';
+    }
+
+    return () => {
+      document.body.style.overflow = '';
+      if (canvas) canvas.style.pointerEvents = 'auto';
+    };
+  }, [isOpen]);
+
   const close = () => setIsOpen(false);
 
   return (
@@ -24,7 +38,7 @@ export default function MobileMenu() {
           <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
           <LogoDiamond className="h-4" />
         </Link>
-        <button className="header-icon" onClick={close} aria-label="Close menu">
+        <button id="menu-close" className="header-icon" onClick={close} aria-label="Close menu">
           <X size={20} />
         </button>
       </div>

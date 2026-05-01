@@ -1,224 +1,188 @@
 # Development Guide
 
-## Local Development
+## Local Setup
 
-### Installation
+### Requirements
+
+- Bun 1.3.10 or newer
+- A Node.js-compatible environment for Next.js 16
+- MemPalace CLI only if you use the memory scripts
+
+### Install Dependencies
 
 ```bash
-cd /home/marcyk/Documents/GITHUB/portfolio/src
 bun install
 ```
 
-### Running Dev Server
+### Common Commands
 
 ```bash
-bun dev
-# Runs on http://localhost:3000
+bun run dev
+bun run lint
+bunx tsc --noEmit
+bun run build
+bun run start
 ```
 
-### Build
+`bun run dev` starts the site on `http://localhost:3000` by default.
 
-```bash
-bun build
-# Outputs to .next/ (gitignored)
-```
+## Repository Layout
 
-### Type Checking
+The repository root holds the Bun, Next.js, TypeScript, and ESLint
+configuration. Application source lives in `src/`.
 
-```bash
-bunx --build
-# Type-checks without emitting files
-```
-
-## Project Structure
-
-The project uses a non-standard layout where `src/` is the actual Next.js project root:
-
-```
+```text
 portfolio/
-└── src/              # Project root (package.json, tsconfig, next.config)
-    ├── app/          # App Router pages
-    ├── components/    # React components
-    ├── lib/          # Utilities
-    ├── data/         # Static data
-    └── types/        # Type definitions
+├── docs/
+├── public/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── contexts/
+│   ├── data/
+│   ├── lib/
+│   └── types/
+├── package.json
+└── tsconfig.json
 ```
 
-### Adding New Components
+## Routing
 
-1. Create component in `src/components/`
-2. Import from `@/components/ComponentName`
-3. Export default function component
+- App Router entry points live in `src/app/`.
+- The landing page is `src/app/page.tsx`.
+- Section index pages live in `src/app/about/`, `src/app/projects/`,
+  and `src/app/words/`.
+- Detail pages live in `src/app/projects/[slug]/` and
+  `src/app/words/[slug]/`.
 
-### Adding New Pages
+### Adding a New Page
 
-1. Create `src/app/[route-name]/page.tsx`
-2. Export default function with page content
-3. Add metadata export for SEO:
-   ```tsx
-   export const metadata: Metadata = {
-     title: 'Page Title',
-   };
-   ```
+1. Create `src/app/<route>/page.tsx`.
+2. Export a default page component.
+3. Add `metadata` when the route needs a custom title or description.
+4. Update `src/data/navigation.ts` if the route belongs in the main nav.
 
-### Using the Page Shell
+## Shared Layout
 
-For sub-pages (not homepage), wrap content in `PageShell`:
+Use `PageShell` for routes that should render the shared header, mobile
+menu, scroll container, and footer.
 
 ```tsx
 import PageShell from '@/components/PageShell';
 
-export default function MyPage() {
+export default function ExamplePage() {
   return (
     <PageShell>
-      {/* Your content */}
+      <section>{/* page content */}</section>
     </PageShell>
   );
 }
 ```
 
-`PageShell` includes:
-- `SiteHeader` (navigation, theme/sound controls)
-- `MobileMenu` (mobile navigation)
-- `SiteFooter` (copyright and links)
+The landing page is the exception. It passes `isHomePage` so the canvas
+surface can control its own composition.
 
-## Working with the Canvas
+## Canvas Interaction Model
 
-### Adding Canvas Interactions
+Canvas state and cross-component events live in
+`src/contexts/CanvasContext.tsx`. New controls should use `useCanvas()`
+instead of window-scoped custom events.
 
-To add new controls that interact with the canvas:
-
-1. Define event type in `lib/canvas-events.ts`:
-   ```tsx
-   type EventMap = {
-     // ...existing events
-     yourNewEvent: { payloadType: PayloadType };
-   };
-   ```
-
-2. Emit event from header component:
-   ```tsx
-   import { canvasEvents } from '@/lib/canvas-events';
-   canvasEvents.emit('yourNewEvent', { payload });
-   ```
-
-3. Listen in `CanvasHome.tsx`:
-   ```tsx
-   useEffect(() => {
-     const unsub = canvasEvents.on('yourNewEvent', (detail) => {
-       // Handle event
-     });
-     return unsub;
-   }, []);
-   ```
-
-### Modifying Canvas Behavior
-
-Edit `lib/canvas-engine.ts`:
-- `drawFrame()` - Main rendering loop
-- `createCanvasState()` - Initial state
-- Colors, energy decay, noise functions are customizable
-
-## Styling
-
-### CSS Variables
-
-Use CSS variables for theming (defined in `globals.css`):
-- `--bg-primary`, `--bg-secondary`, `--bg-tertiary`
-- `--text-primary`, `--text-secondary`, `--text-tertiary`
-- `--border`, `--border-hover`
-
-### Tailwind Classes
-
-Prefer existing CSS classes over inline styles. Common patterns:
-- Layout: `flex`, `flex-col`, `items-center`, `justify-between`
-- Spacing: `gap-2`, `gap-4`, `gap-8`
-- Typography: `text-sm`, `text-base`, `font-semibold`, `font-bold`
-- Responsive: `hidden md:flex`, `md:hidden`
-
-## Data Management
-
-### Adding Projects
-
-Edit `data/projects.tsx`:
 ```tsx
-export const newProject: Project = {
-  title: 'Project Name',
-  description: 'Short description.',
-  date: 'Month YYYY',
-  href: '/projects/slug',
-  external: false,
-  status: 'Prototype',
-  content: ['Paragraph 1', 'Paragraph 2'],
-  icon: <YourIcon className="icon-sm" />,
-};
+'use client';
+
+import { useCanvas } from '@/contexts/CanvasContext';
+
+export function ClearButton() {
+  const { emit } = useCanvas();
+
+  return (
+    <button type="button" onClick={() => emit('canvasClear', undefined)}>
+      Clear canvas
+    </button>
+  );
+}
 ```
 
-Lookup functions are in `lib/projects.ts` - no changes needed there.
+For rendering and audio behavior, start with these files:
 
-### Adding Blog Posts
+- `src/components/CanvasHome.tsx`
+- `src/lib/canvas-engine.ts`
+- `src/lib/audio.ts`
+- `src/lib/song-data.ts`
 
-Edit `data/posts.ts`:
-```tsx
-export const newPost: Post = {
-  date: 'MMM DD, YYYY',
-  title: 'Post Title',
-  href: '/words/slug',
-  author: 'Your Name',
-  content: ['Paragraph 1', 'Paragraph 2'],
-};
-```
+Current canvas events:
 
-## Common Issues
+- `themeChange`
+- `soundToggle`
+- `musicToggle`
+- `spokenToggle`
+- `airToggle`
+- `airStatus`
+- `sunsetToggle`
+- `paintToggle`
+- `canvasClear`
+- `canvasDirty`
+- `colorChange`
+- `menuToggle`
+- `notePlayed`
 
-### Build Fails
+## Content and Navigation
 
-Clear `.next` cache:
+- Projects live in `src/data/projects.ts`.
+- Writing entries live in `src/data/posts.ts`.
+- Main navigation links live in `src/data/navigation.ts`.
+- Shared types live in `src/types/index.ts`.
+
+Project and writing detail routes resolve content by slug, so update the
+data files first before changing route logic.
+
+## MemPalace Workflow
+
+Keep repo files and project conversations in separate wings.
+
 ```bash
-rm -rf .next
-bun build
+bun run memory:project:init
+bun run memory:project:mine
+
+MEMPALACE_CONVOS_DIR=/absolute/path/to/transcripts \
+  bun run memory:convos:split
+MEMPALACE_CONVOS_DIR=/absolute/path/to/transcripts \
+  bun run memory:convos:mine
 ```
 
-### Port Already in Use
+Conventions:
 
-On Linux/Mac:
+- Repo files mine into wing `portfolio`.
+- Conversation transcripts mine into wing `wing_portfolio`.
+- Do not mine portfolio transcripts into wing `sessions`.
+- Local Claude Code hook ingestion now derives `wing_<project>` from the
+  transcript path, so portfolio chats land in `wing_portfolio`.
+
+## Verification
+
+Before shipping a change, run the command set above and check the main
+user flows.
+
+- Home page loads and the canvas responds.
+- Header controls and the mobile menu still work.
+- About, Projects, Words, and at least one slug page load cleanly.
+- Theme, sound, and canvas controls still respond after navigation.
+
+## Troubleshooting
+
+### Port 3000 Already In Use
+
+On macOS or Linux:
+
 ```bash
-lsof -ti:3000 -i:3000 kill -9 3000
+lsof -i :3000
+kill <pid>
 ```
 
 On Windows:
-```bash
+
+```powershell
 netstat -ano | findstr :3000
-taskkill /PID /F
+taskkill /PID <pid> /F
 ```
-
-### Type Errors
-
-If you see type errors after changes:
-1. Run `bunx` to check
-2. Restart dev server
-3. Check imports use correct `@/` aliases
-
-## Testing
-
-### Manual Testing Checklist
-
-- [ ] Homepage canvas loads and responds to mouse
-- [ ] Theme toggle works and persists
-- [ ] Sound toggle works and persists
-- [ ] Music plays and animates canvas rows
-- [ ] Disco mode cycles colors
-- [ ] Sunset mode applies warm palette
-- [ ] Color palette changes stroke color
-- [ ] Canvas clear button resets everything
-- [ ] Navigation works on all pages
-- [ ] Mobile menu opens and closes
-- [ ] All internal project pages load correctly
-- [ ] All blog post pages load correctly
-- [ ] Footer links work
-
-### Browser Testing
-
-Test in Chrome, Firefox, and Safari if possible.
-- Canvas API behaves differently across browsers
-- Audio autoplay policies may require user interaction first

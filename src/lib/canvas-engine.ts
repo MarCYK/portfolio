@@ -104,12 +104,16 @@ export interface CanvasState {
   bgColor: string;
   theme: CanvasTheme;
   customStrokeColor: string | null;
-  discoMode: boolean;
-  discoHue: number;
   sunsetMode: boolean;
   musicPlaying: boolean;
   musicStartTime: number;
   lastMusicElapsed: number;
+  spokenMode: boolean;
+  spokenLevel: number;
+  airMode: boolean;
+  airX: number;
+  airY: number;
+  airEnergy: number;
 }
 
 export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MAX_ROWS): CanvasState {
@@ -124,12 +128,16 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MA
     bgColor: defaults.bgColor,
     theme,
     customStrokeColor: null,
-    discoMode: false,
-    discoHue: 0,
     sunsetMode: false,
     musicPlaying: false,
     musicStartTime: 0,
     lastMusicElapsed: -1,
+    spokenMode: false,
+    spokenLevel: 0,
+    airMode: false,
+    airX: 0.78,
+    airY: 0.52,
+    airEnergy: 0,
   };
 }
 
@@ -150,8 +158,10 @@ export function tickMusic(state: CanvasState, audio: AudioState): void {
       if (audio.player) {
         try {
           audio.player.play(midiNote, audio.audioCtx.currentTime, { duration: 0.5, gain: velocity });
-        } catch {
-          // Ignore playback errors during loop scheduling.
+        } catch (error) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn('Sequencer playback failed:', error);
+          }
         }
       }
       canvasEvents.emit('notePlayed', { note: midiNote });
@@ -185,10 +195,7 @@ export function drawFrame(
 
   state.bgColor = defaults.bgColor;
 
-  if (state.discoMode) {
-    state.discoHue = (state.discoHue + 0.8) % 360;
-    state.strokeColor = state.sunsetMode ? `hsl(${state.discoHue}, 80%, 35%)` : `hsl(${state.discoHue}, 100%, 70%)`;
-  } else if (state.customStrokeColor) {
+  if (state.customStrokeColor) {
     state.strokeColor = state.customStrokeColor;
   } else {
     state.strokeColor = defaults.strokeColor;
@@ -199,6 +206,26 @@ export function drawFrame(
     state.rowGlow[index] *= 0.92;
     if (index > 0) state.energy[index - 1] += state.energy[index] * 0.015;
     if (index < rows - 1) state.energy[index + 1] += state.energy[index] * 0.015;
+  }
+
+  if (state.spokenMode) {
+    const spokenBoost = Math.max(0, Math.min(1, state.spokenLevel));
+    const centerRow = Math.floor(rows * 0.55);
+
+    for (let offset = -2; offset <= 2; offset += 1) {
+      const row = centerRow + offset;
+      if (row < 0 || row >= rows) continue;
+      const falloff = 1 - Math.abs(offset) * 0.22;
+      state.energy[row] = Math.min(state.energy[row] + spokenBoost * 0.38 * falloff, 4);
+      state.rowGlow[row] = Math.min(state.rowGlow[row] + spokenBoost * 0.2 * falloff, 1);
+    }
+  }
+
+  if (state.airMode) {
+    const row = Math.min(rows - 1, Math.max(0, Math.round(state.airY * (rows - 1))));
+    const airBoost = Math.max(0.08, Math.min(1, state.airEnergy));
+    state.energy[row] = Math.min(state.energy[row] + airBoost * 0.42, 4);
+    state.rowGlow[row] = Math.min(state.rowGlow[row] + airBoost * 0.24, 1);
   }
 
   ctx.clearRect(0, 0, width, height);
@@ -305,7 +332,7 @@ export function drawFrame(
     for (let step = 1; step <= steps; step += 1) ctx.lineTo(pointsX[step], pointsY[step]);
 
     let rowStroke = state.strokeColor;
-    if (state.sunsetMode && !state.discoMode && !state.customStrokeColor) {
+    if (state.sunsetMode && !state.customStrokeColor) {
       const ridgeStrokeBase = sampleGradient(SUNSET_RIDGE_STOPS, rowT);
       const ridgeStroke = mixRgb(ridgeStrokeBase, { r: 255, g: 255, b: 255 }, 0.14);
       rowStroke = toRgba(ridgeStroke, 0.42);
@@ -315,6 +342,22 @@ export function drawFrame(
     ctx.globalAlpha = topFade;
     ctx.strokeStyle = rowStroke;
     ctx.lineWidth = LINE_STROKE_WIDTH;
+    ctx.stroke();
+    ctx.restore();
+  }
+
+  if (state.airMode) {
+    const markerX = state.airX * width;
+    const markerY = HEADER_HEIGHT_PX + state.airY * drawableHeight;
+    const markerRadius = 10 + state.airEnergy * 14;
+
+    ctx.save();
+    ctx.lineWidth = 1.25;
+    ctx.strokeStyle = state.theme === 'dark' ? 'rgba(250, 250, 250, 0.72)' : 'rgba(24, 24, 24, 0.72)';
+    ctx.fillStyle = state.theme === 'dark' ? 'rgba(250, 250, 250, 0.08)' : 'rgba(24, 24, 24, 0.08)';
+    ctx.beginPath();
+    ctx.arc(markerX, markerY, markerRadius, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
     ctx.restore();
   }

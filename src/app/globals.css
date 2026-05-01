@@ -223,6 +223,23 @@ body.sunset-active .zach-logo {
   color: var(--text1);
 }
 
+.header-icon.disabled,
+.header-icon:disabled {
+  opacity: 0.42;
+  cursor: default;
+  pointer-events: none;
+}
+
+#header-spoken a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+#header-spoken a:hover {
+  color: var(--accent);
+}
+
 
 .canvas-clear-btn {
   display: none;
@@ -284,6 +301,85 @@ body.sunset-active .zach-logo {
 
 .mobile-menu.open {
   display: flex;
+}
+
+.air-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 80;
+  background: rgba(10, 10, 10, 0.56);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.air-modal.open {
+  display: flex;
+}
+
+.air-modal-card {
+  width: min(420px, 100%);
+  background: var(--surface1);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px;
+  position: relative;
+}
+
+.air-modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.air-modal-card h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.air-modal-card p {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.45;
+  font-size: 14px;
+}
+
+.air-modal-error {
+  margin-top: 10px !important;
+  color: var(--error) !important;
+}
+
+.air-modal-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.air-modal-start,
+.air-modal-cancel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 14px;
+  transition: border-color var(--duration-fast) var(--ease-fast), color var(--duration-fast) var(--ease-fast);
+}
+
+.air-modal-start {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border-color: var(--text-primary);
+}
+
+.air-modal-cancel {
+  background: transparent;
+  color: var(--text-primary);
+}
+
+.air-modal-cancel:hover,
+.air-modal-start:hover {
+  border-color: var(--border-hover);
 }
 
 .mobile-menu-header {

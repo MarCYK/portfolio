@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Mail, Menu, Music } from 'lucide-react';
+import { Home, Mail, Menu } from 'lucide-react';
 import { LogoDiamond } from './icons';
 import { NAV_LINKS } from '@/data/navigation';
 import { useCanvas } from '@/contexts/CanvasContext';
@@ -19,7 +19,10 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const { isDark, toggleTheme } = useTheme();
   const { soundEnabled, toggleSound } = useSound();
   const { emit, on } = useCanvas();
-  const [showNotes, setShowNotes] = useState(false);
+  const [musicActive, setMusicActive] = useState(false);
+  const [spokenActive, setSpokenActive] = useState(false);
+  const [airActive, setAirActive] = useState(false);
+  const [sunsetActive, setSunsetActive] = useState(false);
   const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
   useEffect(() => {
@@ -30,14 +33,31 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       });
     });
     const unsubMusic = on('musicToggle', (detail) => {
-      setShowNotes(detail.active);
+      setMusicActive(detail.active);
       if (!detail.active) {
         setNoteHistory([]);
       }
     });
+    const unsubSpoken = on('spokenToggle', (detail) => {
+      setSpokenActive(detail.active);
+      if (detail.active) {
+        setMusicActive(false);
+        setNoteHistory([]);
+      }
+    });
+    const unsubAir = on('airToggle', (detail) => {
+      setAirActive(detail.active);
+    });
+    const unsubSunset = on('sunsetToggle', (detail) => {
+      setSunsetActive(detail.active);
+    });
+
     return () => {
       unsubNote();
       unsubMusic();
+      unsubSpoken();
+      unsubAir();
+      unsubSunset();
     };
   }, [on]);
 
@@ -45,21 +65,41 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
     emit('menuToggle', undefined);
   };
 
+  const handleThemeToggle = () => {
+    if (sunsetActive) return;
+    toggleTheme();
+  };
+
+  const showEmail = !musicActive && !spokenActive && !airActive;
+
   const iconBarContent = (
     <>
-      {!showNotes && <a href={`mailto:${EMAIL}`} className="header-icon" aria-label="Email Zachary">
-        <Mail size={18} />
-      </a>}
-      {showNotes && (
+      {showEmail && (
+        <a id="email-link" href={`mailto:${EMAIL}`} className="header-icon" aria-label="Email">
+          <Mail size={18} />
+        </a>
+      )}
+      {musicActive && !spokenActive && (
         <div className="flex items-center gap-2 px-2">
-          <span className="font-mono" style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}>
+          <span
+            id="header-chord"
+            className="font-mono"
+            style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}
+          >
             {noteHistory.join(' · ')}
           </span>
         </div>
       )}
+      {spokenActive && (
+        <span id="header-spoken" className="px-2" style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
+          <a href="https://en.wikipedia.org/wiki/Siddhartha_(novel)" target="_blank" rel="noopener noreferrer">
+            Siddartha
+          </a>
+        </span>
+      )}
       {isHomePage && <CanvasToolbar />}
       <SoundToggle enabled={soundEnabled} onToggle={toggleSound} />
-      <ThemeToggle isDark={isDark} onToggle={toggleTheme} />
+      <ThemeToggle isDark={isDark} onToggle={handleThemeToggle} disabled={sunsetActive} />
     </>
   );
 
@@ -76,18 +116,28 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
           </Link>
           <nav className="desktop-nav items-center gap-4 text-sm">
             {NAV_LINKS.map(({ href, label }) => (
-              <Link key={href} href={href} className={`nav-link ${pathname === href ? 'active' : ''}`}>
+              <Link
+                key={href}
+                href={href}
+                className={`nav-link ${pathname === href || pathname.startsWith(`${href}/`) ? 'active' : ''}`}
+              >
                 {label}
               </Link>
             ))}
           </nav>
         </div>
 
-        <button type="button" className="hamburger-btn header-icon md:hidden" onClick={openMenu} aria-label="Open menu">
+        <button
+          id="menu-toggle"
+          type="button"
+          className="hamburger-btn header-icon md:hidden"
+          onClick={openMenu}
+          aria-label="Open menu"
+        >
           <Menu size={20} />
         </button>
 
-        <div className="icon-bar hidden items-center gap-3 md:flex">{iconBarContent}</div>
+        <div id="icon-bar" className="icon-bar hidden items-center gap-3 md:flex">{iconBarContent}</div>
       </header>
 
       <div className="mobile-icon-bar">

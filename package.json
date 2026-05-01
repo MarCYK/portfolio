@@ -7,7 +7,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "memory:project:init": "mempalace init . --yes --no-llm",
+    "memory:project:mine": "mempalace mine . --wing portfolio",
+    "memory:convos:split": "bash ./scripts/mempalace-convos.sh split",
+    "memory:convos:mine": "bash ./scripts/mempalace-convos.sh mine"
   },
   "dependencies": {
     "lucide-react": "^1.7.0",

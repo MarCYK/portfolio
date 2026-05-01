@@ -23,6 +23,8 @@ export function useTheme() {
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);
+    document.documentElement.style.colorScheme = isDark ? 'dark' : 'light';
+    document.documentElement.style.backgroundColor = isDark ? '#0a0a0a' : '#fff';
   }, [isDark]);
 
   const broadcastTheme = (theme: ThemeMode) => {
@@ -53,9 +55,23 @@ export function useTheme() {
   return { isDark, toggleTheme };
 }
 
-export default function ThemeToggle({ isDark, onToggle }: { isDark: boolean; onToggle: () => void }) {
+interface ThemeToggleProps {
+  isDark: boolean;
+  onToggle: () => void;
+  disabled?: boolean;
+}
+
+export default function ThemeToggle({ isDark, onToggle, disabled = false }: ThemeToggleProps) {
   return (
-    <button id="theme-toggle" type="button" className="header-icon" onClick={onToggle} aria-label="Toggle theme">
+    <button
+      id="theme-toggle"
+      type="button"
+      className={`header-icon ${disabled ? 'disabled' : ''}`}
+      onClick={onToggle}
+      aria-label="Toggle theme"
+      aria-disabled={disabled}
+      disabled={disabled}
+    >
       {isDark ? <Sun size={18} /> : <Moon size={18} />}
     </button>
   );

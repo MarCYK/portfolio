@@ -1,111 +1,102 @@
 # Portfolio Project Overview
 
-A personal portfolio site built with Next.js, featuring an interactive canvas-based music visualizer on the homepage.
+This repository contains a personal portfolio built with Next.js 16,
+React 18, TypeScript, and Tailwind CSS. The landing page is an
+interactive canvas surface, while the interior routes are content-driven
+editorial pages for projects, writing, and biography.
 
-## Tech Stack
+## Stack
 
-- **Framework**: Next.js 13.5+ (App Router)
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Audio**: soundfont-player (MusyngKite soundfont)
-- **Icons**: lucide-react
+- Next.js 16.2.4 with the App Router
+- React 18
+- TypeScript 5
+- Tailwind CSS 3
+- `soundfont-player` for audio playback
+- `lucide-react` for iconography
 
-## Architecture
+## Repository Shape
 
-```
-src/
-├── app/                    # Next.js App Router pages
-│   ├── layout.tsx         # Root layout with fonts
-│   ├── page.tsx           # Homepage (canvas + header)
-│   ├── about/
-│   ├── projects/
-│   └── words/
-├── components/             # React components
-│   ├── CanvasHome.tsx     # Full-screen canvas visualizer
-│   ├── PageShell.tsx       # Shared page layout wrapper
-│   ├── SiteHeader.tsx       # Navigation + theme/sound controls
-│   ├── header/             # Header sub-components
-│   │   ├── CanvasToolbar.tsx
-│   │   ├── ThemeToggle.tsx
-│   │   └── SoundToggle.tsx
-│   └── ...
-├── lib/                   # Core utilities
-│   ├── canvas-engine.ts    # Canvas rendering + music scheduling
-│   ├── canvas-events.ts    # Typed event bus for canvas/header comms
-│   ├── audio.ts            # Audio context management
-│   ├── projects.ts         # Project data lookup
-│   └── song-data.ts        # MIDI note data + helpers
-├── data/                  # Static data
-│   ├── constants.ts        # Shared constants (email, etc.)
-│   ├── projects.tsx        # Project list (with JSX icons)
-│   ├── posts.ts            # Blog posts
-│   └── navigation.ts       # Navigation links
-└── types/                 # TypeScript type definitions
-    └── index.ts
+The repo root contains framework configuration and public assets. App code
+lives in `src/`.
+
+```text
+portfolio/
+├── docs/
+├── public/
+├── src/
+│   ├── app/
+│   ├── components/
+│   ├── contexts/
+│   ├── data/
+│   ├── lib/
+│   └── types/
+├── next.config.js
+├── package.json
+└── tsconfig.json
 ```
 
-## Key Features
+## Route Model
 
-### Homepage Canvas
-- Full-screen canvas rendering an animated waveform (Joy Division-inspired)
-- Draws 30 rows that respond to mouse/touch interaction
-- Each row corresponds to a piano note (pentatonic scale)
-- Supports music playback that triggers row animations in sync
-- **Effects**: Disco mode (color cycling), Sunset mode (warm palette), Custom color palette
-- Interactions: Click/touch to draw, clear canvas, toggle sound
+- `src/app/page.tsx` renders the landing page.
+- `src/app/about/page.tsx` renders the biography page.
+- `src/app/projects/page.tsx` renders the projects index.
+- `src/app/projects/[slug]/page.tsx` renders project detail routes.
+- `src/app/words/page.tsx` renders the writing index.
+- `src/app/words/[slug]/page.tsx` renders writing detail routes.
 
-### Theme System
-- Light/dark mode toggle (persisted in localStorage)
-- CSS variables for theming (`--bg-primary`, `--text-primary`, etc.)
-- Broadcasts theme changes to canvas engine
+## Major Subsystems
 
-### Pages
-- **About**: Personal info, contact links, details about the piano/waveform implementation
-- **Projects**: Current and archived projects, internal project detail pages
-- **Words**: Blog/writing archive with posts and post detail pages
+### Layout and Navigation
 
-## Development
+- `src/app/layout.tsx` loads fonts, global styles, and `CanvasProvider`.
+- `src/components/PageShell.tsx` composes shared chrome for interior pages.
+- `src/components/SiteHeader.tsx` and `src/components/MobileMenu.tsx`
+    drive navigation.
+- `src/components/SiteFooter.tsx` renders the shared footer on non-home
+    routes.
 
-### Local Setup
+### Canvas Surface
 
-```bash
-cd /home/marcyk/Documents/GITHUB/portfolio/src
-bun install
-bun dev    # Runs on http://localhost:3000
-bun build  # Production build
-```
+- `src/components/CanvasHome.tsx` owns the landing page canvas surface.
+- `src/lib/canvas-engine.ts` contains the rendering behavior.
+- `src/lib/audio.ts` and `src/lib/song-data.ts` handle sound playback and
+    note timing.
+- `src/contexts/CanvasContext.tsx` is the active typed event channel for
+    cross-component canvas interactions.
 
-### Project Structure Notes
+Current canvas events:
 
-- `src/` is the actual Next.js project root (contains `package.json`, `tsconfig.json`)
-- Components are focused and small (< 300 lines each)
-- Custom event bus (`canvas-events.ts`) decouples header controls from canvas
-- Data separation: Data files contain content, lib files contain lookup logic
+- `themeChange`
+- `soundToggle`
+- `musicToggle`
+- `spokenToggle`
+- `airToggle`
+- `airStatus`
+- `sunsetToggle`
+- `paintToggle`
+- `canvasClear`
+- `canvasDirty`
+- `colorChange`
+- `menuToggle`
+- `notePlayed`
 
-### Canvas Implementation
+### Content Sources
 
-The canvas uses `requestAnimationFrame` loop:
-1. `drawFrame()` clears canvas and redraws all rows with sine-wave noise
-2. Row energy decays over time, bleeds into adjacent rows
-3. Music notes trigger energy spikes when played
-4. State is mutated in-place for performance (double-buffering not needed for this use case)
+- `src/data/projects.ts` stores current and archived project content.
+- `src/data/posts.ts` stores writing content and slug lookup helpers.
+- `src/data/navigation.ts` stores the primary nav links.
+- `src/types/index.ts` defines shared content types.
 
-### Event Communication
+### Design and Research Inputs
 
-Header controls and canvas communicate via typed custom events:
-- `themeChange` - Light/dark theme switch
-- `soundToggle` - Enable/disable sound
-- `musicToggle` - Start/stop music playback
-- `discoToggle` - Enable/disable disco color cycling
-- `sunsetToggle` - Enable/disable sunset warm palette
-- `canvasClear` - Reset canvas energy
-- `colorChange` - Select custom brush color
-- `canvasDirty` - Notify header that canvas has drawings
-- `menuToggle` - Open/close mobile menu
+- `docs/design-references/` holds visual reference material, including the
+    current `zchry-design` package.
+- `docs/research/` stores inspection output, inventories, and token notes
+    used to understand the existing site.
 
-See `lib/canvas-events.ts` for event definitions.
+## Operational Notes
 
-## Deployment
-
-Production build outputs to `.next/` directory (excluded from git).
-Deploy via Vercel or any static host supporting Next.js.
+- Build, lint, and type-check commands run from the repository root.
+- Production builds output to `.next/` at the repository root.
+- Static export is not configured. Treat this as a server-rendered Next.js
+    app unless the build setup changes.

@@ -1,92 +1,84 @@
 # Deployment Guide
 
-## Build
+## Pre-Deploy Checks
 
-From the `src/` directory:
+Run the full validation set from the repository root.
 
 ```bash
-bun build
+bun install
+bun run lint
+bunx tsc --noEmit
+bun run build
 ```
 
-This creates an optimized production build in `.next/` directory.
+The production build outputs to `.next/` in the repository root.
 
-## Deployment Options
+## Vercel
 
-### Vercel (Recommended)
+Vercel is the default target for this repo.
 
-1. Install Vercel CLI:
-   ```bash
-   bun install -g vercel
-   ```
+### Dashboard Settings
 
-2. Deploy:
-   ```bash
-   vercel
-   ```
+- Framework Preset: Next.js
+- Root Directory: repository root
+- Install Command: `bun install`
+- Build Command: `bun run build`
+- Output Directory: leave blank and let Next.js defaults apply
 
-3. Configure project settings in Vercel dashboard:
-   - Framework Preset: Next.js
-   - Root Directory: `src`
-   - Build Command: `cd src && bun run build`
-   - Output Directory: `src/.next`
+### CLI Deploy
 
-### Static Export (Alternative)
+```bash
+bun install -g vercel
+vercel
+```
 
-For static hosting (Netlify, GitHub Pages):
+If you use preview deployments, Vercel can also run the built app with the
+default Next.js server output. No custom adapter is configured in
+`next.config.js`.
 
-1. Build with static export:
-   ```bash
-   bun build
-   bun next export
-   ```
+## Self-Hosted Node Runtime
 
-2. Deploy `out/` directory.
+This repo is not configured for static export. If you deploy outside
+Vercel, use a host that can run the Next.js server.
 
-Note: Canvas interactivity and API routes (if added) require server-side rendering.
+```bash
+bun install
+bun run build
+bun run start
+```
+
+Default local startup uses port `3000`. Set `PORT` in the host environment
+if your platform requires a different port.
 
 ## Environment Variables
 
-No environment variables are currently required for this project.
+No runtime environment variables are required today.
 
-If you add API calls or analytics, configure them in Vercel dashboard.
-
-## Performance Considerations
-
-### Images
-
-The canvas is generated client-side - no image optimization needed.
-
-### Bundle Size
-
-Current bundle size is ~80 KB (optimized by Next.js).
-To check: Run `bun build` and review output for each route.
-
-### Analytics
-
-Consider adding analytics if you want to track:
-- Page views
-- Canvas interactions
-- Theme usage
+If analytics, APIs, or third-party services are added later, document the
+variables here and configure them in the deployment platform before the
+build runs.
 
 ## Troubleshooting
 
-### Build Errors
+### Build Fails
 
-If build fails:
-1. Clear cache: `rm -rf .next`
-2. Check TypeScript errors: `bunx`
-3. Verify all imports use correct `@/` aliases
+```bash
+rm -rf .next
+bun run lint
+bunx tsc --noEmit
+bun run build
+```
 
-### Production Issues
+### Production Differs From Local
 
-If something works locally but not in production:
-- Check browser console for errors
-- Verify `public/` folder contents are accessible
-- Check Vercel deployment logs
-- Ensure static paths are correct (no absolute `/` in src)
+- Check the deployment logs first.
+- Confirm assets in `public/` resolve correctly.
+- Confirm route-level imports still resolve through the `@/` alias.
+- Confirm browser-only code stays behind client components.
 
-### Canvas Not Rendering
+### Canvas Surface Does Not Render
 
-- Verify canvas dimensions are set correctly in `CanvasHome.tsx`
-- Check if any CSS is hiding the canvas (`z-index`, `display`)
-- Ensure JavaScript is enabled in user's browser
+- Inspect browser console errors.
+- Check `src/components/CanvasHome.tsx` for sizing or lifecycle issues.
+- Check `src/lib/audio.ts` and `src/lib/canvas-engine.ts` if the failure
+  appeared after control changes.
