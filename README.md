@@ -17,9 +17,10 @@ Visit `http://localhost:3000`
 
 ## Documentation
 
-- [Overview](docs/overview.md) - Project architecture and features
 - [Development](docs/development.md) - Local development setup and workflows
 - [Deployment](docs/deployment.md) - Build and deployment instructions
+- [Context](CONTEXT.md) - Project vocabulary, architecture boundaries, and operating assumptions
+- [ADRs](docs/adr/README.md) - Architecture decision records for durable technical choices
 
 ## Features
 

@@ -267,15 +267,15 @@ export function drawFrame(
       const edgeFade = Math.pow(Math.sin(nx * Math.PI), edgePow);
 
       let noise = 0;
-      noise += Math.sin(nx * 15 + row * 0.9 + time * 1.7) * 0.24;
-      noise += Math.sin(nx * 33 + row * 1.6 + time * 2.4) * 0.2;
-      noise += Math.sin(nx * 70 + row * 2.5 + time * 0.8) * 0.12;
-      noise += Math.sin(nx * 120 + row * 3.1 + time * 1.4) * 0.08;
-      noise += Math.sin(nx * 8 + row * 0.4 + time * 1.15) * 0.32;
-      noise += Math.max(0, Math.sin(nx * 22 + row * 1.2 + time * 1.8) - 0.2) * 1.95;
-      noise += Math.max(0, Math.sin(nx * 45 + row * 2 + time * 1.25) - 0.35) * 1.45;
-      noise += Math.max(0, Math.sin(nx * 11 + row * 0.35 + time * 2.1) - 0.3) * 1.6;
-      noise += Math.max(0, Math.sin(nx * 65 + row * 2.8 + time * 0.95) - 0.5) * 0.92;
+      noise += Math.sin(nx * 15 + row * 0.9 + time * 1.7) * 0.16;
+      noise += Math.sin(nx * 33 + row * 1.6 + time * 2.4) * 0.13;
+      noise += Math.sin(nx * 70 + row * 2.5 + time * 0.8) * 0.08;
+      noise += Math.sin(nx * 120 + row * 3.1 + time * 1.4) * 0.05;
+      noise += Math.sin(nx * 8 + row * 0.4 + time * 1.15) * 0.22;
+      noise += Math.max(0, Math.sin(nx * 22 + row * 1.2 + time * 1.8) - 0.2) * 1.3;
+      noise += Math.max(0, Math.sin(nx * 45 + row * 2 + time * 1.25) - 0.35) * 0.95;
+      noise += Math.max(0, Math.sin(nx * 11 + row * 0.35 + time * 2.1) - 0.3) * 1.05;
+      noise += Math.max(0, Math.sin(nx * 65 + row * 2.8 + time * 0.95) - 0.5) * 0.6;
 
       const rowPulse = 0.92 + 0.25 * Math.sin(time * 3.2 + row * 0.35);
       const amp = noise * edgeFade * maxAmp * rowPulse;
@@ -362,7 +362,7 @@ export function drawFrame(
     ctx.restore();
   }
 
-  state.timeOffset += 0.012;
+  state.timeOffset += 0.003;
 
   if (state.musicPlaying) tickMusic(state, audio);
 }
