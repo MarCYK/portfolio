@@ -1,3 +1,5 @@
+[read the file here](.github/copilot-instructions.md)
+
 ## Agent skills
 
 ### Issue tracker
