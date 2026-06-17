@@ -3,8 +3,6 @@ type EventMap = {
   soundToggle: { enabled: boolean };
   musicToggle: { active: boolean };
   spokenToggle: { active: boolean };
-  airToggle: { active: boolean };
-  airStatus: { error: string | null };
   sunsetToggle: { active: boolean };
   paintToggle: { active: boolean };
   canvasClear: undefined;

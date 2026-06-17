@@ -36,7 +36,7 @@ export default function MobileMenu() {
       <div className="mobile-menu-header">
         <Link href="/" onClick={close} className="flex items-center gap-2">
           <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
-          <LogoDiamond className="h-4" />
+          <LogoDiamond className="h-4 w-auto" />
         </Link>
         <button id="menu-close" className="header-icon" onClick={close} aria-label="Close menu">
           <X size={20} />

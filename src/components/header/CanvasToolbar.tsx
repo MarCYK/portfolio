@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Mic, Music, Paintbrush, Radio, Sunrise, Trash2, X } from 'lucide-react';
+import { AudioLines, Music, Paintbrush, Rainbow, Trash2 } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 const SWATCHES = [
@@ -16,17 +16,12 @@ const SWATCHES = [
 ];
 
 export default function CanvasToolbar() {
-  const { emit, on } = useCanvas();
+  const { emit, on, paintColor, setPaintColor, resetPaintColor } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
   const [spokenActive, setSpokenActive] = useState(false);
-  const [airActive, setAirActive] = useState(false);
-  const [airStarting, setAirStarting] = useState(false);
-  const [airModalOpen, setAirModalOpen] = useState(false);
-  const [airError, setAirError] = useState<string | null>(null);
   const [sunsetActive, setSunsetActive] = useState(false);
   const [canvasDirty, setCanvasDirty] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
-  const [activeSwatch, setActiveSwatch] = useState('');
   const paletteRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -34,26 +29,8 @@ export default function CanvasToolbar() {
       on('canvasDirty', (detail) => setCanvasDirty(detail.dirty)),
       on('musicToggle', (detail) => setMusicActive(detail.active)),
       on('spokenToggle', (detail) => setSpokenActive(detail.active)),
-      on('airToggle', (detail) => {
-        setAirActive(detail.active);
-        if (detail.active) {
-          setAirStarting(false);
-          setAirError(null);
-        } else {
-          setAirStarting(false);
-        }
-      }),
-      on('airStatus', (detail) => {
-        if (detail.error) {
-          setAirError(detail.error);
-          setAirStarting(false);
-        } else {
-          setAirError(null);
-        }
-      }),
       on('sunsetToggle', (detail) => setSunsetActive(detail.active)),
       on('paintToggle', (detail) => setPaletteOpen(detail.active)),
-      on('colorChange', (detail) => setActiveSwatch(detail.color || '')),
     ];
 
     return () => {
@@ -62,21 +39,11 @@ export default function CanvasToolbar() {
   }, [on]);
 
   useEffect(() => {
-    if (!airModalOpen) return;
-
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape') return;
-      setAirModalOpen(false);
-      setAirStarting(false);
-    };
-
-    document.addEventListener('keydown', onKeyDown);
-    return () => document.removeEventListener('keydown', onKeyDown);
-  }, [airModalOpen]);
-
-  useEffect(() => {
     const handler = (event: MouseEvent) => {
-      if (paletteRef.current && !paletteRef.current.contains(event.target as Node)) {
+      if (!paletteRef.current) return;
+      // Skip if this toolbar instance is hidden (e.g. mobile bar on desktop)
+      if (paletteRef.current.offsetParent === null) return;
+      if (!paletteRef.current.contains(event.target as Node)) {
         setPaletteOpen(false);
         emit('paintToggle', { active: false });
       }
@@ -97,7 +64,6 @@ export default function CanvasToolbar() {
   const toggleMusic = () => {
     const next = !musicActive;
     if (next && spokenActive) emit('spokenToggle', { active: false });
-    if (next && airActive) emit('airToggle', { active: false });
     emit('musicToggle', { active: next });
   };
 
@@ -108,36 +74,8 @@ export default function CanvasToolbar() {
     }
 
     if (musicActive) emit('musicToggle', { active: false });
-    if (airActive) emit('airToggle', { active: false });
     ensureSoundOn();
     emit('spokenToggle', { active: true });
-  };
-
-  const closeAirModal = () => {
-    setAirModalOpen(false);
-    setAirStarting(false);
-  };
-
-  const startAirMode = () => {
-    if (musicActive) emit('musicToggle', { active: false });
-    if (spokenActive) emit('spokenToggle', { active: false });
-    setAirModalOpen(false);
-    setAirStarting(true);
-    setAirError(null);
-    emit('airStatus', { error: null });
-    emit('airToggle', { active: true });
-  };
-
-  const toggleAirMode = () => {
-    if (airActive) {
-      emit('airToggle', { active: false });
-      closeAirModal();
-      return;
-    }
-
-    setAirError(null);
-    setAirModalOpen(true);
-    setAirStarting(true);
   };
 
   const toggleSunset = () => {
@@ -169,15 +107,12 @@ export default function CanvasToolbar() {
   const clearCanvas = () => {
     emit('canvasClear', undefined);
     setCanvasDirty(false);
+    resetPaintColor();
   };
 
   const selectSwatch = (color: string) => {
-    setActiveSwatch(color);
-    emit('colorChange', { color });
+    setPaintColor(color);
   };
-
-  const airPressed = airActive || airStarting || airModalOpen;
-  const airTooltip = airError || (airActive ? 'Stop Theramin' : 'Theramin');
 
   return (
     <>
@@ -199,18 +134,7 @@ export default function CanvasToolbar() {
         aria-pressed={spokenActive}
         data-tooltip={spokenActive ? 'Stop reading' : 'Spoken word'}
       >
-        <Mic size={18} />
-      </button>
-      <button
-        id="air-toggle"
-        type="button"
-        className={`header-icon ${airPressed ? 'active' : ''}`}
-        onClick={toggleAirMode}
-        aria-label="Toggle Theramin Mode"
-        aria-pressed={airPressed}
-        data-tooltip={airTooltip}
-      >
-        <Radio size={18} />
+        <AudioLines size={18} />
       </button>
       <button
         id="sunset-toggle"
@@ -219,7 +143,7 @@ export default function CanvasToolbar() {
         onClick={toggleSunset}
         aria-label="Toggle sunset"
       >
-        <Sunrise size={18} />
+        <Rainbow size={18} />
       </button>
       <div className="relative" ref={paletteRef}>
         <button
@@ -237,7 +161,7 @@ export default function CanvasToolbar() {
               <button
                 key={swatch.color}
                 type="button"
-                className={`color-swatch ${activeSwatch === swatch.color ? 'active' : ''}`}
+                className={`color-swatch ${paintColor === swatch.color ? 'active' : ''}`}
                 style={{ background: swatch.background }}
                 onClick={() => selectSwatch(swatch.color)}
                 aria-label={swatch.label}
@@ -255,41 +179,6 @@ export default function CanvasToolbar() {
       >
         <Trash2 size={18} />
       </button>
-
-      <div
-        id="air-modal"
-        className={`air-modal ${airModalOpen ? 'open' : ''}`}
-        aria-hidden={!airModalOpen}
-        hidden={!airModalOpen}
-        onClick={(event) => {
-          if (event.target === event.currentTarget) closeAirModal();
-        }}
-      >
-        <div className="air-modal-card" role="dialog" aria-modal="true" aria-labelledby="air-modal-title">
-          <button
-            id="air-modal-close"
-            type="button"
-            aria-label="Close Theramin Mode intro"
-            className="air-modal-close header-icon"
-            onClick={closeAirModal}
-          >
-            <X size={16} />
-          </button>
-          <h2 id="air-modal-title">Theramin Mode</h2>
-          <p>
-            Nothing is recorded or sent anywhere. It all happens locally in your browser.
-          </p>
-          {airError && <p className="air-modal-error">{airError}</p>}
-          <div className="air-modal-actions">
-            <button id="air-modal-start" type="button" className="air-modal-start" onClick={startAirMode}>
-              Start camera
-            </button>
-            <button id="air-modal-cancel" type="button" className="air-modal-cancel" onClick={closeAirModal}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
     </>
   );
 }

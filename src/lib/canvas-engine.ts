@@ -99,6 +99,10 @@ export interface CanvasState {
   rows: number;
   energy: Float32Array;
   rowGlow: Float32Array;
+  rowPaintMask: Uint8Array;
+  rowPaintR: Uint8Array;
+  rowPaintG: Uint8Array;
+  rowPaintB: Uint8Array;
   timeOffset: number;
   strokeColor: string;
   bgColor: string;
@@ -110,10 +114,6 @@ export interface CanvasState {
   lastMusicElapsed: number;
   spokenMode: boolean;
   spokenLevel: number;
-  airMode: boolean;
-  airX: number;
-  airY: number;
-  airEnergy: number;
 }
 
 export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MAX_ROWS): CanvasState {
@@ -123,6 +123,10 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MA
     rows,
     energy: new Float32Array(rows),
     rowGlow: new Float32Array(rows),
+    rowPaintMask: new Uint8Array(rows),
+    rowPaintR: new Uint8Array(rows),
+    rowPaintG: new Uint8Array(rows),
+    rowPaintB: new Uint8Array(rows),
     timeOffset: 0,
     strokeColor: defaults.strokeColor,
     bgColor: defaults.bgColor,
@@ -134,18 +138,26 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MA
     lastMusicElapsed: -1,
     spokenMode: false,
     spokenLevel: 0,
-    airMode: false,
-    airX: 0.78,
-    airY: 0.52,
-    airEnergy: 0,
   };
 }
 
 export function updateRows(state: CanvasState, rows: number): void {
-  if (state.rows === rows) return;
+  if (state.rows === rows) {
+    state.energy.fill(0);
+    state.rowGlow.fill(0);
+    state.rowPaintMask.fill(0);
+    state.rowPaintR.fill(0);
+    state.rowPaintG.fill(0);
+    state.rowPaintB.fill(0);
+    return;
+  }
   state.rows = rows;
   state.energy = new Float32Array(rows);
   state.rowGlow = new Float32Array(rows);
+  state.rowPaintMask = new Uint8Array(rows);
+  state.rowPaintR = new Uint8Array(rows);
+  state.rowPaintG = new Uint8Array(rows);
+  state.rowPaintB = new Uint8Array(rows);
 }
 
 export function tickMusic(state: CanvasState, audio: AudioState): void {
@@ -194,12 +206,7 @@ export function drawFrame(
     : getDefaultCanvasColors(state.theme);
 
   state.bgColor = defaults.bgColor;
-
-  if (state.customStrokeColor) {
-    state.strokeColor = state.customStrokeColor;
-  } else {
-    state.strokeColor = defaults.strokeColor;
-  }
+  state.strokeColor = defaults.strokeColor;
 
   for (let index = 0; index < rows; index += 1) {
     state.energy[index] *= 0.96;
@@ -219,13 +226,6 @@ export function drawFrame(
       state.energy[row] = Math.min(state.energy[row] + spokenBoost * 0.38 * falloff, 4);
       state.rowGlow[row] = Math.min(state.rowGlow[row] + spokenBoost * 0.2 * falloff, 1);
     }
-  }
-
-  if (state.airMode) {
-    const row = Math.min(rows - 1, Math.max(0, Math.round(state.airY * (rows - 1))));
-    const airBoost = Math.max(0.08, Math.min(1, state.airEnergy));
-    state.energy[row] = Math.min(state.energy[row] + airBoost * 0.42, 4);
-    state.rowGlow[row] = Math.min(state.rowGlow[row] + airBoost * 0.24, 1);
   }
 
   ctx.clearRect(0, 0, width, height);
@@ -295,6 +295,18 @@ export function drawFrame(
     ctx.fillStyle = state.sunsetMode ? toRgba(sunsetFillBase, sunsetFillAlpha) : state.bgColor;
     ctx.fill();
 
+    const isPaintedRow = !state.sunsetMode && state.rowPaintMask[row] === 1;
+    if (isPaintedRow) {
+      const rowPaintRgb: Rgb = {
+        r: state.rowPaintR[row],
+        g: state.rowPaintG[row],
+        b: state.rowPaintB[row],
+      };
+      const fillAlpha = (state.theme === 'dark' ? 0.72 : 0.82) * topFade;
+      ctx.fillStyle = toRgba(rowPaintRgb, fillAlpha);
+      ctx.fill();
+    }
+
     // Monochrome fill when row is plucked
     const glow = state.rowGlow[row];
     const middleBandRadius = 0.28;
@@ -316,6 +328,15 @@ export function drawFrame(
         const boostedGlow = mixRgb(sunsetGlow, { r: 255, g: 222, b: 140 }, 0.32 + fade * 0.25);
         const alpha = glow * (0.08 + fade * 0.3);
         ctx.fillStyle = toRgba(boostedGlow, alpha);
+      } else if (state.rowPaintMask[row] === 1) {
+        const rowPaintRgb: Rgb = {
+          r: state.rowPaintR[row],
+          g: state.rowPaintG[row],
+          b: state.rowPaintB[row],
+        };
+        const boostedGlow = mixRgb(rowPaintRgb, { r: 255, g: 255, b: 255 }, 0.24 + fade * 0.28);
+        const alpha = glow * (0.1 + fade * 0.28) * topFade;
+        ctx.fillStyle = toRgba(boostedGlow, alpha);
       } else {
         const alpha = glow * (state.theme === 'dark' ? 0.14 + fade * 0.5 : 0.08 + fade * 0.26);
         const lightness = state.theme === 'dark'
@@ -332,32 +353,24 @@ export function drawFrame(
     for (let step = 1; step <= steps; step += 1) ctx.lineTo(pointsX[step], pointsY[step]);
 
     let rowStroke = state.strokeColor;
-    if (state.sunsetMode && !state.customStrokeColor) {
+    if (state.sunsetMode) {
       const ridgeStrokeBase = sampleGradient(SUNSET_RIDGE_STOPS, rowT);
       const ridgeStroke = mixRgb(ridgeStrokeBase, { r: 255, g: 255, b: 255 }, 0.14);
       rowStroke = toRgba(ridgeStroke, 0.42);
+    }
+    if (!state.sunsetMode && state.rowPaintMask[row] === 1) {
+      const rowPaintRgb: Rgb = {
+        r: state.rowPaintR[row],
+        g: state.rowPaintG[row],
+        b: state.rowPaintB[row],
+      };
+      rowStroke = toRgba(rowPaintRgb, 0.9);
     }
 
     ctx.save();
     ctx.globalAlpha = topFade;
     ctx.strokeStyle = rowStroke;
     ctx.lineWidth = LINE_STROKE_WIDTH;
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  if (state.airMode) {
-    const markerX = state.airX * width;
-    const markerY = HEADER_HEIGHT_PX + state.airY * drawableHeight;
-    const markerRadius = 10 + state.airEnergy * 14;
-
-    ctx.save();
-    ctx.lineWidth = 1.25;
-    ctx.strokeStyle = state.theme === 'dark' ? 'rgba(250, 250, 250, 0.72)' : 'rgba(24, 24, 24, 0.72)';
-    ctx.fillStyle = state.theme === 'dark' ? 'rgba(250, 250, 250, 0.08)' : 'rgba(24, 24, 24, 0.08)';
-    ctx.beginPath();
-    ctx.arc(markerX, markerY, markerRadius, 0, Math.PI * 2);
-    ctx.fill();
     ctx.stroke();
     ctx.restore();
   }

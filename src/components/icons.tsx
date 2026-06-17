@@ -1,9 +1,10 @@
 import type { CSSProperties, ReactNode } from 'react';
+import Image from 'next/image';
 import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, PenTool, Smile } from 'lucide-react';
 
 export function LogoDiamond({ className, style }: { className?: string; style?: CSSProperties }) {
   return (
-    <img
+    <Image
       src="/favicon.png"
       alt=""
       aria-hidden="true"
@@ -16,6 +17,8 @@ export function LogoDiamond({ className, style }: { className?: string; style?: 
         ...style,
       }}
       draggable={false}
+      width={24}
+      height={24}
     />
   );
 }

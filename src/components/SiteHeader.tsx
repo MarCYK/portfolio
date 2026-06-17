@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Mail, Menu } from 'lucide-react';
+import { Mail, Menu } from 'lucide-react';
 import { LogoDiamond } from './icons';
 import { NAV_LINKS } from '@/data/navigation';
 import { useCanvas } from '@/contexts/CanvasContext';
@@ -21,7 +21,6 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const { emit, on } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
   const [spokenActive, setSpokenActive] = useState(false);
-  const [airActive, setAirActive] = useState(false);
   const [sunsetActive, setSunsetActive] = useState(false);
   const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
@@ -45,9 +44,6 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         setNoteHistory([]);
       }
     });
-    const unsubAir = on('airToggle', (detail) => {
-      setAirActive(detail.active);
-    });
     const unsubSunset = on('sunsetToggle', (detail) => {
       setSunsetActive(detail.active);
     });
@@ -56,7 +52,6 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       unsubNote();
       unsubMusic();
       unsubSpoken();
-      unsubAir();
       unsubSunset();
     };
   }, [on]);
@@ -70,7 +65,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
     toggleTheme();
   };
 
-  const showEmail = !musicActive && !spokenActive && !airActive;
+  const showEmail = !musicActive && !spokenActive;
 
   const iconBarContent = (
     <>
@@ -112,7 +107,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         <div className="flex items-center gap-5">
           <Link href="/" className="flex items-center gap-2">
             <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
-            <LogoDiamond className="h-4" />
+            <LogoDiamond className="h-4 w-auto" />
           </Link>
           <nav className="desktop-nav items-center gap-4 text-sm">
             {NAV_LINKS.map(({ href, label }) => (
@@ -141,9 +136,6 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       </header>
 
       <div className="mobile-icon-bar">
-        <Link href="/" className="header-icon" aria-label="Home">
-          <Home size={20} />
-        </Link>
         {iconBarContent}
       </div>
     </>
