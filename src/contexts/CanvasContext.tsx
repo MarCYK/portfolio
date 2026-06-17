@@ -44,7 +44,14 @@ const CanvasContext = createContext<CanvasContextValue | null>(null);
 
 export function CanvasProvider({ children }: { children: ReactNode }) {
   const handlersRef = useRef(new Map<CanvasEventType, Set<EventHandler<unknown>>>());
-  const [paintColor, setPaintColorState] = useState('');
+  const [paintColor, setPaintColorState] = useState(() => {
+    if (typeof window === 'undefined') return '';
+    try {
+      return localStorage.getItem('canvasColor') || '';
+    } catch {
+      return '';
+    }
+  });
 
   const emit = useCallback<CanvasContextValue['emit']>((name, detail) => {
     const eventHandlers = handlersRef.current.get(name as CanvasEventType);
@@ -74,11 +81,25 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const setPaintColor = useCallback((color: string) => {
     const normalized = color || '';
     setPaintColorState(normalized);
+    try {
+      if (normalized) {
+        localStorage.setItem('canvasColor', normalized);
+      } else {
+        localStorage.removeItem('canvasColor');
+      }
+    } catch {
+      // Ignore
+    }
     emit('colorChange', { color: normalized });
   }, [emit]);
 
   const resetPaintColor = useCallback(() => {
     setPaintColorState('');
+    try {
+      localStorage.removeItem('canvasColor');
+    } catch {
+      // Ignore
+    }
     emit('colorChange', { color: '' });
   }, [emit]);
 

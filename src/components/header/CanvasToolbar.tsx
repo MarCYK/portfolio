@@ -85,6 +85,7 @@ export default function CanvasToolbar() {
     if (!next) {
       emit('canvasClear', undefined);
       setCanvasDirty(false);
+      resetPaintColor();
       if (paletteOpen) {
         setPaletteOpen(false);
         emit('paintToggle', { active: false });
