@@ -35,7 +35,7 @@ src/
 ├── lib/
 │   ├── audio.ts
 │   ├── canvas-engine.ts
-│   ├── canvas-events.ts
+│   ├── color-math.ts
 │   ├── projects.ts
 │   └── song-data.ts
 └── types/

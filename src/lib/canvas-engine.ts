@@ -1,6 +1,8 @@
 import { MAX_ROWS, MIDI_NOTES, SONG_DURATION, midiPitchToRow, midiToName, computeRows } from './song-data';
 import type { AudioState } from './audio';
-import { canvasEvents } from './canvas-events';
+import { sampleGradient, mixRgb, toRgba, type Rgb } from './color-math';
+
+export type { Rgb } from './color-math';
 
 const SUNSET_BACKGROUND_STOPS = [
   '#ffefaf',
@@ -31,53 +33,6 @@ const SUNSET_RIDGE_STOPS = [
 const HEADER_HEIGHT_PX = 52;
 const LINE_STROKE_WIDTH = 1;
 const TOP_FADE_MIN = 0.18;
-
-type Rgb = { r: number; g: number; b: number };
-
-function hexToRgb(hex: string): Rgb {
-  const normalized = hex.replace('#', '');
-  const value = normalized.length === 3
-    ? normalized.split('').map((char) => `${char}${char}`).join('')
-    : normalized;
-
-  return {
-    r: Number.parseInt(value.slice(0, 2), 16),
-    g: Number.parseInt(value.slice(2, 4), 16),
-    b: Number.parseInt(value.slice(4, 6), 16),
-  };
-}
-
-function lerp(a: number, b: number, t: number): number {
-  return a + (b - a) * t;
-}
-
-function sampleGradient(stops: string[], t: number): Rgb {
-  const clamped = Math.min(1, Math.max(0, t));
-  const scaled = clamped * (stops.length - 1);
-  const index = Math.floor(scaled);
-  const localT = scaled - index;
-  const start = hexToRgb(stops[index]);
-  const end = hexToRgb(stops[Math.min(index + 1, stops.length - 1)]);
-
-  return {
-    r: Math.round(lerp(start.r, end.r, localT)),
-    g: Math.round(lerp(start.g, end.g, localT)),
-    b: Math.round(lerp(start.b, end.b, localT)),
-  };
-}
-
-function mixRgb(base: Rgb, highlight: Rgb, amount: number): Rgb {
-  const clamped = Math.min(1, Math.max(0, amount));
-  return {
-    r: Math.round(lerp(base.r, highlight.r, clamped)),
-    g: Math.round(lerp(base.g, highlight.g, clamped)),
-    b: Math.round(lerp(base.b, highlight.b, clamped)),
-  };
-}
-
-function toRgba(rgb: Rgb, alpha: number): string {
-  return `rgba(${rgb.r}, ${rgb.g}, ${rgb.b}, ${alpha})`;
-}
 
 export type CanvasTheme = 'dark' | 'light';
 
@@ -160,7 +115,7 @@ export function updateRows(state: CanvasState, rows: number): void {
   state.rowPaintB = new Uint8Array(rows);
 }
 
-export function tickMusic(state: CanvasState, audio: AudioState): void {
+export function tickMusic(state: CanvasState, audio: AudioState, onNote?: (note: string) => void): void {
   if (!state.musicPlaying || !audio.audioCtx) return;
   const elapsed = (audio.audioCtx.currentTime - state.musicStartTime) % SONG_DURATION;
 
@@ -176,7 +131,7 @@ export function tickMusic(state: CanvasState, audio: AudioState): void {
           }
         }
       }
-      canvasEvents.emit('notePlayed', { note: midiNote });
+      onNote?.(midiNote);
       const rowIndex = midiPitchToRow(midiPitch, state.rows);
       state.energy[rowIndex] = Math.min(state.energy[rowIndex] + velocity * 1.5, 4);
       state.rowGlow[rowIndex] = Math.min(state.rowGlow[rowIndex] + 0.8, 1.0);
@@ -191,6 +146,7 @@ export function drawFrame(
   ctx: CanvasRenderingContext2D,
   state: CanvasState,
   audio: AudioState,
+  onNote?: (note: string) => void,
 ): void {
   const width = canvas.width;
   const height = canvas.height;
@@ -377,7 +333,7 @@ export function drawFrame(
 
   state.timeOffset += 0.003;
 
-  if (state.musicPlaying) tickMusic(state, audio);
+  if (state.musicPlaying) tickMusic(state, audio, onNote);
 }
 
 export function getRowAtY(canvasHeight: number, clientY: number, rows: number): number {

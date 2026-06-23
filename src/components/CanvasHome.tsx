@@ -5,6 +5,7 @@ import { computeRows } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
 import type { CanvasTheme } from '@/lib/canvas-engine';
 import { createCanvasState, drawFrame, getRowAtY, updateRows } from '@/lib/canvas-engine';
+import { tryParseHex } from '@/lib/color-math';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 const SPOKEN_AUDIO_SRC = 'https://www.zchry.org/audio/siddhartha-spoken-ai.mp3';
@@ -50,19 +51,6 @@ export default function CanvasHome() {
     let lastRow = -1;
     let strokePaintColor: string | null = null;
 
-    const toRgb = (hex: string) => {
-      const normalized = hex.replace('#', '');
-      const value = normalized.length === 3
-        ? normalized.split('').map((char) => `${char}${char}`).join('')
-        : normalized;
-      if (value.length !== 6) return null;
-      const r = Number.parseInt(value.slice(0, 2), 16);
-      const g = Number.parseInt(value.slice(2, 4), 16);
-      const b = Number.parseInt(value.slice(4, 6), 16);
-      if (Number.isNaN(r) || Number.isNaN(g) || Number.isNaN(b)) return null;
-      return { r, g, b };
-    };
-
     const applyPaintToRow = (row: number) => {
       if (state.sunsetMode) return;
       if (row < 0 || row >= state.rows) return;
@@ -75,7 +63,7 @@ export default function CanvasHome() {
         return;
       }
 
-      const rgb = toRgb(strokePaintColor);
+      const rgb = tryParseHex(strokePaintColor);
       if (!rgb) return;
 
       state.rowPaintMask[row] = 1;
@@ -197,7 +185,7 @@ export default function CanvasHome() {
     }
 
     function animate() {
-      drawFrame(canvas, ctx, state, audio);
+      drawFrame(canvas, ctx, state, audio, (note) => emit('notePlayed', { note }));
       animFrameId = requestAnimationFrame(animate);
     }
 
@@ -280,13 +268,6 @@ export default function CanvasHome() {
       }
     });
 
-    const onWindowNotePlayed = (event: Event) => {
-      const detail = (event as CustomEvent<{ note: string }>).detail;
-      emit('notePlayed', detail);
-    };
-
-    window.addEventListener('notePlayed', onWindowNotePlayed as EventListener);
-
     animFrameId = requestAnimationFrame(animate);
 
     return () => {
@@ -300,7 +281,6 @@ export default function CanvasHome() {
       window.removeEventListener('touchend', stopDrawing);
       window.removeEventListener('touchcancel', stopDrawing);
       window.removeEventListener('blur', stopDrawing);
-      window.removeEventListener('notePlayed', onWindowNotePlayed as EventListener);
       stopSpokenWord();
       unsubMusic();
       unsubSpoken();

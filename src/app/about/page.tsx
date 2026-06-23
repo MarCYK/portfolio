@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import PageShell from '@/components/PageShell';
 import { Link as LinkIcon, Mail } from 'lucide-react';
-import { EMAIL, EMAIL_DISPLAY } from '@/data/constants';
+import { EMAIL } from '@/data/constants';
 
 export const metadata: Metadata = {
   title: 'marcyk - About',
@@ -27,7 +27,7 @@ export default function AboutPage() {
                     <li>
                       <a href={`mailto:${EMAIL}`} className="about-link">
                         <Mail size={14} style={{ flexShrink: 0 }} />
-                        {EMAIL_DISPLAY}
+                        {EMAIL}
                       </a>
                     </li>
                   </ul>

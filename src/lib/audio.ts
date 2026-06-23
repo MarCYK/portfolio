@@ -1,8 +1,5 @@
+import type { Player } from 'soundfont-player';
 import { rowToNote } from './song-data';
-
-interface Player {
-  play(note: string, time: number, options?: { duration?: number; gain?: number }): void;
-}
 
 export interface AudioState {
   audioCtx: AudioContext | null;
@@ -10,7 +7,7 @@ export interface AudioState {
   soundEnabled: boolean;
 }
 
-function readSoundPreference(): boolean {
+export function readSoundPreference(): boolean {
   try {
     const stored = localStorage.getItem('sound');
     if (stored === 'off' || stored === 'disabled') return false;

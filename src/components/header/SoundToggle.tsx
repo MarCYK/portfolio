@@ -3,20 +3,7 @@
 import { useEffect, useState } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
-
-function readSoundPreference(): boolean {
-  if (typeof window === 'undefined') {
-    return true;
-  }
-
-  try {
-    const stored = localStorage.getItem('sound');
-    if (stored === 'off' || stored === 'disabled') return false;
-    return true;
-  } catch {
-    return true;
-  }
-}
+import { readSoundPreference } from '@/lib/audio';
 
 export function useSound() {
   const { emit, on } = useCanvas();

@@ -1,5 +1,5 @@
 declare module 'soundfont-player' {
-  interface Player {
+  export interface Player {
     play(note: string, time: number, options?: { duration?: number; gain?: number }): void;
     stop(): void;
   }
