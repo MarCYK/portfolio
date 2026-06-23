@@ -50,3 +50,7 @@ entities.json
 
 # Dev
 task/
+
+# code-review-graph
+.code-review-graph/
+evaluate/
