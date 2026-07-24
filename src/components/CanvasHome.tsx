@@ -157,6 +157,7 @@ export default function CanvasHome() {
       if (state.musicPlaying && audio.audioCtx) {
         state.musicStartTime = audio.audioCtx.currentTime;
         state.lastMusicElapsed = -1;
+        state.seqStep = 0;
       }
     });
 

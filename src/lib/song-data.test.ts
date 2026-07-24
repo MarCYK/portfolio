@@ -106,8 +106,9 @@ describe('005: Where Is My Mind sequencer (reference-matched)', () => {
     expect(SONG_MIDI_HI).toBe(95);
   });
 
-  test('shapeVolume: base multiplier is 1.4', () => {
-    expect(shapeVolume(60, 1.0)).toBeCloseTo(1.4, 5);
+  test('shapeVolume: base multiplier is 1.4 for mid-range (48<=midi<60)', () => {
+    // midi 55: not bass (<48), not melody (>=60) — base only
+    expect(shapeVolume(55, 1.0)).toBeCloseTo(1.4, 5);
   });
 
   test('shapeVolume: melody (midi>=60) boosted by 1.2x', () => {
@@ -123,7 +124,7 @@ describe('005: Where Is My Mind sequencer (reference-matched)', () => {
   });
 
   test('shapeVolume: raw velocity scales linearly', () => {
-    expect(shapeVolume(60, 0.5)).toBeCloseTo(0.5 * 1.4 * 1.2, 5);
+    expect(shapeVolume(55, 0.5)).toBeCloseTo(0.5 * 1.4, 5);
   });
 
   test('rowForMidi: low midi maps near bottom, high midi near top (inverted)', () => {

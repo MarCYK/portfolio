@@ -1,4 +1,11 @@
-import { MAX_ROWS, MIDI_NOTES, SONG_DURATION, midiPitchToRow, midiToName, computeRows } from './song-data';
+import {
+  MAX_ROWS,
+  songNotes,
+  SONG_DURATION_MS,
+  rowForMidi,
+  midiToName,
+  computeRows,
+} from './song-data';
 import type { AudioState } from './audio';
 import { sampleGradient, mixRgb, toRgba, type Rgb } from './color-math';
 
@@ -67,6 +74,7 @@ export interface CanvasState {
   musicPlaying: boolean;
   musicStartTime: number;
   lastMusicElapsed: number;
+  seqStep: number;
 
 }
 
@@ -90,6 +98,7 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MA
     musicPlaying: false,
     musicStartTime: 0,
     lastMusicElapsed: -1,
+    seqStep: 0,
 
   };
 }
@@ -113,27 +122,65 @@ export function updateRows(state: CanvasState, rows: number): void {
   state.rowPaintB = new Uint8Array(rows);
 }
 
+const SONG_DURATION_SEC = SONG_DURATION_MS / 1000;
+const LOOP_GAP_SEC = 1.5;
+
+// Plays due notes from the "Where Is My Mind" arrangement using a cursor
+// (seqStep) over the pre-sorted songNotes stream. Audio-clock-locked for
+// zero drift with the waveform. Matches zchry.org seqFrame: collision
+// nudge when two notes share a row, and energy bleed to neighbouring rows.
 export function tickMusic(state: CanvasState, audio: AudioState, onNote?: (note: string) => void): void {
   if (!state.musicPlaying || !audio.audioCtx) return;
-  const elapsed = (audio.audioCtx.currentTime - state.musicStartTime) % SONG_DURATION;
+  const elapsed = audio.audioCtx.currentTime - state.musicStartTime;
 
-  for (const [noteTime, midiPitch, velocity] of MIDI_NOTES) {
-    if (noteTime <= elapsed && noteTime > state.lastMusicElapsed) {
-      const midiNote = midiToName(midiPitch);
-      if (audio.player) {
-        try {
-          audio.player.play(midiNote, audio.audioCtx.currentTime, { duration: 0.5, gain: velocity });
-        } catch (error) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn('Sequencer playback failed:', error);
-          }
+  if (elapsed >= SONG_DURATION_SEC) {
+    state.seqStep = 0;
+    state.lastMusicElapsed = elapsed + LOOP_GAP_SEC;
+    state.musicStartTime = audio.audioCtx.currentTime + LOOP_GAP_SEC;
+    return;
+  }
+
+  const tickUsed = new Set<number>();
+  while (state.seqStep < songNotes.length) {
+    const [absMs, midi, durSec, vol] = songNotes[state.seqStep];
+    const noteTimeSec = absMs / 1000;
+    if (noteTimeSec > elapsed) break;
+
+    const midiNote = midiToName(midi);
+    if (audio.player) {
+      try {
+        audio.player.play(midiNote, audio.audioCtx.currentTime, { duration: durSec, gain: vol });
+      } catch (error) {
+        if (process.env.NODE_ENV === 'development') {
+          console.warn('Sequencer playback failed:', error);
         }
       }
-      onNote?.(midiNote);
-      const rowIndex = midiPitchToRow(midiPitch, state.rows);
-      state.energy[rowIndex] = Math.min(state.energy[rowIndex] + velocity * 1.5, 4);
-      state.rowGlow[rowIndex] = Math.min(state.rowGlow[rowIndex] + 0.8, 1.0);
     }
+    onNote?.(midiNote);
+
+    // Collision nudge: if two notes map to the same row this tick, push
+    // to an adjacent free row so every note stays visually distinct.
+    let row = rowForMidi(midi, state.rows);
+    if (tickUsed.has(row)) {
+      if (row > 0 && !tickUsed.has(row - 1)) row -= 1;
+      else if (row < state.rows - 1 && !tickUsed.has(row + 1)) row += 1;
+    }
+    tickUsed.add(row);
+
+    state.energy[row] = Math.min(state.energy[row] + vol, 2.0);
+    state.rowGlow[row] = Math.min(state.rowGlow[row] + 0.8, 1.0);
+
+    // Energy bleed to neighbouring rows, matching the reference.
+    if (row > 0) {
+      state.energy[row - 1] = Math.min(state.energy[row - 1] + vol * 0.3, 2.0);
+      state.rowGlow[row - 1] = Math.min(state.rowGlow[row - 1] + 0.3, 1.0);
+    }
+    if (row < state.rows - 1) {
+      state.energy[row + 1] = Math.min(state.energy[row + 1] + vol * 0.3, 2.0);
+      state.rowGlow[row + 1] = Math.min(state.rowGlow[row + 1] + 0.3, 1.0);
+    }
+
+    state.seqStep += 1;
   }
 
   state.lastMusicElapsed = elapsed;

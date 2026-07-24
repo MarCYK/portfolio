@@ -1,3 +1,5 @@
+import { IMPORTED_NOTES } from './song-data-notes';
+
 export const MAX_ROWS = 48;
 export const MIN_ROWS = 16;
 export const TARGET_ROW_SPACING = 24;
@@ -8,26 +10,14 @@ export const PENA_INTERVALS = [0, 2, 4, 7, 9];
 export const INTERACTIVE_MIDI_LO = 48;
 export const INTERACTIVE_MIDI_HI = 84;
 
-/** [beatTime, midiPitch, velocity] */
-export const MIDI_NOTES: [number, number, number][] = [
-  [0.0, 64, 0.7], [0.0, 52, 0.4], [0.75, 62, 0.7], [0.75, 50, 0.4],
-  [1.5, 60, 0.7], [1.5, 48, 0.4], [2.25, 59, 0.65], [3.0, 57, 0.7], [3.0, 45, 0.4],
-  [3.75, 55, 0.65], [4.5, 57, 0.7], [5.25, 59, 0.65], [6.0, 60, 0.75], [6.0, 48, 0.4],
-  [6.75, 62, 0.7], [7.5, 64, 0.75], [8.25, 62, 0.7], [9.0, 60, 0.7], [9.0, 48, 0.4],
-  [9.75, 59, 0.65], [10.5, 57, 0.7], [10.5, 45, 0.4], [11.25, 55, 0.65],
-  [12.0, 52, 0.7], [12.0, 40, 0.4], [12.75, 54, 0.65], [13.5, 55, 0.7],
-  [14.25, 57, 0.65], [15.0, 59, 0.7], [15.0, 47, 0.4], [15.75, 57, 0.65],
-  [16.5, 55, 0.7], [17.25, 54, 0.65], [18.0, 52, 0.75], [18.0, 40, 0.4],
-  [18.75, 54, 0.7], [19.5, 55, 0.7], [20.25, 57, 0.65], [21.0, 59, 0.7], [21.0, 47, 0.4],
-  [21.75, 60, 0.7], [22.5, 62, 0.75], [23.25, 64, 0.8], [24.0, 62, 0.7], [24.0, 50, 0.4],
-  [24.75, 60, 0.7], [25.5, 59, 0.65], [26.25, 57, 0.65], [27.0, 55, 0.7], [27.0, 43, 0.4],
-  [27.75, 54, 0.65], [28.5, 52, 0.7], [29.25, 50, 0.65], [30.0, 52, 0.7], [30.0, 40, 0.4],
-  [30.75, 54, 0.65], [31.5, 55, 0.7], [32.25, 57, 0.65], [33.0, 59, 0.7], [33.0, 47, 0.4],
-  [33.75, 60, 0.7], [34.5, 62, 0.7], [35.25, 60, 0.65], [36.0, 59, 0.7], [36.0, 47, 0.4],
-  [36.75, 57, 0.65], [37.5, 55, 0.7], [38.25, 54, 0.65], [39.0, 52, 0.7], [39.0, 40, 0.4],
-];
-
-export const SONG_DURATION = 40;
+// --- "Where Is My Mind" sequencer (zchry.org reference) ---
+export const SOURCE_BPM = 80;
+// 16th-note duration in ms at SOURCE_BPM.
+export const MS_PER_UNIT = 60000 / SOURCE_BPM / 4;
+export const SONG_MIDI_LO = 37;
+export const SONG_MIDI_HI = 95;
+// Loop pause after the last note, matching the reference's 1500ms gap.
+const SONG_TAIL_GAP_MS = 3000;
 
 export function computeRows(drawableHeight: number): number {
   const idealRows = Math.floor(drawableHeight / TARGET_ROW_SPACING);
@@ -60,10 +50,45 @@ export function rowToNote(rowIndex: number, totalRows: number): string {
   return midiToName(rowToMidi(rowIndex, totalRows));
 }
 
-export function midiPitchToRow(midi: number, totalRows: number): number {
-  const normalized = Math.max(0, Math.min(1, (midi - 48) / 48));
-  return Math.floor((1 - normalized) * (totalRows - 1));
+// Maps a sequencer MIDI pitch to a row using the reference's margin-
+// bounded inverted mapping: low pitch lands near the bottom margin,
+// high pitch near the top margin.
+export function rowForMidi(midi: number, totalRows: number): number {
+  const t = (midi - SONG_MIDI_LO) / (SONG_MIDI_HI - SONG_MIDI_LO);
+  const clamped = Math.max(0, Math.min(1, t));
+  const margin = Math.floor(totalRows * 0.12);
+  const usable = totalRows - 1 - margin * 2;
+  return margin + Math.round((1 - clamped) * usable);
 }
+
+// Volume shaping matches zchry.org songNotes build: base 1.4x, melody
+// (midi>=60) boosted 1.2x, bass (midi<48) cut to 0.75x.
+export function shapeVolume(midi: number, rawVelocity: number): number {
+  let vol = rawVelocity * 1.4;
+  if (midi >= 60) vol *= 1.2;
+  if (midi < 48) vol *= 0.75;
+  return vol;
+}
+
+// Runtime note tuple: [absMs, midi, durSec, vol]. Matches the reference
+// songNotes layout so callers can destructure positionally.
+export type SongNote = [number, number, number, number];
+
+// Converts a raw IMPORTED_NOTES tuple [timeUnit, midi, durUnits, vel]
+// to runtime form [absMs, midi, durSec, vol].
+export function convertSongNote(note: [number, number, number, number]): SongNote {
+  const [timeUnit, midi, durUnits, vel] = note;
+  const absMs = timeUnit * MS_PER_UNIT;
+  const durSec = Math.max(0.1, (durUnits * MS_PER_UNIT) / 1000);
+  const vol = shapeVolume(midi, vel);
+  return [absMs, midi, durSec, vol];
+}
+
+// Pre-converted runtime note stream, sorted by absolute ms.
+export const songNotes: SongNote[] = IMPORTED_NOTES.map(convertSongNote);
+
+export const SONG_DURATION_MS =
+  songNotes.length > 0 ? songNotes[songNotes.length - 1][0] + SONG_TAIL_GAP_MS : 0;
 
 export function midiToName(midi: number): string {
   const notes = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
