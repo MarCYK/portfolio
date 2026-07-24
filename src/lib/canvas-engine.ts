@@ -245,7 +245,7 @@ export function drawFrame(
         g: state.rowPaintG[row],
         b: state.rowPaintB[row],
       };
-      const fillAlpha = (state.theme === 'dark' ? 0.72 : 0.82) * topFade;
+      const fillAlpha = topFade;
       ctx.fillStyle = toRgba(rowPaintRgb, fillAlpha);
       ctx.fill();
     }
