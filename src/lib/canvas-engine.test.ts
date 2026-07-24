@@ -41,6 +41,8 @@ describe("canvas-engine paint persistence", () => {
         const match = val.match(/rgba\(255, 0, 0, ([\d.]+)\)/);
         if (match) {
           paintedFillAlpha = parseFloat(match[1]);
+        } else if (val === "rgb(255, 0, 0)") {
+          paintedFillAlpha = 1.0;
         }
       },
       set globalAlpha(val: number) {},
@@ -50,8 +52,7 @@ describe("canvas-engine paint persistence", () => {
     
     drawFrame(canvas, ctx, state, audio);
     
-    // The requirement says "full vivid alpha" (meaning it doesn't decay over time).
-    // topFade is ~0.6688 for this row.
-    expect(paintedFillAlpha).toBeCloseTo(0.6688, 1);
+    // The requirement says "completely solid, fully opaque".
+    expect(paintedFillAlpha).toBeCloseTo(1.0, 1);
   });
 });

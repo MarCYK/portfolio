@@ -229,8 +229,8 @@ export function drawFrame(
     ctx.beginPath();
     ctx.moveTo(pointsX[0], pointsY[0]);
     for (let step = 1; step <= steps; step += 1) ctx.lineTo(pointsX[step], pointsY[step]);
-    ctx.lineTo(width, lineY + fillExtend);
-    ctx.lineTo(0, lineY + fillExtend);
+    ctx.lineTo(width, fillBottom);
+    ctx.lineTo(0, fillBottom);
     ctx.closePath();
 
     const sunsetFillBase = sampleGradient(SUNSET_RIDGE_STOPS, rowT);
@@ -245,8 +245,7 @@ export function drawFrame(
         g: state.rowPaintG[row],
         b: state.rowPaintB[row],
       };
-      const fillAlpha = topFade;
-      ctx.fillStyle = toRgba(rowPaintRgb, fillAlpha);
+      ctx.fillStyle = `rgb(${rowPaintRgb.r}, ${rowPaintRgb.g}, ${rowPaintRgb.b})`;
       ctx.fill();
     }
 
