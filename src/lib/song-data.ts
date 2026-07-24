@@ -2,10 +2,11 @@ export const MAX_ROWS = 48;
 export const MIN_ROWS = 16;
 export const TARGET_ROW_SPACING = 24;
 
-export const PENTATONIC_NOTES = [
-  'C3', 'E3', 'G3', 'B3', 'D4', 'E4', 'G4', 'B4', 'D5', 'E5', 'G5',
-  'B5', 'D6', 'E6', 'G6', 'B6', 'D7', 'E7', 'G7', 'B7', 'C8',
-];
+// Interactive plucking maps each row to a major pentatonic degree,
+// matching zchry.org. Range and snap algorithm mirror the reference.
+export const PENA_INTERVALS = [0, 2, 4, 7, 9];
+export const INTERACTIVE_MIDI_LO = 48;
+export const INTERACTIVE_MIDI_HI = 84;
 
 /** [beatTime, midiPitch, velocity] */
 export const MIDI_NOTES: [number, number, number][] = [
@@ -33,9 +34,30 @@ export function computeRows(drawableHeight: number): number {
   return Math.max(MIN_ROWS, Math.min(MAX_ROWS, idealRows));
 }
 
+// Maps a row index to a MIDI pitch by snapping linearly across
+// [INTERACTIVE_MIDI_LO, INTERACTIVE_MIDI_HI] to the nearest major
+// pentatonic degree. Row 0 (top of canvas) is the lowest pitch,
+// matching zchry.org where i=0 maps to midiLo.
+export function rowToMidi(rowIndex: number, totalRows: number): number {
+  const t = totalRows > 1 ? rowIndex / (totalRows - 1) : 0.5;
+  const rawMidi = INTERACTIVE_MIDI_LO + t * (INTERACTIVE_MIDI_HI - INTERACTIVE_MIDI_LO);
+  const semis = Math.round(rawMidi) - INTERACTIVE_MIDI_LO;
+  const octSemis = ((semis % 12) + 12) % 12;
+  let best = PENA_INTERVALS[0];
+  let bestDist = Number.POSITIVE_INFINITY;
+  for (const p of PENA_INTERVALS) {
+    const d = Math.abs(octSemis - p);
+    if (d < bestDist) {
+      bestDist = d;
+      best = p;
+    }
+  }
+  const snapped = INTERACTIVE_MIDI_LO + Math.floor(semis / 12) * 12 + best;
+  return Math.max(INTERACTIVE_MIDI_LO, Math.min(INTERACTIVE_MIDI_HI, snapped));
+}
+
 export function rowToNote(rowIndex: number, totalRows: number): string {
-  const noteIndex = totalRows - 1 - rowIndex;
-  return PENTATONIC_NOTES[Math.min(noteIndex, PENTATONIC_NOTES.length - 1)];
+  return midiToName(rowToMidi(rowIndex, totalRows));
 }
 
 export function midiPitchToRow(midi: number, totalRows: number): number {

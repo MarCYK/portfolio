@@ -21,11 +21,11 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
     expect(INTERACTIVE_MIDI_HI).toBe(84);
   });
 
-  test('rowToMidi: bottom row = lowest pitch, top row = highest pitch', () => {
+  test('rowToMidi: top row (row 0) = lowest pitch, bottom row = highest pitch (matches reference)', () => {
     const rows = 30;
-    const bottom = rowToMidi(0, rows);
-    const top = rowToMidi(rows - 1, rows);
-    expect(bottom).toBeLessThan(top);
+    const top = rowToMidi(0, rows);
+    const bottom = rowToMidi(rows - 1, rows);
+    expect(top).toBeLessThan(bottom);
   });
 
   test('rowToMidi: every result snaps to a pentatonic degree within range', () => {
@@ -44,7 +44,7 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
     expect(rowToNote(15, 30)).toBe(midiToName(midi));
   });
 
-  test('rowToMidi: monotonically non-decreasing bottom to top', () => {
+  test('rowToMidi: monotonically non-decreasing top (row 0) to bottom (matches reference)', () => {
     const rows = 30;
     let prev = rowToMidi(0, rows);
     for (let r = 1; r < rows; r++) {
