@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AudioLines, Music, Paintbrush, Rainbow, Trash2 } from 'lucide-react';
+import { Music, Paintbrush, Rainbow, Trash2 } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 const SWATCHES = [
@@ -18,7 +18,7 @@ const SWATCHES = [
 export default function CanvasToolbar() {
   const { emit, on, paintColor, setPaintColor, resetPaintColor } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
-  const [spokenActive, setSpokenActive] = useState(false);
+
   const [sunsetActive, setSunsetActive] = useState(false);
   const [canvasDirty, setCanvasDirty] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function CanvasToolbar() {
     const unsubscribers = [
       on('canvasDirty', (detail) => setCanvasDirty(detail.dirty)),
       on('musicToggle', (detail) => setMusicActive(detail.active)),
-      on('spokenToggle', (detail) => setSpokenActive(detail.active)),
+
       on('sunsetToggle', (detail) => setSunsetActive(detail.active)),
       on('paintToggle', (detail) => setPaletteOpen(detail.active)),
     ];
@@ -63,20 +63,10 @@ export default function CanvasToolbar() {
 
   const toggleMusic = () => {
     const next = !musicActive;
-    if (next && spokenActive) emit('spokenToggle', { active: false });
     emit('musicToggle', { active: next });
   };
 
-  const toggleSpokenWord = () => {
-    if (spokenActive) {
-      emit('spokenToggle', { active: false });
-      return;
-    }
 
-    if (musicActive) emit('musicToggle', { active: false });
-    ensureSoundOn();
-    emit('spokenToggle', { active: true });
-  };
 
   const toggleSunset = () => {
     const next = !sunsetActive;
@@ -126,17 +116,7 @@ export default function CanvasToolbar() {
       >
         <Music size={18} />
       </button>
-      <button
-        id="spoken-toggle"
-        type="button"
-        className={`header-icon ${spokenActive ? 'active' : ''}`}
-        onClick={toggleSpokenWord}
-        aria-label="Toggle spoken word"
-        aria-pressed={spokenActive}
-        data-tooltip={spokenActive ? 'Stop reading' : 'Spoken word'}
-      >
-        <AudioLines size={18} />
-      </button>
+
       <button
         id="sunset-toggle"
         type="button"
