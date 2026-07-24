@@ -9,7 +9,17 @@ import {
   computeRows,
   MAX_ROWS,
   MIN_ROWS,
+  SOURCE_BPM,
+  MS_PER_UNIT,
+  SONG_MIDI_LO,
+  SONG_MIDI_HI,
+  SONG_DURATION_MS,
+  shapeVolume,
+  rowForMidi,
+  convertSongNote,
+  songNotes,
 } from './song-data';
+import { IMPORTED_NOTES } from './song-data-notes';
 
 describe('003: interactive note mapping (pentatonic, reference-matched)', () => {
   test('PENA_INTERVALS is the major pentatonic scale degrees [0,2,4,7,9]', () => {
@@ -69,5 +79,103 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
   test('computeRows: respects bounds', () => {
     expect(computeRows(24 * MIN_ROWS)).toBeLessThanOrEqual(MAX_ROWS);
     expect(computeRows(24 * MIN_ROWS)).toBeGreaterThanOrEqual(MIN_ROWS);
+  });
+});
+
+describe('005: Where Is My Mind sequencer (reference-matched)', () => {
+  test('IMPORTED_NOTES has 527 events matching reference', () => {
+    expect(IMPORTED_NOTES.length).toBe(527);
+  });
+
+  test('IMPORTED_NOTES first and last match reference exactly', () => {
+    expect(IMPORTED_NOTES[0]).toEqual([0, 40, 30, 1]);
+    expect(IMPORTED_NOTES[526]).toEqual([680, 80, 15, 1]);
+  });
+
+  test('SOURCE_BPM is 80', () => {
+    expect(SOURCE_BPM).toBe(80);
+  });
+
+  test('MS_PER_UNIT is a 16th note at 80 BPM (187.5ms)', () => {
+    expect(MS_PER_UNIT).toBe(60000 / 80 / 4);
+    expect(MS_PER_UNIT).toBe(187.5);
+  });
+
+  test('SONG_MIDI range matches reference 37-95', () => {
+    expect(SONG_MIDI_LO).toBe(37);
+    expect(SONG_MIDI_HI).toBe(95);
+  });
+
+  test('shapeVolume: base multiplier is 1.4', () => {
+    expect(shapeVolume(60, 1.0)).toBeCloseTo(1.4, 5);
+  });
+
+  test('shapeVolume: melody (midi>=60) boosted by 1.2x', () => {
+    const v60 = shapeVolume(60, 1.0);
+    const v72 = shapeVolume(72, 1.0);
+    expect(v60).toBeCloseTo(1.4 * 1.2, 5);
+    expect(v72).toBeCloseTo(1.4 * 1.2, 5);
+  });
+
+  test('shapeVolume: bass (midi<48) cut by 0.75x', () => {
+    const v = shapeVolume(40, 1.0);
+    expect(v).toBeCloseTo(1.4 * 0.75, 5);
+  });
+
+  test('shapeVolume: raw velocity scales linearly', () => {
+    expect(shapeVolume(60, 0.5)).toBeCloseTo(0.5 * 1.4 * 1.2, 5);
+  });
+
+  test('rowForMidi: low midi maps near bottom, high midi near top (inverted)', () => {
+    const rows = 30;
+    const lowRow = rowForMidi(SONG_MIDI_LO, rows);
+    const highRow = rowForMidi(SONG_MIDI_HI, rows);
+    expect(lowRow).toBeGreaterThan(highRow);
+  });
+
+  test('rowForMidi: stays within margin-bounded range', () => {
+    const rows = 30;
+    const margin = Math.floor(rows * 0.12);
+    for (let m = SONG_MIDI_LO; m <= SONG_MIDI_HI; m++) {
+      const r = rowForMidi(m, rows);
+      expect(r).toBeGreaterThanOrEqual(margin);
+      expect(r).toBeLessThanOrEqual(rows - 1 - margin);
+    }
+  });
+
+  test('rowForMidi: clamps out-of-range midi', () => {
+    const rows = 30;
+    const margin = Math.floor(rows * 0.12);
+    expect(rowForMidi(0, rows)).toBeGreaterThanOrEqual(margin);
+    expect(rowForMidi(200, rows)).toBeLessThanOrEqual(rows - 1 - margin);
+  });
+
+  test('convertSongNote: time in ms = timeUnit * MS_PER_UNIT', () => {
+    const [absMs, midi, durSec, vol] = convertSongNote([10, 60, 2, 1]);
+    expect(absMs).toBe(10 * MS_PER_UNIT);
+    expect(midi).toBe(60);
+    expect(vol).toBe(shapeVolume(60, 1));
+  });
+
+  test('convertSongNote: duration converts to seconds with floor 0.1', () => {
+    const [, , durSec] = convertSongNote([0, 60, 2, 1]);
+    expect(durSec).toBeCloseTo((2 * MS_PER_UNIT) / 1000, 5);
+    const [, , shortDur] = convertSongNote([0, 60, 0.1, 1]);
+    expect(shortDur).toBeGreaterThanOrEqual(0.1);
+  });
+
+  test('songNotes: length equals IMPORTED_NOTES length', () => {
+    expect(songNotes.length).toBe(IMPORTED_NOTES.length);
+  });
+
+  test('songNotes: sorted ascending by absolute ms', () => {
+    for (let i = 1; i < songNotes.length; i++) {
+      expect(songNotes[i][0]).toBeGreaterThanOrEqual(songNotes[i - 1][0]);
+    }
+  });
+
+  test('SONG_DURATION_MS: extends past last note (loop gap)', () => {
+    const lastMs = songNotes[songNotes.length - 1][0];
+    expect(SONG_DURATION_MS).toBeGreaterThan(lastMs);
   });
 });
