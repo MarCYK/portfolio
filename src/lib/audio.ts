@@ -1,5 +1,6 @@
 import type { Player } from 'soundfont-player';
 import { rowToNote } from './song-data';
+import { PLUCK_VELOCITY, PLUCK_DURATION } from './pluck';
 
 export interface AudioState {
   audioCtx: AudioContext | null;
@@ -38,11 +39,18 @@ export async function initAudio(state: AudioState): Promise<void> {
   }
 }
 
-export function playNote(state: AudioState, rowIndex: number, velocity = 0.8, totalRows = 30): void {
+// Defaults match zchry.org playRowNote: fixed velocity 1.0, duration 0.5s.
+export function playNote(
+  state: AudioState,
+  rowIndex: number,
+  velocity = PLUCK_VELOCITY,
+  totalRows = 30,
+  duration = PLUCK_DURATION,
+): void {
   if (!state.player || !state.soundEnabled || !state.audioCtx) return;
   const note = rowToNote(rowIndex, totalRows);
   try {
-    state.player.play(note, state.audioCtx.currentTime, { duration: 0.6, gain: velocity });
+    state.player.play(note, state.audioCtx.currentTime, { duration, gain: velocity });
   } catch (error) {
     if (process.env.NODE_ENV === 'development') {
       console.warn('Note playback failed:', error);

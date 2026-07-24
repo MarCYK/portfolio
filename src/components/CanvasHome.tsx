@@ -3,6 +3,7 @@
 import { useEffect, useRef } from 'react';
 import { computeRows } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
+import { pluckDecision } from '@/lib/pluck';
 import type { CanvasTheme } from '@/lib/canvas-engine';
 import { createCanvasState, drawFrame, getRowAtY, updateRows } from '@/lib/canvas-engine';
 import { tryParseHex } from '@/lib/color-math';
@@ -94,12 +95,13 @@ export default function CanvasHome() {
 
       applyPaintToRow(row);
 
-      // Pluck on row crossing — fire once per string, like strumming
-      if (row !== lastRow) {
+      // Pluck on row crossing — one note per string at fixed velocity,
+      // matching zchry.org playRowNote. No chord, no speed scaling.
+      const pluck = pluckDecision(lastRow, row);
+      if (pluck.shouldPlay) {
         state.rowGlow[row] = 1.0;
         if (audio.soundEnabled) {
-          const velocity = lastRow === -1 ? 0.7 : Math.min(0.4 + Math.abs(row - lastRow) * 0.1, 0.9);
-          playNote(audio, row, velocity, state.rows);
+          playNote(audio, row, pluck.velocity, state.rows, pluck.duration);
         }
         lastRow = row;
       }
