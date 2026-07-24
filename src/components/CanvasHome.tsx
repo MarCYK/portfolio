@@ -52,10 +52,22 @@ export default function CanvasHome() {
       if (row < 0 || row >= state.rows) return;
 
       if (!strokePaintColor) {
-        state.rowPaintMask[row] = 0;
-        state.rowPaintR[row] = 0;
-        state.rowPaintG[row] = 0;
-        state.rowPaintB[row] = 0;
+        const rowT = row / state.rows;
+        const bandDistance = Math.abs(rowT - 0.5);
+        const middleBandRadius = 0.28;
+        const bandFade = Math.max(0, 1 - bandDistance / middleBandRadius);
+        const fade = Math.pow(bandFade, 1.8);
+        
+        const lightness = state.theme === 'dark'
+          ? 14 + fade * 68
+          : 12 + fade * 42;
+          
+        const rgbVal = Math.floor((lightness / 100) * 255);
+        
+        state.rowPaintMask[row] = 1;
+        state.rowPaintR[row] = rgbVal;
+        state.rowPaintG[row] = rgbVal;
+        state.rowPaintB[row] = rgbVal;
         return;
       }
 
