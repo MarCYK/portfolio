@@ -6,7 +6,7 @@ type CanvasEventType =
   | 'themeChange'
   | 'soundToggle'
   | 'musicToggle'
-  | 'spokenToggle'
+
   | 'sunsetToggle'
   | 'paintToggle'
   | 'canvasClear'
@@ -19,7 +19,7 @@ type EventMap = {
   themeChange: { theme: 'dark' | 'light' };
   soundToggle: { enabled: boolean };
   musicToggle: { active: boolean };
-  spokenToggle: { active: boolean };
+
   sunsetToggle: { active: boolean };
   paintToggle: { active: boolean };
   canvasClear: undefined;

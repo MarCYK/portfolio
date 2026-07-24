@@ -8,7 +8,7 @@ import { createCanvasState, drawFrame, getRowAtY, updateRows } from '@/lib/canva
 import { tryParseHex } from '@/lib/color-math';
 import { useCanvas } from '@/contexts/CanvasContext';
 
-const SPOKEN_AUDIO_SRC = 'https://www.zchry.org/audio/siddhartha-spoken-ai.mp3';
+
 
 export default function CanvasHome() {
   const { emit, on, getPaintColor } = useCanvas();
@@ -30,11 +30,7 @@ export default function CanvasHome() {
     const initialPaintColor = getPaintColor();
     state.customStrokeColor = initialPaintColor === '' ? null : initialPaintColor;
 
-    let spokenAudio: HTMLAudioElement | null = null;
-    let spokenSource: MediaElementAudioSourceNode | null = null;
-    let spokenAnalyser: AnalyserNode | null = null;
-    let spokenData: Uint8Array | null = null;
-    let spokenFrameId = 0;
+
 
     const resize = () => {
       canvas.width = window.innerWidth;
@@ -72,89 +68,7 @@ export default function CanvasHome() {
       state.rowPaintB[row] = rgb.b;
     };
 
-    const stopSpokenWord = () => {
-      state.spokenMode = false;
-      state.spokenLevel = 0;
 
-      if (spokenFrameId) {
-        cancelAnimationFrame(spokenFrameId);
-        spokenFrameId = 0;
-      }
-
-      if (spokenAudio) {
-        spokenAudio.pause();
-        spokenAudio.currentTime = 0;
-      }
-    };
-
-    const updateSpokenLevel = () => {
-      if (!state.spokenMode || !spokenAnalyser || !spokenData) return;
-
-      spokenAnalyser.getByteTimeDomainData(spokenData as Uint8Array<ArrayBuffer>);
-
-      let sum = 0;
-      for (let i = 0; i < spokenData.length; i += 1) {
-        sum += Math.abs(spokenData[i] - 128);
-      }
-
-      const energy = Math.min(1, (sum / spokenData.length) / 46);
-      state.spokenLevel = state.spokenLevel * 0.94 + energy * 0.06;
-      spokenFrameId = requestAnimationFrame(updateSpokenLevel);
-    };
-
-    const startSpokenWord = async () => {
-      await initAudio(audio);
-      if (!audio.audioCtx) return;
-
-      if (audio.audioCtx.state === 'suspended') {
-        await audio.audioCtx.resume();
-      }
-
-      state.musicPlaying = false;
-      state.lastMusicElapsed = -1;
-      state.spokenMode = true;
-      state.spokenLevel = 0;
-
-      if (!spokenAudio) {
-        spokenAudio = new Audio(SPOKEN_AUDIO_SRC);
-        spokenAudio.preload = 'auto';
-      }
-
-      spokenAudio.src = SPOKEN_AUDIO_SRC;
-
-      if (!spokenSource) {
-        spokenSource = audio.audioCtx.createMediaElementSource(spokenAudio);
-        spokenAnalyser = audio.audioCtx.createAnalyser();
-        spokenAnalyser.fftSize = 1024;
-        spokenAnalyser.smoothingTimeConstant = 0.72;
-        spokenData = new Uint8Array(spokenAnalyser.frequencyBinCount);
-        spokenSource.connect(spokenAnalyser);
-        spokenAnalyser.connect(audio.audioCtx.destination);
-      }
-
-      spokenAudio.onended = () => {
-        stopSpokenWord();
-        emit('spokenToggle', { active: false });
-      };
-
-      spokenAudio.onerror = () => {
-        stopSpokenWord();
-        emit('spokenToggle', { active: false });
-      };
-
-      const playPromise = spokenAudio.play();
-      if (playPromise?.catch) {
-        playPromise.catch(() => {
-          stopSpokenWord();
-          emit('spokenToggle', { active: false });
-        });
-      }
-
-      if (spokenFrameId) {
-        cancelAnimationFrame(spokenFrameId);
-      }
-      spokenFrameId = requestAnimationFrame(updateSpokenLevel);
-    };
 
     const stopDrawing = () => {
       isDrawing = false;
@@ -225,23 +139,13 @@ export default function CanvasHome() {
       await initAudio(audio);
       state.musicPlaying = detail.active;
       if (detail.active) {
-        if (state.spokenMode) stopSpokenWord();
       }
       if (state.musicPlaying && audio.audioCtx) {
         state.musicStartTime = audio.audioCtx.currentTime;
         state.lastMusicElapsed = -1;
       }
     });
-    const unsubSpoken = on('spokenToggle', (detail) => {
-      if (detail.active) {
-        startSpokenWord().catch(() => {
-          stopSpokenWord();
-          emit('spokenToggle', { active: false });
-        });
-      } else {
-        stopSpokenWord();
-      }
-    });
+
     const unsubSunset = on('sunsetToggle', (detail) => {
       state.sunsetMode = detail.active;
     });
@@ -281,9 +185,7 @@ export default function CanvasHome() {
       window.removeEventListener('touchend', stopDrawing);
       window.removeEventListener('touchcancel', stopDrawing);
       window.removeEventListener('blur', stopDrawing);
-      stopSpokenWord();
       unsubMusic();
-      unsubSpoken();
       unsubSunset();
       unsubCanvasClear();
       unsubColor();

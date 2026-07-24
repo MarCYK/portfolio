@@ -67,8 +67,7 @@ export interface CanvasState {
   musicPlaying: boolean;
   musicStartTime: number;
   lastMusicElapsed: number;
-  spokenMode: boolean;
-  spokenLevel: number;
+
 }
 
 export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MAX_ROWS): CanvasState {
@@ -91,8 +90,7 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MA
     musicPlaying: false,
     musicStartTime: 0,
     lastMusicElapsed: -1,
-    spokenMode: false,
-    spokenLevel: 0,
+
   };
 }
 
@@ -171,18 +169,7 @@ export function drawFrame(
     if (index < rows - 1) state.energy[index + 1] += state.energy[index] * 0.015;
   }
 
-  if (state.spokenMode) {
-    const spokenBoost = Math.max(0, Math.min(1, state.spokenLevel));
-    const centerRow = Math.floor(rows * 0.55);
 
-    for (let offset = -2; offset <= 2; offset += 1) {
-      const row = centerRow + offset;
-      if (row < 0 || row >= rows) continue;
-      const falloff = 1 - Math.abs(offset) * 0.22;
-      state.energy[row] = Math.min(state.energy[row] + spokenBoost * 0.38 * falloff, 4);
-      state.rowGlow[row] = Math.min(state.rowGlow[row] + spokenBoost * 0.2 * falloff, 1);
-    }
-  }
 
   ctx.clearRect(0, 0, width, height);
 

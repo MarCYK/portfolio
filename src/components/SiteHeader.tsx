@@ -20,7 +20,6 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const { soundEnabled, toggleSound } = useSound();
   const { emit, on } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
-  const [spokenActive, setSpokenActive] = useState(false);
   const [sunsetActive, setSunsetActive] = useState(false);
   const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
@@ -37,13 +36,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         setNoteHistory([]);
       }
     });
-    const unsubSpoken = on('spokenToggle', (detail) => {
-      setSpokenActive(detail.active);
-      if (detail.active) {
-        setMusicActive(false);
-        setNoteHistory([]);
-      }
-    });
+
     const unsubSunset = on('sunsetToggle', (detail) => {
       setSunsetActive(detail.active);
     });
@@ -51,7 +44,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
     return () => {
       unsubNote();
       unsubMusic();
-      unsubSpoken();
+
       unsubSunset();
     };
   }, [on]);
@@ -65,7 +58,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
     toggleTheme();
   };
 
-  const showEmail = !musicActive && !spokenActive;
+  const showEmail = !musicActive;
 
   const iconBarContent = (
     <>
@@ -74,7 +67,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
           <Mail size={18} />
         </a>
       )}
-      {musicActive && !spokenActive && (
+      {musicActive && (
         <div className="flex items-center gap-2 px-2">
           <span
             id="header-chord"
@@ -85,13 +78,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
           </span>
         </div>
       )}
-      {spokenActive && (
-        <span id="header-spoken" className="px-2" style={{ fontSize: '13px', color: 'var(--text-primary)' }}>
-          <a href="https://en.wikipedia.org/wiki/Siddhartha_(novel)" target="_blank" rel="noopener noreferrer">
-            Siddartha
-          </a>
-        </span>
-      )}
+
       {isHomePage && <CanvasToolbar />}
       <SoundToggle enabled={soundEnabled} onToggle={toggleSound} />
       <ThemeToggle isDark={isDark} onToggle={handleThemeToggle} disabled={sunsetActive} />
