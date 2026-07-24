@@ -10,6 +10,7 @@ export const currentProjects: Project[] = [
     icon: 'atom',
   },
   {
+    // TODO: Replace with MarCYK branding
     title: 'wvrk.org',
     description: 'A laboratory for experimental AI work.',
     date: 'February 2026',

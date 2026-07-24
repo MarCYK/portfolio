@@ -56,11 +56,13 @@ export default function AboutPage() {
             <div className="flex-1 pb-28 pt-2 lg:pl-12 lg:pt-20 xl:pl-24">
               <div className="lg:max-w-xl" style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
                 <h1 className="page-heading">
+                  {/* TODO: Replace with MarCYK branding */}
                   Zachary
                 </h1>
 
                 <section>
                   <p className="prose-content">
+                    {/* TODO: Replace with MarCYK branding */}
                     Zachary, a Senior Product Designer / Design Engineer at WarpStream working on <code>product</code>,{' '}
                     <code>ui/ux</code>, <code>frontend development</code>, <code>web</code> and <code>gtm</code>{' '}
                     initiatives.

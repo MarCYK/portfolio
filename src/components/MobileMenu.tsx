@@ -35,6 +35,7 @@ export default function MobileMenu() {
     <div id="mobile-menu" className={`mobile-menu ${isOpen ? 'open' : ''}`}>
       <div className="mobile-menu-header">
         <Link href="/" onClick={close} className="flex items-center gap-2">
+          {/* TODO: Replace with MarCYK branding */}
           <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
           <LogoDiamond className="h-4 w-auto" />
         </Link>

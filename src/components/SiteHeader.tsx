@@ -93,6 +93,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       >
         <div className="flex items-center gap-5">
           <Link href="/" className="flex items-center gap-2">
+            {/* TODO: Replace with MarCYK branding */}
             <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
             <LogoDiamond className="h-4 w-auto" />
           </Link>

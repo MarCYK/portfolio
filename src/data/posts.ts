@@ -5,6 +5,7 @@ export const recentPosts: Post[] = [
     date: 'Mar 24, 2026',
     title: 'On Researching with LLMs',
     href: '/words/on-researching-with-llms',
+    // TODO: Replace with MarCYK branding
     author: 'Zachary',
     content: [
       "It's well known that LLMs like to hallucinate. Taken to extremes, they will lovingly hallucinate around other hallucinations, probably your own. Amidst the hallucinations, they become increasingly sycophantic. They will validate you, they will praise you, they will convince you that you're both wonderful.",
