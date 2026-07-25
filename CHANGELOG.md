@@ -1,5 +1,48 @@
 # Changelog
 
+## [2026-07-25 11:30]
+- Rewrote the canvas/paint/sunset rendering pipeline to match zchry.org's live engine (issue 006).
+- Diff captured by extracting zchry.org's inline engine (44KB) via DevTools and comparing every constant/algorithm against our old code.
+- 12 fixes, all TDD (RED -> GREEN per group). 127 tests pass, build clean.
+- Behavior changes:
+  - DPR-aware canvas backing store (scale by devicePixelRatio, cap 2x). Fixes Retina blurriness.
+  - Row count matches reference: `max(12, floor(innerHeight / 28))`. No MAX cap. No 52px header offset.
+  - Waveform noise extracted to pure module `wave-noise.ts` with zchry's exact 9-term sine sum. Dropped `rowPulse` term (reference doesn't have it).
+  - Amplitude scaling matches: `0.12 * min(w,h)` desktop, `0.14w` mobile (was `0.17`/`0.2`).
+  - Vertical falloff `(1 - 1.6v)^2` (was `(1 - 1.45v)^1.7`). Steeper band, ridges concentrate in center.
+  - Top fade: first 20 rows linear ramp (was continuous curve). Bottom rows full opacity.
+  - Point stride: 7px normally, 5px during music (was 3px everywhere). 2.3x fewer path calls.
+  - Frame rate cap: 33ms (~30fps) normally, 22ms (~45fps) during music. Time advances via real `performance.now()` at 0.0003x.
+  - Energy boost on chord rows: `1 + energy*0.3` (was `*0.85`). Less amplitude chaos.
+  - Paint model migrated from typed arrays (`rowPaintMask/R/G/B`) to `(string|null|"default")[]` matching reference's `rowColors` array.
+  - Paint fill uses vertical `createLinearGradient(0, lineY, 0, lineY+fillExtend)` fading rgba -> transparent. Gated on `rowAmp > 1` so paint appears with the wave, not as a solid stripe.
+  - Chord rows now tinted by `musicNoteColor(midi, isDark)` gradient (7-stop palette per theme).
+  - Hover stroke brightening: hovered/chord rows get 1.5px stroke at 0.9 alpha; others 1px at `topFade` alpha. Three branches: mouseHover with paint color, hover/chord, default.
+  - Sunset reworked: per-row `sunsetRowColor(rowT)` from single 8-stop palette (was 34-stripe background + 9-stop ridges). No banding. `sunsetStrength: number` flag (0..1) replaces boolean `sunsetMode`.
+  - `getRowAtY` no longer skips header. Maps y=0 to row 0, like reference.
+- New pure modules:
+  - `src/lib/wave-noise.ts` (computeNoise, 9-term sine sum)
+  - `src/lib/sunset-color.ts` (SUNSET_STOPS, sunsetRowColor, 8-stop palette)
+  - `src/lib/note-color.ts` (MUSIC_NOTE_DARK/LIGHT_STOPS, musicNoteColor)
+- New tests:
+  - `wave-noise.test.ts` (13 golden values from DevTools + 2 bound checks)
+  - `sunset-color.test.ts` (15 golden + 2 clamp)
+  - `note-color.test.ts` (26 golden + 2 clamp)
+  - `canvas-engine.test.ts` rewritten with structural render tests for: bg fill, sunset fill, paint gradient, default-paint gradient, chord-row gradient, hover stroke widths, getRowAtY
+  - `song-data.test.ts` updated: `MIN_ROWS=12`, `TARGET_ROW_SPACING=28`, no MAX cap
+- Files affected:
+  - `src/lib/song-data.ts` (constants + computeRows)
+  - `src/lib/song-data.test.ts` (row count tests)
+  - `src/lib/canvas-engine.ts` (full rewrite: state shape, drawFrame, updateRows, getRowAtY)
+  - `src/lib/canvas-engine.test.ts` (rewritten)
+  - `src/lib/wave-noise.ts` (new)
+  - `src/lib/wave-noise.test.ts` (new)
+  - `src/lib/sunset-color.ts` (new)
+  - `src/lib/sunset-color.test.ts` (new)
+  - `src/lib/note-color.ts` (new)
+  - `src/lib/note-color.test.ts` (new)
+  - `src/components/CanvasHome.tsx` (DPR resize, frame cap, paint plumbing migration, sunsetStrength)
+
 ## [2026-07-25 05:00]
 - Tagged 9 branding placeholders with `// TODO: Replace with MarCYK branding` (issue 006).
 - No functional change. Locations: constants.EMAIL, layout metadata, SiteHeader/MobileMenu logo spans, projects.wvrk.org, posts.author, about page.

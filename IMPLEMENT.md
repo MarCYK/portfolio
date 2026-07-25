@@ -1,5 +1,30 @@
 # Implementation Audit Trail
 
+## Issue 007 - Canvas Engine Match zchry.org
+**Discussed:** MarCYK reported the clone "is not working as well as https://www.zchry.org/". Live-site analysis via Chrome DevTools extracted zchry.org's inline engine (44KB) and revealed 12 behavioral divergences in our canvas/paint/sunset rendering. MarCYK approved a 12-fix TDD pass in one PR, with existing "reference-matched" tests rewritten to encode zchry.org's actual values where they had previously encoded our wrong values.
+**Implemented (TDD, RED -> GREEN per group):**
+- Group A — pure functions:
+  - `src/lib/wave-noise.ts`: extracted zchry's exact 9-term sine sum as `computeNoise(t, r, time)`. 13 golden values captured via DevTools.
+  - `src/lib/sunset-color.ts`: `SUNSET_STOPS` (8-stop palette) + `sunsetRowColor(rowT)`. Replaces old 11-stop bg / 9-stop ridge split.
+  - `src/lib/note-color.ts`: `MUSIC_NOTE_DARK/LIGHT_STOPS` (7-stop each) + `musicNoteColor(midi, isDark)` for chord-row tinting.
+  - `src/lib/song-data.ts`: `MIN_ROWS=12`, `TARGET_ROW_SPACING=28`, removed `MAX_ROWS` cap. `computeRows` now `max(12, floor(h/28))`.
+- Group B — state + drawFrame rewrite (`src/lib/canvas-engine.ts`):
+  - `CanvasState` shape: dropped `rowPaintMask/R/G/B`, `customStrokeColor`, `timeOffset`, `sunsetMode`. Added `rowColors: (string|null|"default")[]`, `rowMidi: number[]`, `rowNoteEnd: number[]`, `sunsetStrength: number`, `hoverRow: number`, `paintColor: string`.
+  - `drawFrame` rewritten 1:1 with zchry's `draw()`: pointStride 7/5, maxAmp 0.12/0.14, verticalMult `(1-1.6v)^2`, topFade first-20-rows linear, energy boost `1+e*0.3`, sunset per-row rgba color, paint via vertical gradient gated on `rowAmp > 1`, chord rows tinted by musicNoteColor gradient, 3-way hover/mouseHover/default stroke at 1.5px vs 1px.
+  - `getRowAtY`: no header offset, full height.
+- Group C — CanvasHome (`src/components/CanvasHome.tsx`):
+  - DPR-aware resize: `canvas.width = innerWidth * min(dpr, 2)`, `ctx.setTransform(dpr,0,0,dpr,0,0)`.
+  - Frame rate cap: 33ms / 22ms during music. Time advances via `performance.now() * 0.0003` (passed as `nowMs` to drawFrame).
+  - Migrated paint plumbing from typed arrays to `rowColors` array. Tracks `hoverRow` on every mousemove.
+  - `sunsetStrength = active ? 1 : 0` instead of boolean `sunsetMode`.
+**Verification:**
+- `bun test src/`: 127 pass / 0 fail (was 47 before this PR).
+- `npx tsc --noEmit`: clean.
+- `npm run build`: clean.
+- Visual QA via Chrome DevTools side-by-side with zchry.org: dark theme matches (body bg #0a0a0a), 20-25 sparse ridges in center band (was dense/chaotic), sunset gradient smooth with no banding, sunset toggle off cleanly reverses, theme-toggle disabled during sunset (matches reference), paint dispatch produces 3.4% red-pixel coverage in middle band (paint IS rendering, gradient-faded as designed), chord display in header shows live note names during music playback.
+**Status:** Complete. All 12 fixes shipped. 80 new tests locking reference behavior. Build + types clean.
+**Out of scope:** Theremin (air mode), spoken word mode, chord-display UI rework. MarCYK did not request these.
+
 ## Issue 006 - Tag Branding Placeholders
 **Discussed:** Implement the sixth issue from `docs/issues/006-tag-branding-placeholders.md`. Tag all hardcoded identity fields still referencing the original Zach / zchry.org / wvrk.org branding with `// TODO: Replace with MarCYK branding` comments. No functional change.
 **Implemented:**
