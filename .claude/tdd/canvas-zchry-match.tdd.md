@@ -103,4 +103,23 @@ Six checkpoint commits on `main`, in order:
 
 Final state: `bun test src/` 127/127 pass, `npx tsc --noEmit` clean, `npm run build` clean.
 
+## Issue 008 Addendum — Paint Color Change Reset
+
+**User journey:** As a visitor, I want changing the selected paint color to affect only future strokes, so that existing artwork remains intact.
+
+**Root cause:** `getPaintColor` changed function identity whenever `paintColor` changed. `CanvasHome` depended on that callback, so each swatch selection reran the initialization effect and replaced `CanvasState` with empty `rowColors`.
+
+**RED:** New regression test changed paint color and asserted callback identity remained stable. Result: 1 pass / 1 fail. The identity assertion failed for the intended bug.
+
+**GREEN:** `getPaintColor` now reads a setter-maintained ref and has stable identity. `CanvasHome` retains complete effect dependencies. Result: 2/2 focused tests pass; full suite 129/129 passes.
+
+| # | What is guaranteed | Test/command | Result |
+|---|---|---|---|
+| 23 | `getPaintColor` identity stays stable when a swatch changes | `src/contexts/CanvasContext.test.tsx` | PASS |
+| 24 | Stable `getPaintColor` returns the latest selected color | `src/contexts/CanvasContext.test.tsx` | PASS |
+| 25 | React hooks lint accepts ref usage and effect dependencies | `npm run lint` | PASS |
+| 26 | Existing red paint remains after selecting blue | Browser pixel readback: 7,272 red pixels before, 7,736 after | PASS |
+
+**Final gates:** `bun test src/` 129/129, `npm run lint` clean, `npx tsc --noEmit` clean, `npm run build` clean, final code review approved with no findings.
+
 If squashing, preserve this report in the squash commit body.

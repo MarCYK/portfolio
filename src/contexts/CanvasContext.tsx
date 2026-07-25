@@ -52,6 +52,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
       return '';
     }
   });
+  const paintColorRef = useRef(paintColor);
 
   const emit = useCallback<CanvasContextValue['emit']>((name, detail) => {
     const eventHandlers = handlersRef.current.get(name as CanvasEventType);
@@ -80,6 +81,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
 
   const setPaintColor = useCallback((color: string) => {
     const normalized = color || '';
+    paintColorRef.current = normalized;
     setPaintColorState(normalized);
     try {
       if (normalized) {
@@ -94,6 +96,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   }, [emit]);
 
   const resetPaintColor = useCallback(() => {
+    paintColorRef.current = '';
     setPaintColorState('');
     try {
       localStorage.removeItem('canvasColor');
@@ -103,7 +106,10 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
     emit('colorChange', { color: '' });
   }, [emit]);
 
-  const getPaintColor = useCallback(() => paintColor, [paintColor]);
+  // Ref-backed so getPaintColor has a stable identity across paintColor
+  // changes. CanvasHome's useEffect depends on getPaintColor — if its
+  // identity changed, the effect would re-run and wipe the canvas.
+  const getPaintColor = useCallback(() => paintColorRef.current, []);
 
   const value = useMemo<CanvasContextValue>(() => ({
     emit,

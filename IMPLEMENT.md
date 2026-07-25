@@ -1,5 +1,23 @@
 # Implementation Audit Trail
 
+## Issue 008 - Paint Color Change Reset Canvas
+**Discussed:** MarCYK reported that selecting a new paint color reset all existing canvas paint. Expected behavior: color changes only affect future strokes. Existing rows remain painted.
+**Root cause:** `CanvasContext.getPaintColor` was declared as `useCallback(() => paintColor, [paintColor])`. Every swatch selection changed its function identity. `CanvasHome` included `getPaintColor` in the canvas initialization effect dependencies, so React tore down and recreated the canvas engine. New `CanvasState` meant empty `rowColors`.
+**Implemented (TDD):**
+- Added `src/contexts/CanvasContext.test.tsx` with a context probe.
+- RED: changing paint color changed `getPaintColor` callback identity. 1/2 tests failed.
+- GREEN: moved current color into `paintColorRef`; update ref inside `setPaintColor` and `resetPaintColor`; `getPaintColor` now uses `useCallback(..., [])` and retains stable identity while returning current values.
+- Kept `CanvasHome` dependency list complete: `[emit, on, getPaintColor]`. No eslint suppression. Stable callback prevents canvas engine recreation.
+- Code review found and fixed a render-time ref mutation before completion.
+**Verification:**
+- `bun test src/contexts/CanvasContext.test.tsx`: 2/2 pass.
+- `bun test src/`: 129/129 pass.
+- `npm run lint`: clean.
+- `npx tsc --noEmit`: clean.
+- `npm run build`: clean.
+- Browser regression: painted red (7,272 sampled red pixels), changed swatch to blue, red remained (7,736 sampled red pixels), no blue appeared until drawing.
+**Status:** Complete.
+
 ## Issue 007 - Canvas Engine Match zchry.org
 **Discussed:** MarCYK reported the clone "is not working as well as https://www.zchry.org/". Live-site analysis via Chrome DevTools extracted zchry.org's inline engine (44KB) and revealed 12 behavioral divergences in our canvas/paint/sunset rendering. MarCYK approved a 12-fix TDD pass in one PR, with existing "reference-matched" tests rewritten to encode zchry.org's actual values where they had previously encoded our wrong values.
 **Implemented (TDD, RED -> GREEN per group):**

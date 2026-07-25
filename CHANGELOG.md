@@ -1,5 +1,17 @@
 # Changelog
 
+## [2026-07-25 16:20]
+- Fixed paint color changes resetting the canvas (issue 008).
+- Root cause: `CanvasContext.getPaintColor` depended on `paintColor`, so its callback identity changed for each swatch selection. `CanvasHome` included that callback in its effect dependencies. React cleaned up and recreated the entire canvas engine, wiping `rowColors`.
+- `getPaintColor` now has stable identity and reads current color from `paintColorRef`. Ref updates happen only inside `setPaintColor` and `resetPaintColor`, not during render.
+- `CanvasHome` keeps complete effect dependencies. Live color updates still flow through the existing `colorChange` event without recreating canvas state.
+- Added 2 regression tests covering stable callback identity and latest-value reads.
+- Verification: 129/129 tests pass, ESLint clean, TypeScript clean, production build clean.
+- Browser regression: painted red (7,272 sampled pixels), selected blue, existing red remained (7,736 sampled pixels), zero blue pixels appeared before drawing.
+- Files affected:
+  - `src/contexts/CanvasContext.tsx`
+  - `src/contexts/CanvasContext.test.tsx` (new)
+
 ## [2026-07-25 11:30]
 - Rewrote the canvas/paint/sunset rendering pipeline to match zchry.org's live engine (issue 006).
 - Diff captured by extracting zchry.org's inline engine (44KB) via DevTools and comparing every constant/algorithm against our old code.
