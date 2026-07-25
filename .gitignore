@@ -58,6 +58,7 @@ evaluate/
 
 # AI Configs
 .claude
+.lean-ctx/
 CLAUDE.md
 AGENTS.md
 CHANGELOG.md
