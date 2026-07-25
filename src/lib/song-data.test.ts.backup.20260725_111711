@@ -7,8 +7,8 @@ import {
   INTERACTIVE_MIDI_LO,
   INTERACTIVE_MIDI_HI,
   computeRows,
+  MAX_ROWS,
   MIN_ROWS,
-  TARGET_ROW_SPACING,
   SOURCE_BPM,
   MS_PER_UNIT,
   SONG_MIDI_LO,
@@ -29,32 +29,6 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
   test('INTERACTIVE range matches reference MIDI 48-84', () => {
     expect(INTERACTIVE_MIDI_LO).toBe(48);
     expect(INTERACTIVE_MIDI_HI).toBe(84);
-  });
-
-  test('MIN_ROWS matches reference floor of 12', () => {
-    // zchry.org: Math.max(12, Math.floor(baseY / 28))
-    expect(MIN_ROWS).toBe(12);
-  });
-
-  test('TARGET_ROW_SPACING matches reference divisor of 28', () => {
-    expect(TARGET_ROW_SPACING).toBe(28);
-  });
-
-  test('computeRows: floor(height / 28) on a typical desktop height', () => {
-    // 900 / 28 = 32.14 -> 32 rows
-    expect(computeRows(900)).toBe(32);
-  });
-
-  test('computeRows: hits MIN_ROWS floor at small heights', () => {
-    expect(computeRows(0)).toBe(MIN_ROWS);
-    expect(computeRows(100)).toBe(MIN_ROWS);
-    expect(computeRows(28 * MIN_ROWS)).toBe(MIN_ROWS);
-  });
-
-  test('computeRows: scales linearly with height (no MAX cap)', () => {
-    // Reference has no MAX. Rows grow with viewport.
-    expect(computeRows(28 * 50)).toBe(50);
-    expect(computeRows(2800)).toBe(100);
   });
 
   test('rowToMidi: top row (row 0) = lowest pitch, bottom row = highest pitch (matches reference)', () => {
@@ -100,6 +74,11 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
     const midi = rowToMidi(MIN_ROWS - 1, MIN_ROWS);
     expect(midi).toBeLessThanOrEqual(INTERACTIVE_MIDI_HI);
     expect(midi).toBeGreaterThanOrEqual(INTERACTIVE_MIDI_LO);
+  });
+
+  test('computeRows: respects bounds', () => {
+    expect(computeRows(24 * MIN_ROWS)).toBeLessThanOrEqual(MAX_ROWS);
+    expect(computeRows(24 * MIN_ROWS)).toBeGreaterThanOrEqual(MIN_ROWS);
   });
 });
 

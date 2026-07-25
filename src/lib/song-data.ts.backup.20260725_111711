@@ -1,9 +1,8 @@
 import { IMPORTED_NOTES } from './song-data-notes';
 
-// Row count matches zchry.org: Math.max(12, Math.floor(baseY / 28)).
-// No upper cap — rows scale with viewport height, like the reference.
-export const MIN_ROWS = 12;
-export const TARGET_ROW_SPACING = 28;
+export const MAX_ROWS = 48;
+export const MIN_ROWS = 16;
+export const TARGET_ROW_SPACING = 24;
 
 // Interactive plucking maps each row to a major pentatonic degree,
 // matching zchry.org. Range and snap algorithm mirror the reference.
@@ -21,9 +20,8 @@ export const SONG_MIDI_HI = 95;
 const SONG_TAIL_GAP_MS = 3000;
 
 export function computeRows(drawableHeight: number): number {
-  // Matches zchry.org updateRowCount: max(12, floor(baseY / 28)).
-  // No upper cap — rows grow with viewport.
-  return Math.max(MIN_ROWS, Math.floor(drawableHeight / TARGET_ROW_SPACING));
+  const idealRows = Math.floor(drawableHeight / TARGET_ROW_SPACING);
+  return Math.max(MIN_ROWS, Math.min(MAX_ROWS, idealRows));
 }
 
 // Maps a row index to a MIDI pitch by snapping linearly across
