@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { IconSun, IconMoon } from '../ZchryIcons';
+import { IconSun, IconMoon } from '../MarCYKIcons';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 type ThemeMode = 'dark' | 'light';

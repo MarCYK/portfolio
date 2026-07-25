@@ -6,7 +6,7 @@ import { usePathname } from 'next/navigation';
 import { NAV_LINKS } from '@/data/navigation';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { EMAIL } from '@/data/constants';
-import { IconZachLogo, IconEmail, IconHamburger } from './ZchryIcons';
+import { IconMarCYKLogo, IconEmail, IconHamburger } from './MarCYKIcons';
 import { useTheme } from './header/ThemeToggle';
 import ThemeToggle from './header/ThemeToggle';
 import { useSound } from './header/SoundToggle';
@@ -92,9 +92,8 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       >
         <div className="flex items-center gap-5">
           <Link href="/" className="flex items-center gap-2">
-            {/* TODO: Replace with MarCYK branding */}
-            <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
-            <IconZachLogo className="h-4" />
+            <span className="marcyk-logo text-base font-semibold tracking-tight">MarCYK</span>
+            <IconMarCYKLogo className="h-4" />
           </Link>
           <nav className="desktop-nav items-center gap-4 text-sm">
             {NAV_LINKS.map(({ href, label }) => (

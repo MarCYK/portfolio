@@ -1,2 +1,1 @@
-// TODO: Replace with MarCYK branding
-export const EMAIL = 'zach@wvrk.org' as const;
+export const EMAIL = 'marcyk@wvrk.org' as const;

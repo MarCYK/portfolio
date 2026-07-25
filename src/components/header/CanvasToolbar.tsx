@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useCanvas } from '@/contexts/CanvasContext';
-import { IconMusic, IconSunset, IconPaint, IconCanvasClear } from '../ZchryIcons';
+import { IconMusic, IconSunset, IconPaint, IconCanvasClear } from '../MarCYKIcons';
 
 const SWATCHES = [
   { color: '', background: 'linear-gradient(135deg, #fff 50%, #000 50%)', label: 'Default color' },

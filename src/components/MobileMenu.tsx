@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { IconZachLogo, IconMenuClose, IconNavCaret } from './ZchryIcons';
+import { IconMarCYKLogo, IconMenuClose, IconNavCaret } from './MarCYKIcons';
 import { NAV_LINKS } from '@/data/navigation';
 import { useCanvas } from '@/contexts/CanvasContext';
 
@@ -34,9 +34,8 @@ export default function MobileMenu() {
     <div id="mobile-menu" className={`mobile-menu ${isOpen ? 'open' : ''}`}>
       <div className="mobile-menu-header">
         <Link href="/" onClick={close} className="flex items-center gap-2">
-          {/* TODO: Replace with MarCYK branding */}
-          <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
-          <IconZachLogo className="h-4" />
+          <span className="marcyk-logo text-base font-semibold tracking-tight">MarCYK</span>
+          <IconMarCYKLogo className="h-4" />
         </Link>
         <button id="menu-close" className="header-icon" onClick={close} aria-label="Close menu">
           <IconMenuClose />

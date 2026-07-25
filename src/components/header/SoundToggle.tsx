@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { IconSound } from '../ZchryIcons';
+import { IconSound } from '../MarCYKIcons';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { readSoundPreference } from '@/lib/audio';
 

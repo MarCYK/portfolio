@@ -21,10 +21,8 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: 'marcyk',
-  // TODO: Replace with MarCYK branding
-  description: 'portfolio of Zachary, a Senior Product Designer / Design Engineer at WarpStream',
+  description: 'portfolio of MarCYK',
   icons: {
-    // TODO: Replace with MarCYK branding
     icon: '/favicon.png',
   },
 };

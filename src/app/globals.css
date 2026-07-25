@@ -165,7 +165,8 @@ body.sunset-active .nav-link:hover,
 body.sunset-active .nav-link.active,
 body.sunset-active .header-icon:hover,
 body.sunset-active .header-icon.active,
-body.sunset-active .zach-logo {
+body.sunset-active .zach-logo,
+body.sunset-active .marcyk-logo {
   color: rgba(24, 8, 18, 0.95);
 }
 
@@ -187,19 +188,22 @@ body.sunset-active .zach-logo {
 .nav-link:focus-visible,
 .header-icon:focus-visible,
 .mobile-nav-link:focus-visible,
-.zach-logo:focus-visible {
+.zach-logo:focus-visible,
+.marcyk-logo:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 2px;
   border-radius: var(--radius-element);
 }
 
-.zach-logo {
+.zach-logo,
+.marcyk-logo {
   color: var(--text-primary);
   transition: color var(--duration-fast) var(--ease-fast);
   font-family: var(--font-display);
 }
 
-.zach-logo:hover {
+.zach-logo:hover,
+.marcyk-logo:hover {
   color: var(--accent);
 }
 
