@@ -3,31 +3,31 @@ node_modules/
 .pnp
 .pnp.js
 
-# Build
+# Build Output
 .next/
 out/
 build/
 dist/
 
-# Environment
+# Environment & Secrets
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Debug
+# Debug Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# IDE
+# IDE & Editors
 .idea/
 .vscode/
 *.swp
 *.swo
 
-# OS
+# OS Files
 .DS_Store
 Thumbs.db
 
@@ -38,32 +38,25 @@ next-env.d.ts
 # Vercel
 .vercel
 
-# Local settings (not project config)
-.claude/settings.local.json
+# Testing & Reports
+test-results/
+evaluate/
 
-# User-specific skills (not part of the template)
-.claude/skills/customize/
-
-# MemPalace per-project files (issue #185)
+# Project & Memory Archives
+archive/
 mempalace.yaml
 entities.json
 
-# Dev
-task/
-issues/
-
-# code-review-graph
-.code-review-graph/
-evaluate/
-
-# AI Configs
-.claude
+# AI Assistant Configs & Logs
+.claude/
 .lean-ctx/
+.zcode/
+.code-review-graph/
 CLAUDE.md
 AGENTS.md
 CHANGELOG.md
 IMPLEMENT.md
-archive/
-.zcode/
-test-results/
 
+# Dev Tasks
+task/
+issues/
