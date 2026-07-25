@@ -5,7 +5,7 @@ import { computeRows } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
 import { pluckDecision } from '@/lib/pluck';
 import type { CanvasTheme } from '@/lib/canvas-engine';
-import { createCanvasState, drawFrame, getRowAtY, updateRows } from '@/lib/canvas-engine';
+import { createCanvasState, drawFrame, getDefaultCanvasColors, getRowAtY, updateRows } from '@/lib/canvas-engine';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 
@@ -169,6 +169,9 @@ export default function CanvasHome() {
       const theme = detail.theme;
       if (theme === 'dark' || theme === 'light') {
         state.theme = theme;
+        const defaults = getDefaultCanvasColors(theme);
+        state.bgColor = defaults.bgColor;
+        state.strokeColor = defaults.strokeColor;
       }
     });
 

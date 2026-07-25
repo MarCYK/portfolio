@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Moon, Sun } from 'lucide-react';
+import { IconSun, IconMoon } from '../ZchryIcons';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 type ThemeMode = 'dark' | 'light';
@@ -66,13 +66,13 @@ export default function ThemeToggle({ isDark, onToggle, disabled = false }: Them
     <button
       id="theme-toggle"
       type="button"
-      className={`header-icon ${disabled ? 'disabled' : ''}`}
+      className={`header-icon ${disabled ? 'disabled' : ''} group`}
       onClick={onToggle}
       aria-label="Toggle theme"
       aria-disabled={disabled}
       disabled={disabled}
     >
-      {isDark ? <Sun size={18} /> : <Moon size={18} />}
+      {isDark ? <IconSun /> : <IconMoon />}
     </button>
   );
 }

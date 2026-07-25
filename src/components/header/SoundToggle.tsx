@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Volume2, VolumeX } from 'lucide-react';
+import { IconSound } from '../ZchryIcons';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { readSoundPreference } from '@/lib/audio';
 
@@ -34,11 +34,11 @@ export default function SoundToggle({ enabled, onToggle }: { enabled: boolean; o
     <button
       id="sound-toggle"
       type="button"
-      className={`header-icon ${enabled ? 'active' : ''}`}
+      className={`header-icon ${enabled ? 'active' : ''} group`}
       onClick={onToggle}
       aria-label="Toggle sound"
     >
-      {enabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
+      <IconSound soundOn={enabled} />
     </button>
   );
 }

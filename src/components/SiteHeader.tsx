@@ -3,11 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Mail, Menu } from 'lucide-react';
-import { LogoDiamond } from './icons';
 import { NAV_LINKS } from '@/data/navigation';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { EMAIL } from '@/data/constants';
+import { IconZachLogo, IconEmail, IconHamburger } from './ZchryIcons';
 import { useTheme } from './header/ThemeToggle';
 import ThemeToggle from './header/ThemeToggle';
 import { useSound } from './header/SoundToggle';
@@ -63,8 +62,8 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const iconBarContent = (
     <>
       {showEmail && (
-        <a id="email-link" href={`mailto:${EMAIL}`} className="header-icon" aria-label="Email">
-          <Mail size={18} />
+        <a id="email-link" href={`mailto:${EMAIL}`} className="header-icon group" aria-label="Email">
+          <IconEmail />
         </a>
       )}
       {musicActive && (
@@ -95,7 +94,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
           <Link href="/" className="flex items-center gap-2">
             {/* TODO: Replace with MarCYK branding */}
             <span className="zach-logo text-base font-semibold tracking-tight">Zach</span>
-            <LogoDiamond className="h-4 w-auto" />
+            <IconZachLogo className="h-4" />
           </Link>
           <nav className="desktop-nav items-center gap-4 text-sm">
             {NAV_LINKS.map(({ href, label }) => (
@@ -113,11 +112,11 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         <button
           id="menu-toggle"
           type="button"
-          className="hamburger-btn header-icon md:hidden"
+          className="hamburger-btn header-icon md:hidden group"
           onClick={openMenu}
           aria-label="Open menu"
         >
-          <Menu size={20} />
+          <IconHamburger />
         </button>
 
         <div id="icon-bar" className="icon-bar hidden items-center gap-3 md:flex">{iconBarContent}</div>

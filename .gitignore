@@ -56,3 +56,10 @@ issues/
 .code-review-graph/
 evaluate/
 
+# AI Configs
+.claude
+CLAUDE.md
+AGENTS.md
+CHANGELOG.md
+IMPLEMENTAT.md
+

@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Music, Paintbrush, Rainbow, Trash2 } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
+import { IconMusic, IconSunset, IconPaint, IconCanvasClear } from '../ZchryIcons';
 
 const SWATCHES = [
   { color: '', background: 'linear-gradient(135deg, #fff 50%, #000 50%)', label: 'Default color' },
@@ -110,31 +110,31 @@ export default function CanvasToolbar() {
       <button
         id="music-toggle"
         type="button"
-        className={`header-icon ${musicActive ? 'active' : ''}`}
+        className={`header-icon ${musicActive ? 'active' : ''} group`}
         onClick={toggleMusic}
         aria-label="Toggle music"
       >
-        <Music size={18} />
+        <IconMusic />
       </button>
 
       <button
         id="sunset-toggle"
         type="button"
-        className={`header-icon ${sunsetActive ? 'active' : ''}`}
+        className={`header-icon ${sunsetActive ? 'active' : ''} group`}
         onClick={toggleSunset}
         aria-label="Toggle sunset"
       >
-        <Rainbow size={18} />
+        <IconSunset />
       </button>
       <div className="relative" ref={paletteRef}>
         <button
           id="paint-toggle"
           type="button"
-          className={`header-icon ${paletteOpen ? 'active' : ''}`}
+          className={`header-icon ${paletteOpen ? 'active' : ''} group`}
           onClick={togglePaint}
           aria-label="Toggle paint"
         >
-          <Paintbrush size={18} />
+          <IconPaint />
         </button>
         <div id="color-palette" className={`color-palette ${paletteOpen ? '' : 'hidden'}`}>
           <div className="color-palette-inner">
@@ -154,11 +154,11 @@ export default function CanvasToolbar() {
       <button
         id="canvas-clear"
         type="button"
-        className={`canvas-clear-btn header-icon ${canvasDirty || paletteOpen ? 'visible' : ''}`}
+        className={`canvas-clear-btn header-icon ${canvasDirty || paletteOpen ? 'visible' : ''} group`}
         onClick={clearCanvas}
         aria-label="Clear canvas"
       >
-        <Trash2 size={18} />
+        <IconCanvasClear />
       </button>
     </>
   );

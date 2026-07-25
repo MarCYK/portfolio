@@ -1,5 +1,11 @@
 # Changelog
 
+## [2026-07-25 17:26]
+- Fixed light mode toggle only changing header, not canvas background.
+- Root cause: `themeChange` handler in CanvasHome only updated `state.theme` but never `state.bgColor`/`state.strokeColor`. Those were set once in `createCanvasState()` and never refreshed, so `drawFrame` kept filling with `#0a0a0a`.
+- Fix: handler now calls `getDefaultCanvasColors(theme)` and writes both `bgColor` and `strokeColor` to state.
+- Files: `src/components/CanvasHome.tsx`
+
 ## [2026-07-25 16:20]
 - Fixed paint color changes resetting the canvas (issue 008).
 - Root cause: `CanvasContext.getPaintColor` depended on `paintColor`, so its callback identity changed for each swatch selection. `CanvasHome` included that callback in its effect dependencies. React cleaned up and recreated the entire canvas engine, wiping `rowColors`.
