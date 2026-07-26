@@ -70,6 +70,7 @@
   --inline-code-bg: var(--surface3);
   --header-bg: var(--background);
   --header-muted: rgba(0, 0, 0, 0.4);
+  --header-border-fade: rgba(0, 0, 0, 0.1);
 }
 
 .dark {
@@ -105,6 +106,7 @@
   --inline-code-bg: var(--surface2);
   --header-bg: var(--background);
   --header-muted: rgba(255, 255, 255, 0.5);
+  --header-border-fade: rgba(255, 255, 255, 0.1);
 }
 
 * {
@@ -144,8 +146,22 @@ body {
   border-bottom: none;
 }
 
+.header-nav.home-page::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 40px;
+  border-top: 1px solid var(--header-border-fade);
+  background: linear-gradient(to bottom, var(--header-bg), transparent);
+  pointer-events: none;
+  z-index: 40;
+}
+
 body.sunset-active {
   --header-bg: #fffac8;
+  --header-border-fade: rgba(76, 24, 58, 0.1);
 }
 
 body.sunset-active .header-nav {
@@ -217,6 +233,8 @@ body.sunset-active .marcyk-logo {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
 }
 
 .header-icon:hover {

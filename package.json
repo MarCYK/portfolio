@@ -7,6 +7,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "test": "bun test src/",
     "lint": "eslint .",
     "memory:project:init": "mempalace init . --yes --no-llm",
     "memory:project:mine": "mempalace mine . --wing portfolio",
