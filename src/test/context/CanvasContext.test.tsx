@@ -1,6 +1,6 @@
 import { test, expect, describe, beforeEach } from 'bun:test';
 import { act, render } from '@testing-library/react';
-import { CanvasProvider, useCanvas } from './CanvasContext';
+import { CanvasProvider, useCanvas } from '../../contexts/CanvasContext';
 
 // Probe component that exposes the context value so tests can assert on it.
 function Probe({ onValue }: { onValue: (v: ReturnType<typeof useCanvas>) => void }) {

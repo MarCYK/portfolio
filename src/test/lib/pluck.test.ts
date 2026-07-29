@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'bun:test';
-import { pluckDecision, PLUCK_VELOCITY, PLUCK_DURATION } from './pluck';
+import { pluckDecision, PLUCK_VELOCITY, PLUCK_DURATION } from '../../lib/pluck';
 
 describe('004: pluck decision (reference: no chord, fixed velocity per row crossing)', () => {
   test('PLUCK_VELOCITY is fixed at 1.0 matching reference playRowNote', () => {

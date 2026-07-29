@@ -1,6 +1,6 @@
 import { expect, test, describe, mock, beforeEach } from "bun:test";
-import { createCanvasState, drawFrame, updateRows, getRowAtY, type CanvasState } from "./canvas-engine";
-import { createAudioState } from "./audio";
+import { createCanvasState, drawFrame, updateRows, getRowAtY, type CanvasState } from "../../lib/canvas-engine";
+import { createAudioState } from "../../lib/audio";
 
 // Mock canvas + context that records calls so we can assert render structure.
 // Matches the patterns zchry.org's draw() actually performs.

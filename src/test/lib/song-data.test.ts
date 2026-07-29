@@ -18,8 +18,8 @@ import {
   rowForMidi,
   convertSongNote,
   songNotes,
-} from './song-data';
-import { IMPORTED_NOTES } from './song-data-notes';
+} from '../../lib/song-data';
+import { IMPORTED_NOTES } from '../../lib/song-data-notes';
 
 describe('003: interactive note mapping (pentatonic, reference-matched)', () => {
   test('PENA_INTERVALS is the major pentatonic scale degrees [0,2,4,7,9]', () => {

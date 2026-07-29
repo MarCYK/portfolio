@@ -1,6 +1,6 @@
 import { expect, test, describe } from "bun:test";
 import { render, screen } from "@testing-library/react";
-import CanvasToolbar from "./CanvasToolbar";
+import CanvasToolbar from "../../../components/header/CanvasToolbar";
 import { CanvasProvider } from "@/contexts/CanvasContext";
 
 describe("CanvasToolbar", () => {

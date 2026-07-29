@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'bun:test';
-import { computeNoise } from './wave-noise';
+import { computeNoise } from '../../lib/wave-noise';
 
 describe('006: wave noise (zchry.org reference-matched)', () => {
   // Golden values captured from zchry.org's computeNoise via DevTools.

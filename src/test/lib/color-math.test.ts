@@ -1,5 +1,5 @@
 import { test, expect } from 'bun:test';
-import { lerp, tryParseHex, sampleGradient, mixRgb, toRgba } from './color-math';
+import { lerp, tryParseHex, sampleGradient, mixRgb, toRgba } from '../../lib/color-math';
 
 test('lerp: interpolates linearly', () => {
   expect(lerp(0, 10, 0.5)).toBe(5);

@@ -1,5 +1,5 @@
 import { test, expect, describe } from 'bun:test';
-import { SUNSET_STOPS, sunsetRowColor } from './sunset-color';
+import { SUNSET_STOPS, sunsetRowColor } from '../../lib/sunset-color';
 
 describe('006: sunset color (zchry.org reference-matched)', () => {
   test('SUNSET_STOPS has 8 stops matching reference exactly', () => {

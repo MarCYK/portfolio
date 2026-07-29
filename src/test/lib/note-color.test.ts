@@ -3,7 +3,7 @@ import {
   MUSIC_NOTE_DARK_STOPS,
   MUSIC_NOTE_LIGHT_STOPS,
   musicNoteColor,
-} from './note-color';
+} from '../../lib/note-color';
 
 describe('006: music note color (zchry.org reference-matched)', () => {
   test('MUSIC_NOTE_DARK_STOPS has 7 stops matching reference', () => {
