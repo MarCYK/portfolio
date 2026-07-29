@@ -5,14 +5,16 @@ import PageShell from '@/components/PageShell';
 import { User, Calendar, Link as LinkIcon, ArrowLeft } from 'lucide-react';
 import { getPostBySlug } from '@/data/posts';
 
-export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
-  const post = getPostBySlug(params.slug);
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
   return { title: post ? `marcyk - ${post.title}` : 'marcyk - Not Found' };
 }
 
-export default function PostPage({ params }: { params: { slug: string } }) {
-  const post = getPostBySlug(params.slug);
-  if (!post || !post.content) notFound();
+export default async function PostPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const post = getPostBySlug(slug);
+  if (!post || !post.contentHtml) notFound();
 
   return (
     <PageShell>
@@ -44,11 +46,10 @@ export default function PostPage({ params }: { params: { slug: string } }) {
               <LinkIcon className="h-3.5 w-3.5" />
             </div>
 
-            <div className="prose-content">
-              {post.content.map((paragraph, i) => (
-                <p key={i}>{paragraph}</p>
-              ))}
-            </div>
+            <div 
+              className="prose-content" 
+              dangerouslySetInnerHTML={{ __html: post.contentHtml }} 
+            />
           </article>
 
           <hr style={{ borderColor: 'var(--border)' }} />

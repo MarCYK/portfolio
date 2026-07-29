@@ -9,6 +9,11 @@ mock.module('next/navigation', () => ({
   notFound: mock(() => { throw new Error('NEXT_NOT_FOUND'); })
 }));
 
+// Mock PageShell
+mock.module('@/components/PageShell', () => ({
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>
+}));
+
 // Mock posts data
 mock.module('@/data/posts', () => ({
   getPostBySlug: mock((slug: string) => {
