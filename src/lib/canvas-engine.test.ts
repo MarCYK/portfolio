@@ -85,13 +85,16 @@ describe("006: canvas-engine state shape (zchry.org reference-matched)", () => {
     expect(s.rowPaintB).toBeUndefined();
   });
 
-  test("updateRows reinitializes rowColors with nulls at new size", () => {
+  test("updateRows preserves rowColors and state arrays at new size", () => {
     const s = createCanvasState("dark", 5);
     s.rowColors[2] = "#ff0000";
+    s.energy[2] = 0.5;
     updateRows(s, 10);
     expect(s.rowColors).toHaveLength(10);
-    for (const c of s.rowColors) expect(c).toBeNull();
+    expect(s.rowColors[2]).toBe("#ff0000");
+    expect(s.rowColors[5]).toBeNull();
     expect(s.energy).toHaveLength(10);
+    expect(s.energy[2]).toBeCloseTo(0.5);
     expect(s.rowGlow).toHaveLength(10);
   });
 });

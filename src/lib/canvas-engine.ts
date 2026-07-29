@@ -78,12 +78,33 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MI
 }
 
 export function updateRows(state: CanvasState, rows: number): void {
+  if (state.rows === rows && state.energy && state.energy.length === rows) {
+    return;
+  }
+
+  const oldEnergy = state.energy;
+  const oldGlow = state.rowGlow;
+  const oldColors = state.rowColors;
+  const oldMidi = state.rowMidi;
+  const oldNoteEnd = state.rowNoteEnd;
+
   state.rows = rows;
   state.energy = new Float32Array(rows);
   state.rowGlow = new Float32Array(rows);
   state.rowColors = new Array(rows).fill(null);
   state.rowMidi = new Array(rows).fill(0);
   state.rowNoteEnd = new Array(rows).fill(0);
+
+  if (oldEnergy) {
+    const minRows = Math.min(rows, oldEnergy.length);
+    for (let i = 0; i < minRows; i++) {
+      state.energy[i] = oldEnergy[i];
+      state.rowGlow[i] = oldGlow[i];
+      state.rowColors[i] = oldColors[i];
+      state.rowMidi[i] = oldMidi[i];
+      state.rowNoteEnd[i] = oldNoteEnd[i];
+    }
+  }
 }
 
 const SONG_DURATION_SEC = SONG_DURATION_MS / 1000;
@@ -176,9 +197,11 @@ export function drawFrame(
   audio: AudioState,
   onNote?: (note: string) => void,
   nowMs: number = 0,
+  cssWidth?: number,
+  cssHeight?: number,
 ): void {
-  const width = canvas.width;
-  const height = canvas.height;
+  const width = cssWidth ?? canvas.width;
+  const height = cssHeight ?? canvas.height;
   const rows = state.rows;
   const rowSpacing = height / rows;
   const fillExtend = rowSpacing * 3;

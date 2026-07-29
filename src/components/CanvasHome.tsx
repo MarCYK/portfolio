@@ -29,14 +29,18 @@ export default function CanvasHome() {
     const state = createCanvasState(initialTheme);
     state.paintColor = getPaintColor();
 
-    // DPR-aware resize matches zchry.org: scale backing store by devicePixelRatio
-    // (capped at 2x) so waveforms stay crisp on Retina displays.
+    // DPR-aware resize matches zchry.org: backing store scaled by DPR,
+    // but all drawing uses CSS pixel dimensions via setTransform.
+    let cssW = window.innerWidth;
+    let cssH = window.innerHeight;
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      canvas.width = window.innerWidth * dpr;
-      canvas.height = window.innerHeight * dpr;
+      cssW = window.innerWidth;
+      cssH = window.innerHeight;
+      canvas.width = cssW * dpr;
+      canvas.height = cssH * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      updateRows(state, computeRows(window.innerHeight));
+      updateRows(state, computeRows(cssH));
     };
     resize();
     window.addEventListener('resize', resize);
@@ -63,7 +67,7 @@ export default function CanvasHome() {
     };
 
     function handleDraw(_clientX: number, clientY: number) {
-      const row = getRowAtY(canvas.height, clientY, state.rows);
+      const row = getRowAtY(cssH, clientY, state.rows);
       if (row < 0 || row >= state.rows) return;
 
       // Track hover row even when not drawing, so the hover stroke lights up.
@@ -98,7 +102,7 @@ export default function CanvasHome() {
         return;
       }
       lastDrawTime = now;
-      drawFrame(canvas, ctx, state, audio, (note) => emit('notePlayed', { note }), now);
+      drawFrame(canvas, ctx, state, audio, (note) => emit('notePlayed', { note }), now, cssW, cssH);
       animFrameId = requestAnimationFrame(animate);
     }
 
