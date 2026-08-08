@@ -58,7 +58,7 @@ HEADER_LINES = [
 
 @dataclass
 class Note:
-    start_step: int
+    start_step: float
     midi: int
     dur_step: int
     vel: float
@@ -74,6 +74,7 @@ def extract_notes(
     min_vel: int,
     skip_channel_9: bool,
     track_filter: set[int] | None,
+    normalize_vel: bool,
 ) -> list[Note]:
     # clip=True clamps out-of-range data bytes to 127 instead of aborting.
     # Some DAW/synth exports contain bytes > 127 (spec-violating but common);
@@ -91,9 +92,11 @@ def extract_notes(
             continue
 
         abs_tick = 0  # mido msg.time is a delta; accumulate to absolute.
-        # Pending note_on keyed by note -> abs tick start. Channel is fixed per
-        # track here so we key on note alone.
-        open_notes: dict[int, int] = {}
+        # FIFO queue of open start-ticks per note. A note_on pushes a start;
+        # a note_off pops the OLDEST. This lets the same pitch ring twice at
+        # once (e.g. doubled events in OnlineSequencer exports) instead of
+        # collapsing or re-striking them.
+        open_starts: dict[int, list[int]] = {}
         for msg in track:
             abs_tick += msg.time
             if msg.type not in ("note_on", "note_off"):
@@ -103,27 +106,46 @@ def extract_notes(
 
             is_off = msg.type == "note_off" or msg.velocity == 0
             if not is_off and msg.velocity >= min_vel:
-                if msg.note in open_notes:
-                    # Re-strike closes the previous instance first.
-                    start = open_notes.pop(msg.note)
-                    notes.append(_build(start, abs_tick, msg.note, msg.velocity, step))
-                open_notes[msg.note] = abs_tick
-            elif is_off and msg.note in open_notes:
-                start = open_notes.pop(msg.note)
+                open_starts.setdefault(msg.note, []).append(abs_tick)
+            elif is_off and open_starts.get(msg.note):
+                start = open_starts[msg.note].pop(0)
                 notes.append(_build(start, abs_tick, msg.note, msg.velocity, step))
 
         # Notes never closed get a 1-step length so nothing is silently dropped.
-        for note, start in open_notes.items():
-            notes.append(_build(start, abs_tick, note, 1, step))
+        for note, starts in open_starts.items():
+            for start in starts:
+                notes.append(_build(start, abs_tick, note, 1, step))
 
+    if normalize_vel:
+        _normalize_velocities(notes)
     return notes
 
 
+def _normalize_velocities(notes: list[Note]) -> None:
+    # Scale the loudest note up to 1.0 and the rest proportionally. Matches
+    # how the reference "Where Is My Mind" data collapses a constant-velocity
+    # OnlineSequencer export (all notes at vel 50) to uniform 1.0.
+    peak = max((n.vel for n in notes), default=0.0)
+    if peak <= 0:
+        return
+    for n in notes:
+        n.vel = round(n.vel / peak, 3)
+
+
 def _build(start_tick: int, end_tick: int, midi: int, vel: int, step: float) -> Note:
-    start_step = round(start_tick / step)
+    # Start is rounded to 2 dp so sub-16th grace notes keep their position
+    # (e.g. 272.45) instead of snapping to a whole step. Duration is a whole
+    # number of 16th units with a floor of 1.
+    start_step = round(start_tick / step, 2)
     dur_step = max(1, round((end_tick - start_tick) / step))
     velocity = round(min(127, max(1, vel)) / 127, 3)
     return Note(start_step, midi, dur_step, velocity)
+
+
+def _num(x: float) -> str:
+    # Render whole numbers without a trailing .0 (272, not 272.0) but keep
+    # genuine decimals (272.45). Matches how the reference data file is written.
+    return f"{x:g}"
 
 
 def render_ts(notes: list[Note], name: str, source: str) -> str:
@@ -137,7 +159,8 @@ def render_ts(notes: list[Note], name: str, source: str) -> str:
     for i in range(0, len(notes_sorted), 6):
         chunk = notes_sorted[i : i + 6]
         cells = ", ".join(
-            f"[{n.start_step}, {n.midi}, {n.dur_step}, {n.vel}]" for n in chunk
+            f"[{_num(n.start_step)}, {n.midi}, {n.dur_step}, {_num(n.vel)}]"
+            for n in chunk
         )
         sep = "," if i + 6 < len(notes_sorted) else ""
         rows.append(f"  {cells}{sep}")
@@ -222,6 +245,13 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Print every track's index, channel, note count, and name, then exit.",
     )
+    parser.add_argument(
+        "--normalize-vel",
+        action="store_true",
+        help="Scale velocities so the loudest note is 1.0 (rest proportional). "
+        "Matches how the reference Where Is My Mind data treats a constant-"
+        "velocity OnlineSequencer export as uniform 1.0. Off by default.",
+    )
     args = parser.parse_args(argv)
 
     if not args.midi.is_file():
@@ -238,6 +268,7 @@ def main(argv: list[str] | None = None) -> int:
         min_vel=max(1, args.min_vel),
         skip_channel_9=not args.keep_drums,
         track_filter=track_filter,
+        normalize_vel=args.normalize_vel,
     )
     if not notes:
         sys.exit(f"No notes found in {args.midi}.")
