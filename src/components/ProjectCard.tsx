@@ -1,6 +1,6 @@
 import { ArrowUpRight } from 'lucide-react';
 import type { Project } from '@/types';
-import { PROJECT_ICONS } from './icons';
+import { PROJECT_ICONS } from './MarCYKIcons';
 
 export default function ProjectCard({ title, description, date, href, external, icon }: Project) {
   const iconNode = PROJECT_ICONS[icon] ?? null;

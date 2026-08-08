@@ -103,14 +103,31 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
   });
 });
 
-describe('005: Where Is My Mind sequencer (reference-matched)', () => {
-  test('IMPORTED_NOTES has 527 events matching reference', () => {
-    expect(IMPORTED_NOTES.length).toBe(527);
+describe('005: imported sequencer data (format invariants, song-agnostic)', () => {
+  test('IMPORTED_NOTES is a non-empty array of 4-tuples', () => {
+    expect(IMPORTED_NOTES.length).toBeGreaterThan(0);
+    for (const note of IMPORTED_NOTES) {
+      expect(Array.isArray(note)).toBe(true);
+      expect(note.length).toBe(4);
+      for (const v of note) expect(typeof v).toBe('number');
+    }
   });
 
-  test('IMPORTED_NOTES first and last match reference exactly', () => {
-    expect(IMPORTED_NOTES[0]).toEqual([0, 40, 30, 1]);
-    expect(IMPORTED_NOTES[526]).toEqual([680, 80, 15, 1]);
+  test('every tuple is [timeUnit, midi, dur, vel] with dur>=1 and vel in (0,1]', () => {
+    for (const [timeUnit, midi, dur, vel] of IMPORTED_NOTES) {
+      expect(timeUnit).toBeGreaterThanOrEqual(0);
+      expect(midi).toBeGreaterThanOrEqual(0);
+      expect(midi).toBeLessThanOrEqual(127);
+      expect(dur).toBeGreaterThanOrEqual(1);
+      expect(vel).toBeGreaterThan(0);
+      expect(vel).toBeLessThanOrEqual(1);
+    }
+  });
+
+  test('IMPORTED_NOTES is sorted ascending by start step', () => {
+    for (let i = 1; i < IMPORTED_NOTES.length; i++) {
+      expect(IMPORTED_NOTES[i][0]).toBeGreaterThanOrEqual(IMPORTED_NOTES[i - 1][0]);
+    }
   });
 
   test('SOURCE_BPM is 80', () => {

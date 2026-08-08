@@ -62,7 +62,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const iconBarContent = (
     <>
       {showEmail && (
-        <a id="email-link" href={`mailto:${EMAIL}`} className="header-icon group" aria-label="Email">
+        <a id="email-link" href={`mailto:${EMAIL}`} className="header-icon has-tooltip group" aria-label="Email" data-tooltip="Email">
           <IconEmail />
         </a>
       )}

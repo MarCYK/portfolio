@@ -43,14 +43,17 @@ export default function CanvasToolbar() {
       if (!paletteRef.current) return;
       // Skip if this toolbar instance is hidden (e.g. mobile bar on desktop)
       if (paletteRef.current.offsetParent === null) return;
+      
       if (!paletteRef.current.contains(event.target as Node)) {
-        setPaletteOpen(false);
-        emit('paintToggle', { active: false });
+        if (paletteOpen) {
+          setPaletteOpen(false);
+          emit('paintToggle', { active: false });
+        }
       }
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
-  }, [emit]);
+  }, [emit, paletteOpen]);
 
   const ensureSoundOn = () => {
     emit('soundToggle', { enabled: true });
@@ -110,7 +113,8 @@ export default function CanvasToolbar() {
       <button
         id="music-toggle"
         type="button"
-        className={`header-icon ${musicActive ? 'active' : ''} group`}
+        className={`header-icon has-tooltip ${musicActive ? 'active' : ''} group`}
+        data-tooltip="Music"
         onClick={toggleMusic}
         aria-label="Toggle music"
       >
@@ -120,46 +124,52 @@ export default function CanvasToolbar() {
       <button
         id="sunset-toggle"
         type="button"
-        className={`header-icon ${sunsetActive ? 'active' : ''} group`}
+        className={`header-icon has-tooltip ${sunsetActive ? 'active' : ''} group`}
+        data-tooltip="Sunset"
         onClick={toggleSunset}
         aria-label="Toggle sunset"
       >
         <IconSunset />
       </button>
-      <div className="relative" ref={paletteRef}>
-        <button
-          id="paint-toggle"
-          type="button"
-          className={`header-icon ${paletteOpen ? 'active' : ''} group`}
-          onClick={togglePaint}
-          aria-label="Toggle paint"
-        >
-          <IconPaint />
-        </button>
-        <div id="color-palette" className={`color-palette ${paletteOpen ? '' : 'hidden'}`}>
-          <div className="color-palette-inner">
-            {SWATCHES.map((swatch) => (
-              <button
-                key={swatch.color}
-                type="button"
-                className={`color-swatch ${paintColor === swatch.color ? 'active' : ''}`}
-                style={{ background: swatch.background }}
-                onClick={() => selectSwatch(swatch.color)}
-                aria-label={swatch.label}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
       <button
         id="canvas-clear"
         type="button"
-        className={`canvas-clear-btn header-icon ${canvasDirty || paletteOpen ? 'visible' : ''} group`}
+        className={`canvas-clear-btn header-icon has-tooltip ${canvasDirty || paletteOpen ? 'visible' : ''} group`}
+        data-tooltip="Clear canvas"
         onClick={clearCanvas}
         aria-label="Clear canvas"
       >
         <IconCanvasClear />
       </button>
+      
+      <div className="relative flex items-center justify-center" ref={paletteRef}>
+        <div id="color-palette" className={`absolute bottom-full md:bottom-auto md:top-full right-0 pb-2 md:pb-0 md:pt-2 z-10 ${paletteOpen ? '' : 'hidden'}`}>
+          <div className="color-palette-inner flex items-center gap-1.5">
+            {SWATCHES.map((swatch) => (
+              <button
+                key={swatch.color}
+                type="button"
+                className={`color-swatch ${paintColor === swatch.color ? 'active' : ''}`}
+                onClick={() => selectSwatch(swatch.color)}
+                aria-label={swatch.label}
+              >
+                <span className="swatch-inner" style={{ background: swatch.background }} />
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <button
+          id="paint-toggle"
+          type="button"
+          className={`header-icon has-tooltip ${paletteOpen ? 'active' : ''} group`}
+          data-tooltip="Paint"
+          onClick={togglePaint}
+          aria-label="Toggle paint"
+        >
+          <IconPaint />
+        </button>
+      </div>
     </>
   );
 }

@@ -42,6 +42,20 @@ src/
 └── types/                # Type definitions
 ```
 
+# one-time: install the dep
+pip install -r scripts/requirements.txt
+
+# import a song (overwrites src/lib/song-data-notes.ts)
+python scripts/import_song.py path/to/song.mid --name '"Song Title" (Artist)'
+
+# options
+python scripts/import_song.py song.mid --min-vel 10        # drop ghost notes
+python scripts/import_song.py song.mid --keep-drums        # keep percussion
+python scripts/import_song.py song.mid --out src/lib/other-song.ts  # write elsewhere
+
+# then verify nothing broke
+bun test src/test/lib/song-data.test.ts
+
 ## License
 
 Copyright 2026 marcyk. All rights reserved.

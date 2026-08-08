@@ -2,14 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageShell from '@/components/PageShell';
 import { ArrowRight } from 'lucide-react';
-import { recentPosts, archivePosts } from '@/data/posts';
-import type { Post } from '@/types';
+import { getRecentPosts, getArchivePosts, type ExtendedPost } from '@/data/posts';
 
 export const metadata: Metadata = {
   title: 'marcyk - Words',
 };
 
-function WordsRow({ date, title, href }: Post) {
+function WordsRow({ date, title, href }: ExtendedPost) {
   return (
     <Link href={href} className="words-row group">
       <span style={{ fontSize: '12px', color: 'var(--text-tertiary)' }}>{date}</span>
@@ -31,6 +30,8 @@ function WordsRow({ date, title, href }: Post) {
 }
 
 export default function WordsPage() {
+  const recentPosts = getRecentPosts();
+  const archivePosts = getArchivePosts();
   return (
     <PageShell>
         <div className="mx-auto flex w-full flex-1 flex-col px-6 sm:px-8" style={{ maxWidth: '80rem' }}>

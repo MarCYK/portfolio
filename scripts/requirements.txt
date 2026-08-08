@@ -1,0 +1,3 @@
+# Python deps for scripts/import_song.py — MIDI decoding.
+# mido: battle-tested standard-MIDI reader (documented format, no guessing).
+mido>=1.3,<2

@@ -34,7 +34,8 @@ export default function SoundToggle({ enabled, onToggle }: { enabled: boolean; o
     <button
       id="sound-toggle"
       type="button"
-      className={`header-icon ${enabled ? 'active' : ''} group`}
+      className={`header-icon has-tooltip ${enabled ? 'active' : ''} group`}
+      data-tooltip="Sound"
       onClick={onToggle}
       aria-label="Toggle sound"
     >

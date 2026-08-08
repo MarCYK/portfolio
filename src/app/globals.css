@@ -22,6 +22,7 @@
   --warning-bg: #fef9c3;
   --error: #ef4444;
   --error-bg: #fee2e2;
+  --text-muted: rgba(0, 0, 0, 0.62);
 
   --font-display: "Soehne", var(--font-inter), "Inter", system-ui, sans-serif;
   --font-body: "Soehne", var(--font-inter), "Inter", system-ui, sans-serif;
@@ -93,6 +94,7 @@
   --warning-bg: #78350f;
   --error: #ef4444;
   --error-bg: #7f1d1d;
+  --text-muted: rgba(255, 255, 255, 0.66);
 
   --bg-primary: var(--background);
   --bg-secondary: var(--surface1);
@@ -156,7 +158,7 @@ body {
   border-top: 1px solid var(--header-border-fade);
   background: linear-gradient(to bottom, var(--header-bg), transparent);
   pointer-events: none;
-  z-index: 40;
+  z-index: 1;
 }
 
 body.sunset-active {
@@ -373,36 +375,26 @@ body.sunset-active .marcyk-logo {
   flex-shrink: 0;
 }
 
-.color-palette {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  padding-top: 8px;
-  z-index: 10;
-}
-
-.color-palette.hidden {
-  display: none;
-}
-
-.color-palette-inner {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 6px;
-  background-color: var(--surface1);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-}
-
 .color-swatch {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   border: 2px solid transparent;
   cursor: pointer;
+  padding: 2px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   transition: border-color var(--duration-fast) var(--ease-fast);
   flex-shrink: 0;
+  background: transparent;
+}
+
+.color-swatch .swatch-inner {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: block;
 }
 
 .color-swatch:hover {
@@ -413,13 +405,80 @@ body.sunset-active .marcyk-logo {
   border-color: var(--text-primary);
 }
 
-@media (max-width: 767px) {
-  .color-palette {
-    top: auto;
-    bottom: 100%;
-    padding-top: 0;
-    padding-bottom: 8px;
-  }
+/* Palette layering: z-index:10 sits above the .home-page::after fade (z-index:1),
+   so the palette isn't painted over when it opens downward. Position/padding
+   stay on the element via Tailwind classes (responsive open-above on mobile). */
+#color-palette {
+  z-index: 10;
+}
+
+.color-palette-inner {
+  padding: 8px 6px;
+  border-radius: 7px;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.dark .color-palette-inner {
+  background-color: #0a0a0a;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+/* CSS-only tooltip via data-tooltip — ported from zchry so header-icon buttons
+   (paint, etc.) show a label on hover without extra JS. */
+.has-tooltip {
+  position: relative;
+}
+
+.has-tooltip::before,
+.has-tooltip::after {
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease-out 0.15s;
+}
+
+.has-tooltip::before {
+  content: "";
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  width: 9px;
+  height: 9px;
+  background-color: #e5e5e5;
+  transform: translate(-50%, -50%) rotate(45deg);
+  z-index: 101;
+}
+
+.has-tooltip::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translate(-50%);
+  padding: 5px 9px;
+  border-radius: 0 0 6px 6px;
+  background-color: #e5e5e5;
+  color: #171717;
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  line-height: 1;
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  z-index: 100;
+}
+
+.has-tooltip:hover::before,
+.has-tooltip:hover::after {
+  opacity: 1;
+}
+
+.dark .has-tooltip::before {
+  background-color: #2a2a2a;
+}
+
+.dark .has-tooltip::after {
+  background-color: #2a2a2a;
+  color: #fafafa;
 }
 
 .project-grid {
@@ -522,32 +581,6 @@ body.sunset-active .marcyk-logo {
   display: none;
 }
 
-.about-details summary::before {
-  content: "";
-  flex: 1;
-  height: 1px;
-  background-color: var(--border);
-  order: 1;
-}
-
-.about-details summary::after {
-  content: "";
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-right: 1.5px solid var(--text-tertiary);
-  border-bottom: 1.5px solid var(--text-tertiary);
-  transform: rotate(45deg);
-  transition: transform 0.2s;
-  margin-top: -2px;
-  order: 2;
-  flex-shrink: 0;
-}
-
-.about-details[open] summary::after {
-  transform: rotate(-135deg);
-  margin-top: 2px;
-}
 
 .tree-label {
   font-size: 12px;
@@ -632,9 +665,11 @@ body.sunset-active .marcyk-logo {
 }
 
 .page-heading {
-  font-size: var(--text-display);
+  font-size: 30px;
   font-weight: 600;
-  letter-spacing: -0.025em;
+  line-height: 36px;
+  letter-spacing: -0.75px;
+  margin-bottom: 12px;
   color: var(--text-primary);
   font-family: var(--font-display);
 }
@@ -649,6 +684,16 @@ body.sunset-active .marcyk-logo {
   font-family: var(--font-body);
 }
 
+.about-h2 {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+}
+
 .prose-content {
   font-size: var(--text-body);
   line-height: 1.5;
@@ -657,6 +702,17 @@ body.sunset-active .marcyk-logo {
 }
 
 .prose-content p {
+  margin-bottom: 16px;
+}
+
+.about-prose {
+  font-size: 14px;
+  line-height: 22.75px;
+  color: var(--text-secondary);
+  font-family: var(--font-body);
+}
+
+.about-prose p {
   margin-bottom: 16px;
 }
 

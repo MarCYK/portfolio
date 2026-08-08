@@ -66,7 +66,8 @@ export default function ThemeToggle({ isDark, onToggle, disabled = false }: Them
     <button
       id="theme-toggle"
       type="button"
-      className={`header-icon ${disabled ? 'disabled' : ''} group`}
+      className={`header-icon has-tooltip ${disabled ? 'disabled' : ''} group`}
+      data-tooltip="Theme"
       onClick={onToggle}
       aria-label="Toggle theme"
       aria-disabled={disabled}

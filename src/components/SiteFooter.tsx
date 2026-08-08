@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LogoDiamond } from './icons';
+import { LogoDiamond } from './MarCYKIcons';
 
 export default function SiteFooter() {
   return (
