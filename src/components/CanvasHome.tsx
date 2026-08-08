@@ -29,7 +29,7 @@ export default function CanvasHome() {
     const state = createCanvasState(initialTheme);
     state.paintColor = getPaintColor();
 
-    // DPR-aware resize matches zchry.org: backing store scaled by DPR,
+    // DPR-aware resize: backing store scaled by DPR,
     // but all drawing uses CSS pixel dimensions via setTransform.
     let cssW = window.innerWidth;
     let cssH = window.innerHeight;
@@ -57,7 +57,7 @@ export default function CanvasHome() {
       strokePaintColor = '';
     };
 
-    // Matches zchry.org paint-on-row-cross behavior: each new row entered
+    // Paint-on-row-cross behavior: each new row entered
     // while the mouse is down gets the current paint color (or "default").
     const applyPaintToRow = (row: number) => {
       if (state.sunsetStrength > 0) return;
@@ -75,7 +75,7 @@ export default function CanvasHome() {
       applyPaintToRow(row);
 
       // Pluck on row crossing: one note per string at fixed velocity,
-      // matching zchry.org playRowNote. No chord, no speed scaling.
+      // No chord, no speed scaling.
       const pluck = pluckDecision(lastRow, row);
       if (pluck.shouldPlay) {
         state.rowGlow[row] = 1.0;
@@ -93,7 +93,7 @@ export default function CanvasHome() {
 
     function animate() {
       const now = performance.now();
-      // Frame-rate cap matches zchry.org: 33ms (~30fps) normally, 22ms
+      // Frame-rate cap: 33ms (~30fps) normally, 22ms
       // (~45fps) while music plays. The wave's time advancement is tied
       // to real performance.now(), so skipping frames doesn't slow it.
       const minFrameMs = state.musicPlaying ? 22 : 33;

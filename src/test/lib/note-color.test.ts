@@ -5,7 +5,7 @@ import {
   musicNoteColor,
 } from '../../lib/note-color';
 
-describe('006: music note color (zchry.org reference-matched)', () => {
+describe('006: music note color', () => {
   test('MUSIC_NOTE_DARK_STOPS has 7 stops matching reference', () => {
     expect(MUSIC_NOTE_DARK_STOPS).toEqual([
       [37, 35, 12, 44],

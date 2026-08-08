@@ -1,5 +1,4 @@
 // "Where Is My Mind" (Pixies) — Maxence Cyrin piano cover arrangement.
-// Extracted from the zchry.org reference client script (public asset).
 // Format: [timeUnit, midiPitch, duration, velocity]
 //   timeUnit = 16th-note steps at 80 BPM (MS_PER_UNIT = 60000 / 80 / 4 = 187.5ms)
 //   midiPitch = 37 (G2) .. 95 (B6)

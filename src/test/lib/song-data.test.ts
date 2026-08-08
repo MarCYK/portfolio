@@ -32,7 +32,7 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
   });
 
   test('MIN_ROWS matches reference floor of 12', () => {
-    // zchry.org: Math.max(12, Math.floor(baseY / 28))
+    // Math.max(12, Math.floor(baseY / 28))
     expect(MIN_ROWS).toBe(12);
   });
 

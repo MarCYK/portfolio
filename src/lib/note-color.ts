@@ -1,4 +1,4 @@
-// Music note color, matched to zchry.org's musicNoteColor.
+// Music note color, musicNoteColor.
 // 7-stop palette per theme; midi clamped to [first, last] stop midi.
 
 import type { RgbTuple } from './sunset-color';

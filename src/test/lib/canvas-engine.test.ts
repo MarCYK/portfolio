@@ -3,7 +3,6 @@ import { createCanvasState, drawFrame, updateRows, getRowAtY, type CanvasState }
 import { createAudioState } from "../../lib/audio";
 
 // Mock canvas + context that records calls so we can assert render structure.
-// Matches the patterns zchry.org's draw() actually performs.
 interface RecordedCtx {
   fills: string[];
   strokes: string[];
@@ -59,7 +58,7 @@ const CANVAS_W = 1000;
 const CANVAS_H = 1000;
 const mockCanvas = { width: CANVAS_W, height: CANVAS_H } as HTMLCanvasElement;
 
-describe("006: canvas-engine state shape (zchry.org reference-matched)", () => {
+describe("006: canvas-engine state shape", () => {
   test("createCanvasState initializes rowColors as null array sized to rows", () => {
     const s = createCanvasState("dark", 10);
     expect(s.rowColors).toHaveLength(10);
@@ -99,7 +98,7 @@ describe("006: canvas-engine state shape (zchry.org reference-matched)", () => {
   });
 });
 
-describe("006: canvas-engine drawFrame structure (zchry.org reference-matched)", () => {
+describe("006: canvas-engine drawFrame structure", () => {
   let baseState: CanvasState;
   let audio: ReturnType<typeof createAudioState>;
 
@@ -175,13 +174,13 @@ describe("006: canvas-engine drawFrame structure (zchry.org reference-matched)",
   });
 });
 
-describe("006: getRowAtY (zchry.org reference-matched)", () => {
+describe("006: getRowAtY", () => {
   test("returns -1 for negative y", () => {
     expect(getRowAtY(1000, -10, 30)).toBe(-1);
   });
 
   test("maps y=0 to row 0 (no header offset — reference does not skip header)", () => {
-    // zchry.org: rowSpacing = innerHeight / joyRows, no HEADER_HEIGHT_PX offset
+    // rowSpacing = innerHeight / joyRows, no HEADER_HEIGHT_PX offset
     expect(getRowAtY(1000, 0, 10)).toBe(0);
   });
 

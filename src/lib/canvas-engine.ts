@@ -32,7 +32,7 @@ export function getDefaultCanvasColors(theme: CanvasTheme): { bgColor: string; s
   };
 }
 
-// Paint value per row matches zchry.org: hex color string, the literal
+// Paint value per row: hex color string, the literal
 // "default" for monochrome band, or null when unpainted.
 export type RowPaint = string | 'default' | null;
 
@@ -111,7 +111,7 @@ const SONG_DURATION_SEC = SONG_DURATION_MS / 1000;
 const LOOP_GAP_SEC = 1.5;
 
 // Plays due notes from the "Where Is My Mind" arrangement. Audio-clock-
-// locked for zero drift. Matches zchry.org seqFrame: collision nudge
+// locked for zero drift. seqFrame: collision nudge
 // when two notes share a row, and energy bleed to neighbouring rows.
 export function tickMusic(state: CanvasState, audio: AudioState, onNote?: (note: string) => void): void {
   if (!state.musicPlaying || !audio.audioCtx) return;
@@ -187,7 +187,7 @@ function rgbaTuple(rgb: Rgb, alpha: number): string {
   return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha.toFixed(3)})`;
 }
 
-// drawFrame mirrors zchry.org's draw() function. The caller passes the
+// drawFrame draw() function. The caller passes the
 // current performance.now() so time advances at real-time rate (0.0003x),
 // independent of frame rate. Reference values are reproduced exactly.
 export function drawFrame(
@@ -233,7 +233,7 @@ export function drawFrame(
   const pointStride = state.musicPlaying ? 5 : 7;
   const steps = Math.ceil(width / pointStride);
 
-  // Pre-allocate path buffers (matches zchry.org ptsX/ptsY Float64Array).
+  // Pre-allocate path buffers (ptsX/ptsY Float64Array).
   const ptsX = new Float64Array(steps + 1);
   const ptsY = new Float64Array(steps + 1);
 
@@ -285,7 +285,7 @@ export function drawFrame(
     ctx.fill();
 
     // Paint fill: only when the wave is actually peaking (rowAmp > 1).
-    // Uses a vertical gradient that fades to transparent, matching zchry.
+    // Uses a vertical gradient that fades to transparent.
     if (rc !== null && rc !== 'default' && rowAmp > 1) {
       const parsed = tryParseHex(rc);
       if (parsed) {
@@ -390,7 +390,7 @@ export function drawFrame(
   if (state.musicPlaying) tickMusic(state, audio, onNote);
 }
 
-// Maps a Y coordinate to a row. Matches zchry.org getRowFromY: no header
+// Maps a Y coordinate to a row. getRowAtY: no header
 // offset, rows span the full height.
 export function getRowAtY(canvasHeight: number, clientY: number, rows: number): number {
   if (clientY < 0) return -1;

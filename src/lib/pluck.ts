@@ -1,5 +1,5 @@
 // Pluck decision for interactive canvas playing.
-// Matches zchry.org playRowNote: one note per row crossing at fixed
+// playRowNote: one note per row crossing at fixed
 // velocity and duration. No chord, no speed-based velocity scaling.
 
 export const PLUCK_VELOCITY = 1.0;

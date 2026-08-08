@@ -3,7 +3,7 @@ import { render } from "@testing-library/react";
 import SoundToggle from "../../../components/header/SoundToggle";
 import ThemeToggle from "../../../components/header/ThemeToggle";
 
-// zchry.org gives every toolbar icon a hover tooltip via .has-tooltip +
+// gives every toolbar icon a hover tooltip via .has-tooltip +
 // data-tooltip. Sound/Theme/email were missing them. This guards the gap.
 describe("header icon tooltips", () => {
   test("sound toggle shows a 'Sound' tooltip", () => {

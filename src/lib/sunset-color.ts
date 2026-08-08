@@ -1,4 +1,4 @@
-// Sunset palette + per-row color, matched to zchry.org's sunsetRowColor.
+// Sunset palette + per-row color, sunsetRowColor.
 // Single 8-stop palette used for both background and ridge fills (the
 // reference does not split them into separate gradients).
 

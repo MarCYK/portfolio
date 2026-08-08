@@ -1,8 +1,7 @@
 import { test, expect, describe } from 'bun:test';
 import { computeNoise } from '../../lib/wave-noise';
 
-describe('006: wave noise (zchry.org reference-matched)', () => {
-  // Golden values captured from zchry.org's computeNoise via DevTools.
+describe('006: wave noise', () => {
   // Locks the exact 9-term sine sum so the visual character stays matched.
   const golden: Array<{ t: number; r: number; time: number; n: number }> = [
     { t: 0, r: 0, time: 0, n: 0 },

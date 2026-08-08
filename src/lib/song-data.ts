@@ -1,17 +1,17 @@
 import { IMPORTED_NOTES } from './song-data-notes';
 
-// Row count matches zchry.org: Math.max(12, Math.floor(baseY / 28)).
+// Row count: Math.max(12, Math.floor(baseY / 28)).
 // No upper cap — rows scale with viewport height, like the reference.
 export const MIN_ROWS = 12;
 export const TARGET_ROW_SPACING = 28;
 
 // Interactive plucking maps each row to a major pentatonic degree,
-// matching zchry.org. Range and snap algorithm mirror the reference.
+// Range and snap algorithm mirror the reference.
 export const PENA_INTERVALS = [0, 2, 4, 7, 9];
 export const INTERACTIVE_MIDI_LO = 48;
 export const INTERACTIVE_MIDI_HI = 84;
 
-// --- "Where Is My Mind" sequencer (zchry.org reference) ---
+// --- "Where Is My Mind" sequencer ---
 export const SOURCE_BPM = 80;
 // 16th-note duration in ms at SOURCE_BPM.
 export const MS_PER_UNIT = 60000 / SOURCE_BPM / 4;
@@ -21,7 +21,7 @@ export const SONG_MIDI_HI = 95;
 const SONG_TAIL_GAP_MS = 3000;
 
 export function computeRows(drawableHeight: number): number {
-  // Matches zchry.org updateRowCount: max(12, floor(baseY / 28)).
+  // updateRowCount: max(12, floor(baseY / 28)).
   // No upper cap — rows grow with viewport.
   return Math.max(MIN_ROWS, Math.floor(drawableHeight / TARGET_ROW_SPACING));
 }
@@ -29,7 +29,7 @@ export function computeRows(drawableHeight: number): number {
 // Maps a row index to a MIDI pitch by snapping linearly across
 // [INTERACTIVE_MIDI_LO, INTERACTIVE_MIDI_HI] to the nearest major
 // pentatonic degree. Row 0 (top of canvas) is the lowest pitch,
-// matching zchry.org where i=0 maps to midiLo.
+// i=0 maps to midiLo.
 export function rowToMidi(rowIndex: number, totalRows: number): number {
   const t = totalRows > 1 ? rowIndex / (totalRows - 1) : 0.5;
   const rawMidi = INTERACTIVE_MIDI_LO + t * (INTERACTIVE_MIDI_HI - INTERACTIVE_MIDI_LO);
@@ -63,7 +63,7 @@ export function rowForMidi(midi: number, totalRows: number): number {
   return margin + Math.round((1 - clamped) * usable);
 }
 
-// Volume shaping matches zchry.org songNotes build: base 1.4x, melody
+// Volume shaping songNotes build: base 1.4x, melody
 // (midi>=60) boosted 1.2x, bass (midi<48) cut to 0.75x.
 export function shapeVolume(midi: number, rawVelocity: number): number {
   let vol = rawVelocity * 1.4;

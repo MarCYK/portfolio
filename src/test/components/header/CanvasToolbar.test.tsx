@@ -15,7 +15,7 @@ describe("CanvasToolbar", () => {
     expect(spokenToggle === null).toBe(true);
   });
 
-  test("paint toggle shows a 'Paint' tooltip matching zchry", () => {
+  test("paint toggle shows a 'Paint' tooltip", () => {
     render(
       <CanvasProvider>
         <CanvasToolbar />
@@ -28,7 +28,7 @@ describe("CanvasToolbar", () => {
     expect(paintToggle?.getAttribute("data-tooltip")).toBe("Paint");
   });
 
-  test("music, sunset, and canvas-clear each show a tooltip matching zchry", () => {
+  test("music, sunset, and canvas-clear each show a tooltip", () => {
     render(
       <CanvasProvider>
         <CanvasToolbar />
@@ -48,7 +48,7 @@ describe("CanvasToolbar", () => {
     }
   });
 
-  test("palette swatches match zchry's exact colors", () => {
+  test("palette swatches match exact colors", () => {
     render(
       <CanvasProvider>
         <CanvasToolbar />

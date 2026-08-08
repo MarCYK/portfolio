@@ -1,7 +1,7 @@
 import { test, expect, describe } from 'bun:test';
 import { SUNSET_STOPS, sunsetRowColor } from '../../lib/sunset-color';
 
-describe('006: sunset color (zchry.org reference-matched)', () => {
+describe('006: sunset color', () => {
   test('SUNSET_STOPS has 8 stops matching reference exactly', () => {
     expect(SUNSET_STOPS).toEqual([
       [0.0, 255, 250, 200],
@@ -15,7 +15,6 @@ describe('006: sunset color (zchry.org reference-matched)', () => {
     ]);
   });
 
-  // Golden samples captured from zchry.org's sunsetRowColor via DevTools.
   const samples: Array<{ t: number; rgb: [number, number, number] }> = [
     { t: 0, rgb: [255, 250, 200] },
     { t: 0.06, rgb: [255, 235, 165] },

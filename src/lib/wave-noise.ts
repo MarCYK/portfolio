@@ -1,4 +1,4 @@
-// Waveform noise function, exact 9-term sine sum matched to zchry.org.
+// Waveform noise function, exact 9-term sine sum.
 // No rowPulse term — the reference does not have one.
 
 export function computeNoise(t: number, r: number, time: number): number {

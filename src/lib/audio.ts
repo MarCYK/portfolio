@@ -39,7 +39,7 @@ export async function initAudio(state: AudioState): Promise<void> {
   }
 }
 
-// Defaults match zchry.org playRowNote: fixed velocity 1.0, duration 0.5s.
+// playRowNote: fixed velocity 1.0, duration 0.5s.
 export function playNote(
   state: AudioState,
   rowIndex: number,

@@ -4,7 +4,7 @@ import { resolve } from "node:path";
 
 // The palette opens downward from the header, overlapping the .home-page::after
 // fade gradient. The fade must sit BELOW the palette or it paints over it.
-// zchry.org keeps the fade at z-index:1; the palette container is z-index:10.
+// keeps the fade at z-index:1; the palette container is z-index:10.
 // This guards the ordering invariant (regression test for the "palette behind
 // toolbar" bug).
 const css = readFileSync(resolve(process.cwd(), "src/app/globals.css"), "utf8");

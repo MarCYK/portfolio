@@ -424,7 +424,7 @@ body.sunset-active .marcyk-logo {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* CSS-only tooltip via data-tooltip — ported from zchry so header-icon buttons
+/* CSS-only tooltip via data-tooltip — so header-icon buttons
    (paint, etc.) show a label on hover without extra JS. */
 .has-tooltip {
   position: relative;

@@ -68,7 +68,10 @@ def ticks_per_16th(ticks_per_beat: int) -> float:
 
 
 def extract_notes(midi_path: Path, min_vel: int, skip_channel_9: bool) -> list[Note]:
-    mid = mido.MidiFile(midi_path)
+    # clip=True clamps out-of-range data bytes to 127 instead of aborting.
+    # Some DAW/synth exports contain bytes > 127 (spec-violating but common);
+    # 127 is the max valid value anyway, so clamping is lossless for playback.
+    mid = mido.MidiFile(midi_path, clip=True)
     step = ticks_per_16th(mid.ticks_per_beat)
     if step <= 0:
         sys.exit(f"Invalid ticks_per_beat: {mid.ticks_per_beat}")
