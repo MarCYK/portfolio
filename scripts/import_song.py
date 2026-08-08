@@ -22,6 +22,8 @@ keeps notes sorted by start time so convertSongNote's ms math stays monotonic.
 
 Usage:
     python scripts/import_song.py path/to/song.mid
+    python scripts/import_song.py song.mid --list-tracks        # see track indexes
+    python scripts/import_song.py song.mid --tracks 13,25       # keep only those tracks
     python scripts/import_song.py song.mid --name "My Song" --out custom.ts
     python scripts/import_song.py song.mid --min-vel 10  # drop ghost notes
 """
@@ -67,7 +69,12 @@ def ticks_per_16th(ticks_per_beat: int) -> float:
     return ticks_per_beat / 4
 
 
-def extract_notes(midi_path: Path, min_vel: int, skip_channel_9: bool) -> list[Note]:
+def extract_notes(
+    midi_path: Path,
+    min_vel: int,
+    skip_channel_9: bool,
+    track_filter: set[int] | None,
+) -> list[Note]:
     # clip=True clamps out-of-range data bytes to 127 instead of aborting.
     # Some DAW/synth exports contain bytes > 127 (spec-violating but common);
     # 127 is the max valid value anyway, so clamping is lossless for playback.
@@ -76,35 +83,38 @@ def extract_notes(midi_path: Path, min_vel: int, skip_channel_9: bool) -> list[N
     if step <= 0:
         sys.exit(f"Invalid ticks_per_beat: {mid.ticks_per_beat}")
 
-    # Pending note_on events keyed by (channel, note) -> abs tick start.
-    # A repeated note_on with velocity 0 is a note_off in General MIDI.
-    open_notes: dict[tuple[int, int], int] = {}
+    # Iterate tracks individually (not merge_tracks) so we can both filter by
+    # track index and keep each track's delta-time arithmetic independent.
     notes: list[Note] = []
-    abs_tick = 0  # mido msg.time is a delta; accumulate to absolute.
-
-    for msg in mido.merge_tracks(mid.tracks):
-        abs_tick += msg.time
-        if msg.type not in ("note_on", "note_off"):
-            continue
-        if skip_channel_9 and msg.channel == 9:
+    for track_idx, track in enumerate(mid.tracks):
+        if track_filter is not None and track_idx not in track_filter:
             continue
 
-        key = (msg.channel, msg.note)
-        is_off = msg.type == "note_off" or msg.velocity == 0
+        abs_tick = 0  # mido msg.time is a delta; accumulate to absolute.
+        # Pending note_on keyed by note -> abs tick start. Channel is fixed per
+        # track here so we key on note alone.
+        open_notes: dict[int, int] = {}
+        for msg in track:
+            abs_tick += msg.time
+            if msg.type not in ("note_on", "note_off"):
+                continue
+            if skip_channel_9 and msg.channel == 9:
+                continue
 
-        if not is_off and msg.velocity >= min_vel:
-            if key in open_notes:
-                # Re-strike closes the previous instance first.
-                start = open_notes.pop(key)
+            is_off = msg.type == "note_off" or msg.velocity == 0
+            if not is_off and msg.velocity >= min_vel:
+                if msg.note in open_notes:
+                    # Re-strike closes the previous instance first.
+                    start = open_notes.pop(msg.note)
+                    notes.append(_build(start, abs_tick, msg.note, msg.velocity, step))
+                open_notes[msg.note] = abs_tick
+            elif is_off and msg.note in open_notes:
+                start = open_notes.pop(msg.note)
                 notes.append(_build(start, abs_tick, msg.note, msg.velocity, step))
-            open_notes[key] = abs_tick
-        elif is_off and key in open_notes:
-            start = open_notes.pop(key)
-            notes.append(_build(start, abs_tick, msg.note, msg.velocity, step))
 
-    # Notes never closed get a 1-step length so nothing is silently dropped.
-    for (channel, note), start in open_notes.items():
-        notes.append(_build(start, abs_tick, note, 1, step))
+        # Notes never closed get a 1-step length so nothing is silently dropped.
+        for note, start in open_notes.items():
+            notes.append(_build(start, abs_tick, note, 1, step))
 
     return notes
 
@@ -141,6 +151,39 @@ def render_ts(notes: list[Note], name: str, source: str) -> str:
     )
 
 
+def _parse_track_filter(raw: str | None) -> set[int] | None:
+    if raw is None or raw.strip() == "":
+        return None
+    try:
+        idxs = {int(part.strip()) for part in raw.split(",") if part.strip()}
+    except ValueError:
+        sys.exit(f"--tracks must be comma-separated integers, got: {raw!r}")
+    if any(i < 0 for i in idxs):
+        sys.exit(f"--tracks indexes must be non-negative, got: {raw!r}")
+    return idxs
+
+
+def _list_tracks(midi_path: Path) -> int:
+    mid = mido.MidiFile(midi_path, clip=True)
+    print(f"{midi_path.name}  ({len(mid.tracks)} tracks, {mid.ticks_per_beat} ticks/beat)")
+    print(f"{'idx':>3}  {'chan':>4}  {'notes':>6}  name")
+    print("-" * 60)
+    for idx, track in enumerate(mid.tracks):
+        name = ""
+        channel = "-"
+        note_count = 0
+        for msg in track:
+            if msg.type == "track_name" and msg.name and not name:
+                name = msg.name
+            if msg.type == "note_on" and msg.velocity > 0:
+                if channel == "-":
+                    channel = msg.channel
+                note_count += 1
+        marker = "  (drums)" if channel == 9 else ""
+        print(f"{idx:>3}  {str(channel):>4}  {note_count:>6}  {name}{marker}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         description="Import a MIDI file into song-data-notes.ts."
@@ -168,16 +211,33 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="Keep channel 9 (General MIDI percussion). Off by default.",
     )
+    parser.add_argument(
+        "--tracks",
+        default=None,
+        help="Comma-separated track indexes to keep (e.g. '13,25'). "
+        "Default: all tracks. Run --list-tracks to see indexes.",
+    )
+    parser.add_argument(
+        "--list-tracks",
+        action="store_true",
+        help="Print every track's index, channel, note count, and name, then exit.",
+    )
     args = parser.parse_args(argv)
 
     if not args.midi.is_file():
         sys.exit(f"MIDI file not found: {args.midi}")
+
+    if args.list_tracks:
+        return _list_tracks(args.midi)
+
+    track_filter = _parse_track_filter(args.tracks)
 
     name = args.name or args.midi.stem
     notes = extract_notes(
         args.midi,
         min_vel=max(1, args.min_vel),
         skip_channel_9=not args.keep_drums,
+        track_filter=track_filter,
     )
     if not notes:
         sys.exit(f"No notes found in {args.midi}.")
