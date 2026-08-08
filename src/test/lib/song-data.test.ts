@@ -9,17 +9,8 @@ import {
   computeRows,
   MIN_ROWS,
   TARGET_ROW_SPACING,
-  SOURCE_BPM,
-  MS_PER_UNIT,
-  SONG_MIDI_LO,
-  SONG_MIDI_HI,
-  SONG_DURATION_MS,
   shapeVolume,
-  rowForMidi,
-  convertSongNote,
-  songNotes,
 } from '../../lib/song-data';
-import { IMPORTED_NOTES } from '../../lib/song-data-notes';
 
 describe('003: interactive note mapping (pentatonic, reference-matched)', () => {
   test('PENA_INTERVALS is the major pentatonic scale degrees [0,2,4,7,9]', () => {
@@ -101,49 +92,19 @@ describe('003: interactive note mapping (pentatonic, reference-matched)', () => 
     expect(midi).toBeLessThanOrEqual(INTERACTIVE_MIDI_HI);
     expect(midi).toBeGreaterThanOrEqual(INTERACTIVE_MIDI_LO);
   });
+
+  test('midiToName: middle C and concert A', () => {
+    expect(midiToName(60)).toBe('C4');
+    expect(midiToName(69)).toBe('A4');
+  });
+
+  test('midiToName: sharps and low octave', () => {
+    expect(midiToName(61)).toBe('C#4');
+    expect(midiToName(40)).toBe('E2');
+  });
 });
 
-describe('005: imported sequencer data (format invariants, song-agnostic)', () => {
-  test('IMPORTED_NOTES is a non-empty array of 4-tuples', () => {
-    expect(IMPORTED_NOTES.length).toBeGreaterThan(0);
-    for (const note of IMPORTED_NOTES) {
-      expect(Array.isArray(note)).toBe(true);
-      expect(note.length).toBe(4);
-      for (const v of note) expect(typeof v).toBe('number');
-    }
-  });
-
-  test('every tuple is [timeUnit, midi, dur, vel] with dur>=1 and vel in (0,1]', () => {
-    for (const [timeUnit, midi, dur, vel] of IMPORTED_NOTES) {
-      expect(timeUnit).toBeGreaterThanOrEqual(0);
-      expect(midi).toBeGreaterThanOrEqual(0);
-      expect(midi).toBeLessThanOrEqual(127);
-      expect(dur).toBeGreaterThanOrEqual(1);
-      expect(vel).toBeGreaterThan(0);
-      expect(vel).toBeLessThanOrEqual(1);
-    }
-  });
-
-  test('IMPORTED_NOTES is sorted ascending by start step', () => {
-    for (let i = 1; i < IMPORTED_NOTES.length; i++) {
-      expect(IMPORTED_NOTES[i][0]).toBeGreaterThanOrEqual(IMPORTED_NOTES[i - 1][0]);
-    }
-  });
-
-  test('SOURCE_BPM is 80', () => {
-    expect(SOURCE_BPM).toBe(80);
-  });
-
-  test('MS_PER_UNIT is a 16th note at 80 BPM (187.5ms)', () => {
-    expect(MS_PER_UNIT).toBe(60000 / 80 / 4);
-    expect(MS_PER_UNIT).toBe(187.5);
-  });
-
-  test('SONG_MIDI range matches reference 37-95', () => {
-    expect(SONG_MIDI_LO).toBe(37);
-    expect(SONG_MIDI_HI).toBe(95);
-  });
-
+describe('003: volume shaping (song-agnostic curve)', () => {
   test('shapeVolume: base multiplier is 1.4 for mid-range (48<=midi<60)', () => {
     // midi 55: not bass (<48), not melody (>=60) — base only
     expect(shapeVolume(55, 1.0)).toBeCloseTo(1.4, 5);
@@ -163,58 +124,5 @@ describe('005: imported sequencer data (format invariants, song-agnostic)', () =
 
   test('shapeVolume: raw velocity scales linearly', () => {
     expect(shapeVolume(55, 0.5)).toBeCloseTo(0.5 * 1.4, 5);
-  });
-
-  test('rowForMidi: low midi maps near bottom, high midi near top (inverted)', () => {
-    const rows = 30;
-    const lowRow = rowForMidi(SONG_MIDI_LO, rows);
-    const highRow = rowForMidi(SONG_MIDI_HI, rows);
-    expect(lowRow).toBeGreaterThan(highRow);
-  });
-
-  test('rowForMidi: stays within margin-bounded range', () => {
-    const rows = 30;
-    const margin = Math.floor(rows * 0.12);
-    for (let m = SONG_MIDI_LO; m <= SONG_MIDI_HI; m++) {
-      const r = rowForMidi(m, rows);
-      expect(r).toBeGreaterThanOrEqual(margin);
-      expect(r).toBeLessThanOrEqual(rows - 1 - margin);
-    }
-  });
-
-  test('rowForMidi: clamps out-of-range midi', () => {
-    const rows = 30;
-    const margin = Math.floor(rows * 0.12);
-    expect(rowForMidi(0, rows)).toBeGreaterThanOrEqual(margin);
-    expect(rowForMidi(200, rows)).toBeLessThanOrEqual(rows - 1 - margin);
-  });
-
-  test('convertSongNote: time in ms = timeUnit * MS_PER_UNIT', () => {
-    const [absMs, midi, durSec, vol] = convertSongNote([10, 60, 2, 1]);
-    expect(absMs).toBe(10 * MS_PER_UNIT);
-    expect(midi).toBe(60);
-    expect(vol).toBe(shapeVolume(60, 1));
-  });
-
-  test('convertSongNote: duration converts to seconds with floor 0.1', () => {
-    const [, , durSec] = convertSongNote([0, 60, 2, 1]);
-    expect(durSec).toBeCloseTo((2 * MS_PER_UNIT) / 1000, 5);
-    const [, , shortDur] = convertSongNote([0, 60, 0.1, 1]);
-    expect(shortDur).toBeGreaterThanOrEqual(0.1);
-  });
-
-  test('songNotes: length equals IMPORTED_NOTES length', () => {
-    expect(songNotes.length).toBe(IMPORTED_NOTES.length);
-  });
-
-  test('songNotes: sorted ascending by absolute ms', () => {
-    for (let i = 1; i < songNotes.length; i++) {
-      expect(songNotes[i][0]).toBeGreaterThanOrEqual(songNotes[i - 1][0]);
-    }
-  });
-
-  test('SONG_DURATION_MS: extends past last note (loop gap)', () => {
-    const lastMs = songNotes[songNotes.length - 1][0];
-    expect(SONG_DURATION_MS).toBeGreaterThan(lastMs);
   });
 });

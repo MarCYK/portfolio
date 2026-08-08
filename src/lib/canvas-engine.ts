@@ -1,11 +1,10 @@
 import {
-  songNotes,
-  SONG_DURATION_MS,
-  rowForMidi,
   midiToName,
   computeRows,
   MIN_ROWS,
 } from './song-data';
+import { buildSongRuntime, rowForMidi, type SongNote } from './song-runtime';
+import { SONGS, DEFAULT_SONG_ID, getSongById, type Song } from './songs';
 import type { AudioState } from './audio';
 import { mixRgb, toRgba, tryParseHex, type Rgb } from './color-math';
 import { computeNoise } from './wave-noise';
@@ -53,10 +52,17 @@ export interface CanvasState {
   musicStartTime: number;
   lastMusicElapsed: number;
   seqStep: number;
+  // Currently selected song and its precomputed runtime. Swapping currentSong
+  // rebuilds runtime so tickMusic plays the new song at its own tempo.
+  currentSong: Song;
+  songNotes: SongNote[];
+  songDurationSec: number;
 }
 
 export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MIN_ROWS): CanvasState {
   const defaults = getDefaultCanvasColors(theme);
+  const currentSong = getSongById(DEFAULT_SONG_ID);
+  const runtime = buildSongRuntime(currentSong);
   return {
     rows,
     energy: new Float32Array(rows),
@@ -74,7 +80,24 @@ export function createCanvasState(theme: CanvasTheme = 'dark', rows: number = MI
     musicStartTime: 0,
     lastMusicElapsed: -1,
     seqStep: 0,
+    currentSong,
+    songNotes: runtime.songNotes,
+    songDurationSec: runtime.durationMs / 1000,
   };
+}
+
+// Swaps the active song and rebuilds its runtime. Resets the sequencer step
+// and elapsed tracking so the new song starts cleanly. Caller restarts audio
+// timing if needed.
+export function selectSong(state: CanvasState, songId: string): Song {
+  const song = getSongById(songId);
+  const runtime = buildSongRuntime(song);
+  state.currentSong = song;
+  state.songNotes = runtime.songNotes;
+  state.songDurationSec = runtime.durationMs / 1000;
+  state.seqStep = 0;
+  state.lastMusicElapsed = -1;
+  return song;
 }
 
 export function updateRows(state: CanvasState, rows: number): void {
@@ -107,23 +130,24 @@ export function updateRows(state: CanvasState, rows: number): void {
   }
 }
 
-const SONG_DURATION_SEC = SONG_DURATION_MS / 1000;
 const LOOP_GAP_SEC = 1.5;
 
-// Plays due notes from the "Where Is My Mind" arrangement. Audio-clock-
-// locked for zero drift. seqFrame: collision nudge
-// when two notes share a row, and energy bleed to neighbouring rows.
+// Plays due notes from the currently selected song. Audio-clock-locked for
+// zero drift. Collision nudge when two notes share a row, and energy bleed to
+// neighbouring rows.
 export function tickMusic(state: CanvasState, audio: AudioState, onNote?: (note: string) => void): void {
   if (!state.musicPlaying || !audio.audioCtx) return;
   const elapsed = audio.audioCtx.currentTime - state.musicStartTime;
 
-  if (elapsed >= SONG_DURATION_SEC) {
+  if (elapsed >= state.songDurationSec) {
     state.seqStep = 0;
     state.lastMusicElapsed = elapsed + LOOP_GAP_SEC;
     state.musicStartTime = audio.audioCtx.currentTime + LOOP_GAP_SEC;
     return;
   }
 
+  const songNotes = state.songNotes;
+  const song = state.currentSong;
   const tickUsed = new Set<number>();
   while (state.seqStep < songNotes.length) {
     const [absMs, midi, durSec, vol] = songNotes[state.seqStep];
@@ -144,7 +168,7 @@ export function tickMusic(state: CanvasState, audio: AudioState, onNote?: (note:
 
     // Collision nudge: if two notes map to the same row this tick, push
     // to an adjacent free row so every note stays visually distinct.
-    let row = rowForMidi(midi, state.rows);
+    let row = rowForMidi(song, midi, state.rows);
     if (tickUsed.has(row)) {
       if (row > 0 && !tickUsed.has(row - 1)) row -= 1;
       else if (row < state.rows - 1 && !tickUsed.has(row + 1)) row += 1;

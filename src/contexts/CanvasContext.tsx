@@ -13,7 +13,9 @@ type CanvasEventType =
   | 'canvasDirty'
   | 'colorChange'
   | 'menuToggle'
-  | 'notePlayed';
+  | 'notePlayed'
+  | 'songSelect'
+  | 'songChanged';
 
 type EventMap = {
   themeChange: { theme: 'dark' | 'light' };
@@ -27,6 +29,8 @@ type EventMap = {
   colorChange: { color: string };
   menuToggle: undefined;
   notePlayed: { note: string };
+  songSelect: { songId: string };
+  songChanged: { songId: string };
 };
 
 type EventHandler<T> = (detail: T) => void;

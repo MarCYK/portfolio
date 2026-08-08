@@ -5,7 +5,7 @@ import { computeRows } from '@/lib/song-data';
 import { createAudioState, initAudio, playNote } from '@/lib/audio';
 import { pluckDecision } from '@/lib/pluck';
 import type { CanvasTheme } from '@/lib/canvas-engine';
-import { createCanvasState, drawFrame, getDefaultCanvasColors, getRowAtY, updateRows } from '@/lib/canvas-engine';
+import { createCanvasState, drawFrame, getDefaultCanvasColors, getRowAtY, updateRows, selectSong } from '@/lib/canvas-engine';
 import { useCanvas } from '@/contexts/CanvasContext';
 
 
@@ -152,6 +152,17 @@ export default function CanvasHome() {
       }
     });
 
+    const unsubSong = on('songSelect', (detail) => {
+      selectSong(state, detail.songId);
+      emit('songChanged', { songId: state.currentSong.id });
+      // If music is playing, restart timing so the new song begins immediately.
+      if (state.musicPlaying && audio.audioCtx) {
+        state.musicStartTime = audio.audioCtx.currentTime;
+        state.lastMusicElapsed = -1;
+        state.seqStep = 0;
+      }
+    });
+
     const unsubSunset = on('sunsetToggle', (detail) => {
       state.sunsetStrength = detail.active ? 1 : 0;
     });
@@ -194,6 +205,7 @@ export default function CanvasHome() {
       window.removeEventListener('touchcancel', stopDrawing);
       window.removeEventListener('blur', stopDrawing);
       unsubMusic();
+      unsubSong();
       unsubSunset();
       unsubCanvasClear();
       unsubColor();

@@ -1,8 +1,10 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Play, Pause, SkipBack, SkipForward, Disc3 } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { IconMusic, IconSunset, IconPaint, IconCanvasClear } from '../MarCYKIcons';
+import { SONGS, DEFAULT_SONG_ID } from '@/lib/songs';
 
 const SWATCHES = [
   { color: '', background: 'linear-gradient(135deg, #fff 50%, #000 50%)', label: 'Default color' },
@@ -18,16 +20,20 @@ const SWATCHES = [
 export default function CanvasToolbar() {
   const { emit, on, paintColor, setPaintColor, resetPaintColor } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
+  const [songListOpen, setSongListOpen] = useState(false);
+  const [currentSongId, setCurrentSongId] = useState(DEFAULT_SONG_ID);
 
   const [sunsetActive, setSunsetActive] = useState(false);
   const [canvasDirty, setCanvasDirty] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const paletteRef = useRef<HTMLDivElement>(null);
+  const songListRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const unsubscribers = [
       on('canvasDirty', (detail) => setCanvasDirty(detail.dirty)),
       on('musicToggle', (detail) => setMusicActive(detail.active)),
+      on('songChanged', (detail) => setCurrentSongId(detail.songId)),
 
       on('sunsetToggle', (detail) => setSunsetActive(detail.active)),
       on('paintToggle', (detail) => setPaletteOpen(detail.active)),
@@ -55,6 +61,21 @@ export default function CanvasToolbar() {
     return () => document.removeEventListener('mousedown', handler);
   }, [emit, paletteOpen]);
 
+  useEffect(() => {
+    const handler = (event: MouseEvent) => {
+      if (!songListRef.current) return;
+      if (songListRef.current.offsetParent === null) return;
+
+      if (!songListRef.current.contains(event.target as Node)) {
+        if (songListOpen) {
+          setSongListOpen(false);
+        }
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [songListOpen]);
+
   const ensureSoundOn = () => {
     emit('soundToggle', { enabled: true });
     try {
@@ -65,10 +86,30 @@ export default function CanvasToolbar() {
   };
 
   const toggleMusic = () => {
-    const next = !musicActive;
-    emit('musicToggle', { active: next });
+    const next = !songListOpen;
+    setSongListOpen(next);
+    if (next && paletteOpen) {
+      setPaletteOpen(false);
+      emit('paintToggle', { active: false });
+    }
   };
 
+  const currentSong = SONGS.find((s) => s.id === currentSongId) ?? SONGS[0];
+  const currentIdx = SONGS.findIndex((s) => s.id === currentSongId);
+
+  const prevSong = () => {
+    const prev = SONGS[(currentIdx - 1 + SONGS.length) % SONGS.length];
+    emit('songSelect', { songId: prev.id });
+  };
+
+  const nextSong = () => {
+    const next = SONGS[(currentIdx + 1) % SONGS.length];
+    emit('songSelect', { songId: next.id });
+  };
+
+  const togglePlay = () => {
+    emit('musicToggle', { active: !musicActive });
+  };
 
 
   const toggleSunset = () => {
@@ -96,6 +137,9 @@ export default function CanvasToolbar() {
     const next = !paletteOpen;
     setPaletteOpen(next);
     emit('paintToggle', { active: next });
+    if (next && songListOpen) {
+      setSongListOpen(false);
+    }
   };
 
   const clearCanvas = () => {
@@ -110,16 +154,57 @@ export default function CanvasToolbar() {
 
   return (
     <>
-      <button
-        id="music-toggle"
-        type="button"
-        className={`header-icon has-tooltip ${musicActive ? 'active' : ''} group`}
-        data-tooltip="Music"
-        onClick={toggleMusic}
-        aria-label="Toggle music"
-      >
-        <IconMusic />
-      </button>
+      <div className="music-wrapper relative flex items-center justify-center" ref={songListRef}>
+        <div id="song-list" className={`absolute bottom-full md:bottom-auto md:top-full right-0 pb-2 md:pb-0 md:pt-2 z-10 ${songListOpen ? '' : 'song-list-hidden'}`}>
+          <div className="color-palette-inner song-widget">
+            <Disc3 size={36} className={`song-disk ${musicActive ? 'spinning' : ''}`} />
+            <div className="song-widget-info-row">
+              <span className="song-marquee">
+                <span className="song-title">{currentSong.title}</span>
+                <span className="song-dot">·</span>
+                <span className="song-artist">{currentSong.artist}</span>
+              </span>
+            </div>
+            <div className="song-widget-controls">
+              <button
+                type="button"
+                className="song-nav-btn"
+                onClick={prevSong}
+                aria-label="Previous song"
+              >
+                <SkipBack size={13} />
+              </button>
+              <button
+                type="button"
+                className="song-play-btn"
+                onClick={togglePlay}
+                aria-label={musicActive ? 'Pause' : 'Play'}
+              >
+                {musicActive ? <Pause size={14} /> : <Play size={14} />}
+              </button>
+              <button
+                type="button"
+                className="song-nav-btn"
+                onClick={nextSong}
+                aria-label="Next song"
+              >
+                <SkipForward size={13} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <button
+          id="music-toggle"
+          type="button"
+          className={`header-icon has-tooltip ${musicActive ? 'active' : ''} group`}
+          data-tooltip="Music"
+          onClick={toggleMusic}
+          aria-label="Toggle music"
+        >
+          <IconMusic />
+        </button>
+      </div>
 
       <button
         id="sunset-toggle"

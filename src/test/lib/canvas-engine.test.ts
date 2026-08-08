@@ -1,5 +1,7 @@
 import { expect, test, describe, mock, beforeEach } from "bun:test";
-import { createCanvasState, drawFrame, updateRows, getRowAtY, type CanvasState } from "../../lib/canvas-engine";
+import { createCanvasState, drawFrame, updateRows, getRowAtY, selectSong, type CanvasState } from "../../lib/canvas-engine";
+import { buildSongRuntime } from "../../lib/song-runtime";
+import { SONGS, DEFAULT_SONG_ID, getSongById } from "../../lib/songs";
 import { createAudioState } from "../../lib/audio";
 
 // Mock canvas + context that records calls so we can assert render structure.
@@ -187,5 +189,36 @@ describe("006: getRowAtY", () => {
   test("clamps to valid row range", () => {
     expect(getRowAtY(1000, 2000, 10)).toBe(9);
     expect(getRowAtY(1000, 999, 10)).toBe(9);
+  });
+});
+
+describe("006: song runtime in canvas state", () => {
+  test("createCanvasState loads the default song and its runtime", () => {
+    const s = createCanvasState("dark", 12);
+    const expected = buildSongRuntime(getSongById(DEFAULT_SONG_ID));
+    expect(s.currentSong.id).toBe(DEFAULT_SONG_ID);
+    expect(s.songNotes).toHaveLength(expected.songNotes.length);
+    expect(s.songDurationSec).toBeCloseTo(expected.durationMs / 1000, 5);
+  });
+
+  test("selectSong swaps the song, rebuilds the runtime, and resets sequencing", () => {
+    const s = createCanvasState("dark", 12);
+    const other = SONGS.find((song) => song.id !== DEFAULT_SONG_ID)!;
+    s.seqStep = 5;
+    s.lastMusicElapsed = 42;
+    const returned = selectSong(s, other.id);
+    const expected = buildSongRuntime(other);
+    expect(returned.id).toBe(other.id);
+    expect(s.currentSong.id).toBe(other.id);
+    expect(s.songNotes).toHaveLength(expected.songNotes.length);
+    expect(s.songDurationSec).toBeCloseTo(expected.durationMs / 1000, 5);
+    expect(s.seqStep).toBe(0);
+    expect(s.lastMusicElapsed).toBe(-1);
+  });
+
+  test("selectSong with an unknown id falls back to the first catalog song", () => {
+    const s = createCanvasState("dark", 12);
+    selectSong(s, "does-not-exist");
+    expect(s.currentSong.id).toBe(SONGS[0].id);
   });
 });

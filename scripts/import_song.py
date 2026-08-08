@@ -26,6 +26,7 @@ Usage:
     python scripts/import_song.py song.mid --tracks 13,25       # keep only those tracks
     python scripts/import_song.py song.mid --name "My Song" --out custom.ts
     python scripts/import_song.py song.mid --min-vel 10  # drop ghost notes
+    python scripts/import_song.py song.mid --song-module --id foo --title "Foo" --artist "Bar" --normalize-vel --out src/lib/songs/foo.ts
 """
 from __future__ import annotations
 
@@ -69,13 +70,23 @@ def ticks_per_16th(ticks_per_beat: int) -> float:
     return ticks_per_beat / 4
 
 
+def first_tempo_bpm(mid: "mido.MidiFile") -> int:
+    # BPM from the first set_tempo meta across all tracks. Most files carry one
+    # tempo; tempo maps mid-song are ignored (rare for the piano covers we import).
+    for track in mid.tracks:
+        for msg in track:
+            if msg.type == "set_tempo":
+                return round(mido.tempo2bpm(msg.tempo))
+    return 120  # MIDI default when no tempo meta is present.
+
+
 def extract_notes(
     midi_path: Path,
     min_vel: int,
     skip_channel_9: bool,
     track_filter: set[int] | None,
     normalize_vel: bool,
-) -> list[Note]:
+) -> tuple[list[Note], int]:
     # clip=True clamps out-of-range data bytes to 127 instead of aborting.
     # Some DAW/synth exports contain bytes > 127 (spec-violating but common);
     # 127 is the max valid value anyway, so clamping is lossless for playback.
@@ -83,6 +94,7 @@ def extract_notes(
     step = ticks_per_16th(mid.ticks_per_beat)
     if step <= 0:
         sys.exit(f"Invalid ticks_per_beat: {mid.ticks_per_beat}")
+    bpm = first_tempo_bpm(mid)
 
     # Iterate tracks individually (not merge_tracks) so we can both filter by
     # track index and keep each track's delta-time arithmetic independent.
@@ -119,7 +131,7 @@ def extract_notes(
 
     if normalize_vel:
         _normalize_velocities(notes)
-    return notes
+    return notes, bpm
 
 
 def _normalize_velocities(notes: list[Note]) -> None:
@@ -172,6 +184,49 @@ def render_ts(notes: list[Note], name: str, source: str) -> str:
         f"export const IMPORTED_NOTES: [number, number, number, number][] = [\n"
         f"{body}\n"
         f"];\n"
+    )
+
+
+def render_song_module(
+    notes: list[Note],
+    song_id: str,
+    title: str,
+    artist: str,
+    bpm: int,
+    source: str,
+) -> str:
+    # Self-describing song module for the jukebox: the engine reads bpm/midiLo/
+    # midiHi at runtime instead of hardcoded constants, so each song plays at its
+    # own speed and maps to its own canvas row range.
+    notes_sorted = sorted(notes, key=lambda n: (n.start_step, n.midi))
+    midis = [n.midi for n in notes_sorted]
+
+    rows = []
+    for i in range(0, len(notes_sorted), 6):
+        chunk = notes_sorted[i : i + 6]
+        cells = ", ".join(
+            f"[{_num(n.start_step)}, {n.midi}, {n.dur_step}, {_num(n.vel)}]"
+            for n in chunk
+        )
+        sep = "," if i + 6 < len(notes_sorted) else ""
+        rows.append(f"    {cells}{sep}")
+    body = "\n".join(rows)
+
+    return (
+        f"// {title} — {artist}\n"
+        f"// Auto-generated from {source} by scripts/import_song.py.\n"
+        f"// notes format: [timeUnit, midi, dur, vel] in 16th-note steps at {bpm} BPM.\n"
+        f"export const SONG = {{\n"
+        f"  id: {song_id!r},\n"
+        f"  title: {title!r},\n"
+        f"  artist: {artist!r},\n"
+        f"  bpm: {bpm},\n"
+        f"  midiLo: {min(midis)},\n"
+        f"  midiHi: {max(midis)},\n"
+        f"  notes: [\n"
+        f"{body}\n"
+        f"  ] as [number, number, number, number][],\n"
+        f"}};\n"
     )
 
 
@@ -253,6 +308,16 @@ def main(argv: list[str] | None = None) -> int:
         "Matches how the reference Where Is My Mind data treats a constant-"
         "velocity OnlineSequencer export as uniform 1.0. Off by default.",
     )
+    parser.add_argument(
+        "--song-module",
+        action="store_true",
+        help="Emit a self-describing song module {id,title,artist,bpm,midiLo,"
+        "midiHi,notes} for the jukebox, instead of the bare IMPORTED_NOTES array. "
+        "Use with --id/--title/--artist.",
+    )
+    parser.add_argument("--id", default=None, help="Song id (with --song-module).")
+    parser.add_argument("--title", default=None, help="Song title (with --song-module).")
+    parser.add_argument("--artist", default=None, help="Artist name (with --song-module).")
     args = parser.parse_args(argv)
 
     if not args.midi.is_file():
@@ -264,7 +329,7 @@ def main(argv: list[str] | None = None) -> int:
     track_filter = _parse_track_filter(args.tracks)
 
     name = args.name or args.midi.stem
-    notes = extract_notes(
+    notes, bpm = extract_notes(
         args.midi,
         min_vel=max(1, args.min_vel),
         skip_channel_9=not args.keep_drums,
@@ -274,7 +339,17 @@ def main(argv: list[str] | None = None) -> int:
     if not notes:
         sys.exit(f"No notes found in {args.midi}.")
 
-    ts = render_ts(notes, name=name, source=args.midi.name)
+    if args.song_module:
+        ts = render_song_module(
+            notes,
+            song_id=args.id or args.midi.stem.lower().replace(" ", "-"),
+            title=args.title or args.midi.stem,
+            artist=args.artist or "Unknown",
+            bpm=bpm,
+            source=args.midi.name,
+        )
+    else:
+        ts = render_ts(notes, name=name, source=args.midi.name)
     args.out.write_text(ts, encoding="utf-8")
 
     midis = [n.midi for n in notes]
@@ -282,7 +357,7 @@ def main(argv: list[str] | None = None) -> int:
     print(f"  pitch range: {min(midis)}..{max(midis)}")
     print(
         f"  length: {max(n.start_step + n.dur_step for n in notes)} steps "
-        f"({max(n.start_step for n in notes) * 187.5 / 1000:.1f}s at 80 BPM)"
+        f"({max(n.start_step for n in notes) * 60000 / bpm / 4 / 1000:.1f}s at {bpm} BPM)"
     )
     return 0
 
