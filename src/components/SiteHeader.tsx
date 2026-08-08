@@ -20,20 +20,10 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const { emit, on } = useCanvas();
   const [musicActive, setMusicActive] = useState(false);
   const [sunsetActive, setSunsetActive] = useState(false);
-  const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
   useEffect(() => {
-    const unsubNote = on('notePlayed', (detail) => {
-      setNoteHistory(prev => {
-        const newHistory = [...prev, detail.note];
-        return newHistory.slice(-4);
-      });
-    });
     const unsubMusic = on('musicToggle', (detail) => {
       setMusicActive(detail.active);
-      if (!detail.active) {
-        setNoteHistory([]);
-      }
     });
 
     const unsubSunset = on('sunsetToggle', (detail) => {
@@ -41,9 +31,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
     });
 
     return () => {
-      unsubNote();
       unsubMusic();
-
       unsubSunset();
     };
   }, [on]);
@@ -65,17 +53,6 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         <a id="email-link" href={`mailto:${EMAIL}`} className="header-icon has-tooltip group" aria-label="Email" data-tooltip="Email">
           <IconEmail />
         </a>
-      )}
-      {musicActive && (
-        <div className="flex items-center gap-2 px-2">
-          <span
-            id="header-chord"
-            className="font-mono"
-            style={{ fontSize: '13px', color: 'var(--text-primary)', fontWeight: '500' }}
-          >
-            {noteHistory.join(' · ')}
-          </span>
-        </div>
       )}
 
       {isHomePage && <CanvasToolbar />}

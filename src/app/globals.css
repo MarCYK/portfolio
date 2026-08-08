@@ -315,6 +315,61 @@ body.sunset-active .marcyk-logo {
     justify-content: center;
   }
 
+  /* Mobile focus layout: |music icon| notes | space | player (right)|
+     Hide all non-music items, show player inline right-aligned. */
+  .mobile-icon-bar:has(.music-focused) #email-link,
+  .mobile-icon-bar:has(.music-focused) #sunset-toggle,
+  .mobile-icon-bar:has(.music-focused) #canvas-clear,
+  .mobile-icon-bar:has(.music-focused) .paint-wrapper,
+  .mobile-icon-bar:has(.music-focused) #sound-toggle,
+  .mobile-icon-bar:has(.music-focused) #theme-toggle {
+    display: none;
+  }
+
+  .mobile-icon-bar:has(.music-focused) .music-wrapper {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: flex-start;
+  }
+
+  .mobile-icon-bar .music-focused #music-toggle {
+    flex-shrink: 0;
+  }
+
+  .mobile-icon-bar .music-focused .song-notes {
+    flex-shrink: 0;
+  }
+
+  /* Player widget: inline, right-aligned via margin-left:auto.
+     flex-shrink:1 lets it yield space to notes+icon so it never
+     overflows the bar. */
+  .mobile-icon-bar .music-focused #song-list {
+    position: static;
+    padding: 0;
+    margin-left: auto;
+    flex: 0 1 auto;
+    min-width: 0;
+    max-width: 200px;
+  }
+
+  .mobile-icon-bar .music-focused #song-list .color-palette-inner {
+    background: none;
+    border: none;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .mobile-icon-bar .music-focused .song-widget {
+    width: 180px;
+    max-width: 100%;
+    padding: 0;
+    min-width: 0;
+  }
+
   #scroll-root {
     padding-bottom: 3.25rem;
   }
@@ -424,10 +479,20 @@ body.sunset-active .marcyk-logo {
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* Song widget dropdown — unified compact two-row design for both mobile
-   and desktop. Row 1: spinning disk + title . artist. Row 2: spinning
-   disk + prev + play/pause + next. #song-list mirrors #color-palette's
-   z-index so it sits above the header fade. */
+/* Sunset mode: .dark rule above wins when html.dark persists,
+   so override with sunset palette vars. Fixes unreadable widget. */
+body.sunset-active .color-palette-inner {
+  background-color: var(--surface1);
+  border: 1px solid var(--border);
+}
+
+body.sunset-active .song-nav-btn:hover {
+  background-color: rgba(76, 24, 58, 0.12);
+}
+
+/* Song widget dropdown — single-row compact design.
+   Controls (prev/play/next) + title · artist in one line.
+   #song-list mirrors #color-palette's z-index. */
 #song-list {
   z-index: 10;
 }
@@ -437,13 +502,11 @@ body.sunset-active .marcyk-logo {
 }
 
 .song-widget {
-  padding: 8px 10px;
-  display: grid;
-  grid-template-columns: auto 1fr;
-  grid-template-rows: auto auto;
-  gap: 4px 8px;
+  padding: 6px 8px;
+  display: flex;
   align-items: center;
-  width: 220px;
+  gap: 6px;
+  width: 200px;
   min-width: 0;
 }
 
@@ -454,10 +517,10 @@ body.sunset-active .marcyk-logo {
 }
 
 .song-widget-info-row {
-  grid-column: 2;
-  grid-row: 1;
   overflow: hidden;
   white-space: nowrap;
+  flex: 1;
+  min-width: 0;
 }
 
 .song-marquee {
@@ -482,38 +545,36 @@ body.sunset-active .marcyk-logo {
   color: var(--text-tertiary);
 }
 
-.song-disk {
-  grid-column: 1;
-  grid-row: 1 / 3;
-  color: var(--text-secondary);
-  flex-shrink: 0;
-}
-
-.song-disk.spinning {
-  animation: song-disk-spin 2s linear infinite;
-}
-
-@keyframes song-disk-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.song-spacer {
+  display: inline-block;
+  width: 32px;
 }
 
 .song-widget-controls {
-  grid-column: 2;
-  grid-row: 2;
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
-/* Marquee scroll: only when text overflows the fixed-width container. */
-.song-widget-info-row .song-marquee {
-  animation: song-marquee-scroll 8s linear infinite;
+/* Marquee scroll: only when text overflows the container.
+   .marquee-scrolling is added by JS after measuring scrollWidth
+   vs clientWidth. Duration scales with text length via --marquee-duration. */
+.song-marquee.marquee-scrolling {
+  animation: song-marquee-scroll var(--marquee-duration, 8s) linear infinite;
 }
 
 @keyframes song-marquee-scroll {
-  0%, 10% { transform: translateX(0); }
-  90%, 100% { transform: translateX(calc(-100% + 164px)); }
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Desktop: notes before music icon (DOM order is icon→notes,
+   row-reverse flips visual order without touching mobile layout). */
+@media (min-width: 768px) {
+  .music-wrapper {
+    flex-direction: row-reverse;
+  }
 }
 
 .song-nav-btn {
@@ -546,10 +607,10 @@ body.sunset-active .marcyk-logo {
   justify-content: center;
   width: 24px;
   height: 24px;
-  border-radius: 50%;
+  border-radius: 4px;
   cursor: pointer;
-  background: var(--bg-primary);
-  border: 1px solid var(--text-primary);
+  background: transparent;
+  border: none;
   color: var(--text-primary);
   flex-shrink: 0;
   transition: opacity var(--duration-fast) var(--ease-fast);
@@ -879,14 +940,13 @@ body.sunset-active {
   --bg-card-hover: #fff0c8;
 }
 
+.song-notes,
 #header-chord {
   font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--text-secondary);
-}
-
-#header-chord.hidden {
-  display: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
 }
 
 .page-container {

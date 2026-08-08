@@ -117,20 +117,8 @@ describe("CanvasToolbar song widget", () => {
     expect(artist).toBe(defaultSong.artist);
   });
 
-  test("widget has one spinning disk icon on the controls row", () => {
-    render(
-      <CanvasProvider>
-        <CanvasToolbar />
-      </CanvasProvider>
-    );
 
-    fireEvent.click(document.getElementById("music-toggle")!);
 
-    const disks = document.querySelectorAll("#song-list .song-disk");
-    expect(disks.length).toBe(1);
-    // Not spinning when music is inactive
-    expect(disks[0].className).not.toMatch(/spinning/);
-  });
 
   test("widget has prev, next, and play/pause buttons", () => {
     render(
@@ -273,6 +261,110 @@ describe("CanvasToolbar song widget", () => {
     fireEvent.click(document.getElementById("paint-toggle")!);
     expect(document.getElementById("song-list")?.className).toMatch(/song-list-hidden/);
     expect(document.getElementById("color-palette")?.className).not.toMatch(/hidden/);
+  });
+});
+
+describe("CanvasToolbar note history", () => {
+  test("notes appear inside music-wrapper when music is active and notes are played", () => {
+    function TestHarness() {
+      const { emit } = useCanvas();
+      useEffect(() => {
+        emit("musicToggle", { active: true });
+        emit("notePlayed", { note: "C4" });
+        emit("notePlayed", { note: "E4" });
+      }, [emit]);
+      return null;
+    }
+
+    render(
+      <CanvasProvider>
+        <CanvasToolbar />
+        <TestHarness />
+      </CanvasProvider>
+    );
+
+    const chord = document.getElementById("header-chord");
+    expect(chord).not.toBeNull();
+    expect(chord?.textContent).toContain("C4");
+    expect(chord?.textContent).toContain("E4");
+    expect(chord?.textContent).toBe("C4 · E4");
+  });
+
+  test("notes are not rendered when music is inactive", () => {
+    function TestHarness() {
+      const { emit } = useCanvas();
+      useEffect(() => {
+        emit("notePlayed", { note: "C4" });
+      }, [emit]);
+      return null;
+    }
+
+    render(
+      <CanvasProvider>
+        <CanvasToolbar />
+        <TestHarness />
+      </CanvasProvider>
+    );
+
+    expect(document.getElementById("header-chord")).toBeNull();
+  });
+
+  test("notes clear when music is toggled off", () => {
+    function TestHarness({ step }: { step: number }) {
+      const { emit } = useCanvas();
+      useEffect(() => {
+        if (step === 1) {
+          emit("musicToggle", { active: true });
+          emit("notePlayed", { note: "G4" });
+        } else {
+          emit("musicToggle", { active: false });
+        }
+      }, [emit, step]);
+      return null;
+    }
+
+    const { rerender } = render(
+      <CanvasProvider>
+        <CanvasToolbar />
+        <TestHarness step={1} />
+      </CanvasProvider>
+    );
+
+    expect(document.getElementById("header-chord")?.textContent).toBe("G4");
+
+    rerender(
+      <CanvasProvider>
+        <CanvasToolbar />
+        <TestHarness step={2} />
+      </CanvasProvider>
+    );
+
+    expect(document.getElementById("header-chord")).toBeNull();
+  });
+
+  test("note history caps at 4 entries", () => {
+    function TestHarness() {
+      const { emit } = useCanvas();
+      useEffect(() => {
+        emit("musicToggle", { active: true });
+        emit("notePlayed", { note: "C4" });
+        emit("notePlayed", { note: "D4" });
+        emit("notePlayed", { note: "E4" });
+        emit("notePlayed", { note: "F4" });
+        emit("notePlayed", { note: "G4" });
+      }, [emit]);
+      return null;
+    }
+
+    render(
+      <CanvasProvider>
+        <CanvasToolbar />
+        <TestHarness />
+      </CanvasProvider>
+    );
+
+    const chord = document.getElementById("header-chord");
+    expect(chord?.textContent).toBe("D4 · E4 · F4 · G4");
   });
 });
 

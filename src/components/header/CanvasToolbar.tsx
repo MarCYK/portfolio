@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Play, Pause, SkipBack, SkipForward, Disc3 } from 'lucide-react';
+import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { IconMusic, IconSunset, IconPaint, IconCanvasClear } from '../MarCYKIcons';
 import { SONGS, DEFAULT_SONG_ID } from '@/lib/songs';
@@ -22,18 +22,27 @@ export default function CanvasToolbar() {
   const [musicActive, setMusicActive] = useState(false);
   const [songListOpen, setSongListOpen] = useState(false);
   const [currentSongId, setCurrentSongId] = useState(DEFAULT_SONG_ID);
+  const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
   const [sunsetActive, setSunsetActive] = useState(false);
   const [canvasDirty, setCanvasDirty] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const paletteRef = useRef<HTMLDivElement>(null);
   const songListRef = useRef<HTMLDivElement>(null);
+  const infoRowRef = useRef<HTMLDivElement>(null);
+  const marqueeRef = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const unsubscribers = [
       on('canvasDirty', (detail) => setCanvasDirty(detail.dirty)),
-      on('musicToggle', (detail) => setMusicActive(detail.active)),
+      on('musicToggle', (detail) => {
+        setMusicActive(detail.active);
+        if (!detail.active) setNoteHistory([]);
+      }),
       on('songChanged', (detail) => setCurrentSongId(detail.songId)),
+      on('notePlayed', (detail) => {
+        setNoteHistory((prev) => [...prev, detail.note].slice(-4));
+      }),
 
       on('sunsetToggle', (detail) => setSunsetActive(detail.active)),
       on('paintToggle', (detail) => setPaletteOpen(detail.active)),
@@ -49,7 +58,7 @@ export default function CanvasToolbar() {
       if (!paletteRef.current) return;
       // Skip if this toolbar instance is hidden (e.g. mobile bar on desktop)
       if (paletteRef.current.offsetParent === null) return;
-      
+
       if (!paletteRef.current.contains(event.target as Node)) {
         if (paletteOpen) {
           setPaletteOpen(false);
@@ -75,6 +84,40 @@ export default function CanvasToolbar() {
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
   }, [songListOpen]);
+
+  // Marquee overflow detection: only scroll when text is wider than its
+  // container. Duration scales with text length so reading speed is
+  // consistent across songs. Re-measures on song change, widget open,
+  // and viewport resize (via ResizeObserver).
+  useEffect(() => {
+    if (!songListOpen) return;
+    const infoRow = infoRowRef.current;
+    const marquee = marqueeRef.current;
+    if (!infoRow || !marquee) return;
+
+    const measure = () => {
+      const containerWidth = infoRow.clientWidth;
+      if (containerWidth === 0) return;
+      // Marquee contains two identical copies. Half the scroll width
+      // is one copy — if that exceeds the container, text overflows.
+      const copyWidth = marquee.scrollWidth / 2;
+      if (copyWidth > containerWidth) {
+        const duration = Math.max(4, Math.min(15, copyWidth / 40));
+        marquee.style.setProperty('--marquee-duration', `${duration}s`);
+        marquee.classList.add('marquee-scrolling');
+      } else {
+        marquee.classList.remove('marquee-scrolling');
+      }
+    };
+
+    const raf = requestAnimationFrame(measure);
+    const ro = new ResizeObserver(measure);
+    ro.observe(infoRow);
+    return () => {
+      cancelAnimationFrame(raf);
+      ro.disconnect();
+    };
+  }, [songListOpen, currentSongId]);
 
   const ensureSoundOn = () => {
     emit('soundToggle', { enabled: true });
@@ -154,15 +197,36 @@ export default function CanvasToolbar() {
 
   return (
     <>
-      <div className="music-wrapper relative flex items-center justify-center" ref={songListRef}>
+      <div className={`music-wrapper relative flex items-center justify-center ${songListOpen ? 'music-focused' : ''}`} ref={songListRef}>
+        <button
+          id="music-toggle"
+          type="button"
+          className={`header-icon has-tooltip ${musicActive ? 'active' : ''} group`}
+          data-tooltip="Music"
+          onClick={toggleMusic}
+          aria-label="Toggle music"
+        >
+          <IconMusic />
+        </button>
+
+        {musicActive && noteHistory.length > 0 && (
+          <span id="header-chord" className="song-notes">
+            {noteHistory.join(' · ')}
+          </span>
+        )}
+
         <div id="song-list" className={`absolute bottom-full md:bottom-auto md:top-full right-0 pb-2 md:pb-0 md:pt-2 z-10 ${songListOpen ? '' : 'song-list-hidden'}`}>
           <div className="color-palette-inner song-widget">
-            <Disc3 size={36} className={`song-disk ${musicActive ? 'spinning' : ''}`} />
-            <div className="song-widget-info-row">
-              <span className="song-marquee">
+            <div className="song-widget-info-row" ref={infoRowRef}>
+              <span className="song-marquee" ref={marqueeRef}>
                 <span className="song-title">{currentSong.title}</span>
                 <span className="song-dot">·</span>
                 <span className="song-artist">{currentSong.artist}</span>
+                <span className="song-spacer" />
+                <span className="song-title">{currentSong.title}</span>
+                <span className="song-dot">·</span>
+                <span className="song-artist">{currentSong.artist}</span>
+                <span className="song-spacer" />
               </span>
             </div>
             <div className="song-widget-controls">
@@ -193,17 +257,6 @@ export default function CanvasToolbar() {
             </div>
           </div>
         </div>
-
-        <button
-          id="music-toggle"
-          type="button"
-          className={`header-icon has-tooltip ${musicActive ? 'active' : ''} group`}
-          data-tooltip="Music"
-          onClick={toggleMusic}
-          aria-label="Toggle music"
-        >
-          <IconMusic />
-        </button>
       </div>
 
       <button
@@ -226,8 +279,8 @@ export default function CanvasToolbar() {
       >
         <IconCanvasClear />
       </button>
-      
-      <div className="relative flex items-center justify-center" ref={paletteRef}>
+
+      <div className="paint-wrapper relative flex items-center justify-center" ref={paletteRef}>
         <div id="color-palette" className={`absolute bottom-full md:bottom-auto md:top-full right-0 pb-2 md:pb-0 md:pt-2 z-10 ${paletteOpen ? '' : 'hidden'}`}>
           <div className="color-palette-inner flex items-center gap-1.5">
             {SWATCHES.map((swatch) => (
