@@ -92,11 +92,12 @@ def extract_notes(
             continue
 
         abs_tick = 0  # mido msg.time is a delta; accumulate to absolute.
-        # FIFO queue of open start-ticks per note. A note_on pushes a start;
-        # a note_off pops the OLDEST. This lets the same pitch ring twice at
-        # once (e.g. doubled events in OnlineSequencer exports) instead of
-        # collapsing or re-striking them.
-        open_starts: dict[int, list[int]] = {}
+        # FIFO queue of (start_tick, velocity) per note. A note_on pushes its
+        # start and velocity; a note_off pops the OLDEST. This lets the same
+        # pitch ring twice at once (e.g. doubled events in OnlineSequencer
+        # exports) instead of collapsing or re-striking them. Velocity comes
+        # from the note_on — note_off velocity is undefined/0 in most files.
+        open_starts: dict[int, list[tuple[int, int]]] = {}
         for msg in track:
             abs_tick += msg.time
             if msg.type not in ("note_on", "note_off"):
@@ -106,10 +107,10 @@ def extract_notes(
 
             is_off = msg.type == "note_off" or msg.velocity == 0
             if not is_off and msg.velocity >= min_vel:
-                open_starts.setdefault(msg.note, []).append(abs_tick)
+                open_starts.setdefault(msg.note, []).append((abs_tick, msg.velocity))
             elif is_off and open_starts.get(msg.note):
-                start = open_starts[msg.note].pop(0)
-                notes.append(_build(start, abs_tick, msg.note, msg.velocity, step))
+                start, vel = open_starts[msg.note].pop(0)
+                notes.append(_build(start, abs_tick, msg.note, vel, step))
 
         # Notes never closed get a 1-step length so nothing is silently dropped.
         for note, starts in open_starts.items():

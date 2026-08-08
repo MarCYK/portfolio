@@ -46,7 +46,7 @@ src/
 pip install -r scripts/requirements.txt
 
 # import a song (overwrites src/lib/song-data-notes.ts)
-python scripts/import_song.py path/to/song.mid --name '"Song Title" (Artist)'
+python scripts/import_song.py path/to/song.mid --normalize-vel --name '"Song Title" (Artist)'
 
 # options
 python scripts/import_song.py song.mid --list-tracks        # see track indexes
