@@ -335,11 +335,19 @@ body.sunset-active .marcyk-logo {
     justify-content: flex-start;
   }
 
-  .mobile-icon-bar .music-focused #music-toggle {
-    flex-shrink: 0;
+  /* On mobile the bottom bar is cramped, so note history only shows when the
+     music icon is focused (song list open). Hidden otherwise to stop notes
+     leaking into the bar while music plays in the background. */
+  .mobile-icon-bar .song-notes {
+    display: none;
   }
 
   .mobile-icon-bar .music-focused .song-notes {
+    display: flex;
+    flex-shrink: 0;
+  }
+
+  .mobile-icon-bar .music-focused #music-toggle {
     flex-shrink: 0;
   }
 

@@ -1,5 +1,5 @@
 import { expect, test, describe, mock, beforeEach } from "bun:test";
-import { createCanvasState, drawFrame, updateRows, getRowAtY, selectSong, type CanvasState } from "../../lib/canvas-engine";
+import { createCanvasState, drawFrame, updateRows, getRowAtY, selectSong, tickMusic, type CanvasState } from "../../lib/canvas-engine";
 import { buildSongRuntime } from "../../lib/song-runtime";
 import { SONGS, DEFAULT_SONG_ID, getSongById } from "../../lib/songs";
 import { createAudioState } from "../../lib/audio";
@@ -220,5 +220,48 @@ describe("006: song runtime in canvas state", () => {
     const s = createCanvasState("dark", 12);
     selectSong(s, "does-not-exist");
     expect(s.currentSong.id).toBe(SONGS[0].id);
+  });
+});
+
+describe("006: tickMusic mute gate", () => {
+  // The sound icon is the master mute. When soundEnabled is false the music
+  // sequencer must not emit audio, otherwise muting leaves music playing.
+  function makeMusicState(): { state: CanvasState; audio: ReturnType<typeof createAudioState>; playCalls: string[] } {
+    const state = createCanvasState("dark", 12);
+    state.musicPlaying = true;
+    // Anchor startTime so the first note (absMs small) is already due.
+    const fakeCtx = { currentTime: 10 } as AudioContext;
+    const playCalls: string[] = [];
+    const player = {
+      play: mock((note: string) => { playCalls.push(note); }),
+    } as unknown as import("../../lib/audio").AudioState["player"];
+    const audio = {
+      audioCtx: fakeCtx,
+      player,
+      soundEnabled: true,
+    } as ReturnType<typeof createAudioState>;
+    state.musicStartTime = fakeCtx.currentTime - 1;
+    return { state, audio, playCalls };
+  }
+
+  test("plays notes through audio.player when sound is enabled", () => {
+    const { state, audio, playCalls } = makeMusicState();
+    tickMusic(state, audio);
+    expect(playCalls.length).toBeGreaterThan(0);
+  });
+
+  test("does NOT play notes through audio.player when sound is disabled", () => {
+    const { state, audio, playCalls } = makeMusicState();
+    audio.soundEnabled = false;
+    tickMusic(state, audio);
+    expect(playCalls.length).toBe(0);
+  });
+
+  test("still fires onNote callback when sound is disabled (visuals keep advancing)", () => {
+    const { state, audio } = makeMusicState();
+    audio.soundEnabled = false;
+    const notes: string[] = [];
+    tickMusic(state, audio, (n) => notes.push(n));
+    expect(notes.length).toBeGreaterThan(0);
   });
 });

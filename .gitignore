@@ -38,6 +38,13 @@ next-env.d.ts
 # Vercel
 .vercel
 
+# Cloudflare / OpenNext
+.open-next/
+.wrangler/
+
+# Generated content registry
+src/data/words-registry.generated.ts
+
 # Testing & Reports
 test-results/
 evaluate/

@@ -155,7 +155,9 @@ export function tickMusic(state: CanvasState, audio: AudioState, onNote?: (note:
     if (noteTimeSec > elapsed) break;
 
     const midiNote = midiToName(midi);
-    if (audio.player) {
+    // Master mute gate: the sound icon toggles audio.soundEnabled. Respect it
+    // here so muting silences music too. Visuals (onNote, row glow) still run.
+    if (audio.soundEnabled && audio.player) {
       try {
         audio.player.play(midiNote, audio.audioCtx.currentTime, { duration: durSec, gain: vol });
       } catch (error) {

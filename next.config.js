@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	allowedDevOrigins: ['']
+	allowedDevOrigins: [''],
+	images: { unoptimized: true }
 }
 
 module.exports = nextConfig

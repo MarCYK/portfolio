@@ -25,3 +25,19 @@ describe("header layering", () => {
     expect((palette as number) > (fade as number)).toBe(true);
   });
 });
+
+// On mobile the bottom icon bar is cramped. The note history (.song-notes)
+// must only appear when the music icon is focused (.music-focused), otherwise
+// notes leak into the bar while music plays in the background. Regression test.
+describe("mobile song-notes visibility", () => {
+  test("hides .song-notes inside .mobile-icon-bar when not music-focused", () => {
+    const bare = /\.mobile-icon-bar\s+\.song-notes\s*\{[^}]*display:\s*none/i.test(css);
+    const notHas = /\.mobile-icon-bar(?::not\(:has\(\.music-focused\)\))?\s+\.song-notes\s*\{[^}]*display:\s*none/i.test(css);
+    expect(bare || notHas).toBe(true);
+  });
+
+  test("keeps .song-notes visible when the music wrapper is music-focused", () => {
+    const restore = /\.mobile-icon-bar[^\{]*\.music-focused[^\{]*\.song-notes\s*\{[^}]*display:\s*(?:flex|inline|block|inherit)/i.test(css);
+    expect(restore).toBe(true);
+  });
+});
