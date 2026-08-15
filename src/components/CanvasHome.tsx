@@ -27,6 +27,9 @@ export default function CanvasHome() {
     const audio = createAudioState();
     const initialTheme: CanvasTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
     const state = createCanvasState(initialTheme);
+    // Sunset persists across SPA navigation via the body class; pick it up
+    // on mount so the gradient survives remounts.
+    state.sunsetStrength = document.body.classList.contains('sunset-active') ? 1 : 0;
     state.paintColor = getPaintColor();
 
     // DPR-aware resize: backing store scaled by DPR,
