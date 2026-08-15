@@ -1,6 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState, type ReactNode } from 'react';
+import { readPreference, writePreference, removePreference } from '@/lib/storage';
 
 type CanvasEventType =
   | 'themeChange'
@@ -50,11 +51,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const handlersRef = useRef(new Map<CanvasEventType, Set<EventHandler<unknown>>>());
   const [paintColor, setPaintColorState] = useState(() => {
     if (typeof window === 'undefined') return '';
-    try {
-      return localStorage.getItem('canvasColor') || '';
-    } catch {
-      return '';
-    }
+    return readPreference('canvasColor') || '';
   });
   const paintColorRef = useRef(paintColor);
 
@@ -87,14 +84,10 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
     const normalized = color || '';
     paintColorRef.current = normalized;
     setPaintColorState(normalized);
-    try {
-      if (normalized) {
-        localStorage.setItem('canvasColor', normalized);
-      } else {
-        localStorage.removeItem('canvasColor');
-      }
-    } catch {
-      // Ignore
+    if (normalized) {
+      writePreference('canvasColor', normalized);
+    } else {
+      removePreference('canvasColor');
     }
     emit('colorChange', { color: normalized });
   }, [emit]);
@@ -102,11 +95,7 @@ export function CanvasProvider({ children }: { children: ReactNode }) {
   const resetPaintColor = useCallback(() => {
     paintColorRef.current = '';
     setPaintColorState('');
-    try {
-      localStorage.removeItem('canvasColor');
-    } catch {
-      // Ignore
-    }
+    removePreference('canvasColor');
     emit('colorChange', { color: '' });
   }, [emit]);
 

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { IconSound } from '../MarCYKIcons';
 import { useCanvas } from '@/contexts/CanvasContext';
 import { readSoundPreference } from '@/lib/audio';
+import { writePreference } from '@/lib/storage';
 
 export function useSound() {
   const { emit, on } = useCanvas();
@@ -18,11 +19,7 @@ export function useSound() {
   const toggleSound = () => {
     const newEnabled = !soundEnabled;
     setSoundEnabled(newEnabled);
-    try {
-      localStorage.setItem('sound', newEnabled ? 'on' : 'off');
-    } catch {
-      // Ignore persistence failures; in-memory state still updates.
-    }
+    writePreference('sound', newEnabled ? 'on' : 'off');
     emit('soundToggle', { enabled: newEnabled });
   };
 

@@ -1,6 +1,7 @@
 import type { Player } from 'soundfont-player';
 import { rowToNote } from './song-data';
 import { PLUCK_VELOCITY, PLUCK_DURATION } from './pluck';
+import { readPreference } from './storage';
 
 export interface AudioState {
   audioCtx: AudioContext | null;
@@ -9,13 +10,9 @@ export interface AudioState {
 }
 
 export function readSoundPreference(): boolean {
-  try {
-    const stored = localStorage.getItem('sound');
-    if (stored === 'off' || stored === 'disabled') return false;
-    return true;
-  } catch {
-    return true;
-  }
+  const stored = readPreference('sound');
+  if (stored === 'off' || stored === 'disabled') return false;
+  return true;
 }
 
 export function createAudioState(): AudioState {

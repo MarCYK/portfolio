@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { IconSun, IconMoon } from '../MarCYKIcons';
 import { useCanvas } from '@/contexts/CanvasContext';
+import { readPreference, writePreference } from '@/lib/storage';
 
 type ThemeMode = 'dark' | 'light';
 
@@ -14,11 +15,7 @@ export function useTheme() {
     if (typeof window === 'undefined') {
       return true;
     }
-    try {
-      return localStorage.getItem('theme') !== 'light';
-    } catch {
-      return true;
-    }
+    return readPreference('theme') !== 'light';
   });
 
   useEffect(() => {
@@ -36,18 +33,10 @@ export function useTheme() {
     setIsDark(newDark);
 
     if (newDark) {
-      try {
-        localStorage.setItem('theme', 'dark');
-      } catch {
-        // Ignore persistence failures; UI state still updates.
-      }
+      writePreference('theme', 'dark');
       broadcastTheme('dark');
     } else {
-      try {
-        localStorage.setItem('theme', 'light');
-      } catch {
-        // Ignore persistence failures; UI state still updates.
-      }
+      writePreference('theme', 'light');
       broadcastTheme('light');
     }
   };
