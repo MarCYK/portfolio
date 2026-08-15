@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Play, Pause, SkipBack, SkipForward } from 'lucide-react';
 import { useCanvas } from '@/contexts/CanvasContext';
-import { IconMusic, IconSunset, IconPaint, IconCanvasClear } from '../MarCYKIcons';
+import { IconMusic, IconPaint, IconCanvasClear } from '../MarCYKIcons';
 import { SONGS, DEFAULT_SONG_ID } from '@/lib/songs';
 
 const SWATCHES = [
@@ -24,7 +24,6 @@ export default function CanvasToolbar() {
   const [currentSongId, setCurrentSongId] = useState(DEFAULT_SONG_ID);
   const [noteHistory, setNoteHistory] = useState<string[]>([]);
 
-  const [sunsetActive, setSunsetActive] = useState(false);
   const [canvasDirty, setCanvasDirty] = useState(false);
   const [paletteOpen, setPaletteOpen] = useState(false);
   const paletteRef = useRef<HTMLDivElement>(null);
@@ -44,14 +43,19 @@ export default function CanvasToolbar() {
         setNoteHistory((prev) => [...prev, detail.note].slice(-4));
       }),
 
-      on('sunsetToggle', (detail) => setSunsetActive(detail.active)),
+      on('sunsetToggle', (detail) => {
+        if (!detail.active && paletteOpen) {
+          setPaletteOpen(false);
+          emit('paintToggle', { active: false });
+        }
+      }),
       on('paintToggle', (detail) => setPaletteOpen(detail.active)),
     ];
 
     return () => {
       unsubscribers.forEach((unsubscribe) => unsubscribe());
     };
-  }, [on]);
+  }, [on, emit, paletteOpen]);
 
   useEffect(() => {
     const handler = (event: MouseEvent) => {
@@ -146,27 +150,6 @@ export default function CanvasToolbar() {
   };
 
 
-  const toggleSunset = () => {
-    const next = !sunsetActive;
-    emit('sunsetToggle', { active: next });
-
-    if (!next) {
-      emit('canvasClear', undefined);
-      setCanvasDirty(false);
-      resetPaintColor();
-      if (paletteOpen) {
-        setPaletteOpen(false);
-        emit('paintToggle', { active: false });
-      }
-    }
-
-    if (next) {
-      document.body.classList.add('sunset-active');
-    } else {
-      document.body.classList.remove('sunset-active');
-    }
-  };
-
   const togglePaint = () => {
     const next = !paletteOpen;
     setPaletteOpen(next);
@@ -250,16 +233,6 @@ export default function CanvasToolbar() {
         </div>
       </div>
 
-      <button
-        id="sunset-toggle"
-        type="button"
-        className={`header-icon has-tooltip ${sunsetActive ? 'active' : ''} group`}
-        data-tooltip="Sunset"
-        onClick={toggleSunset}
-        aria-label="Toggle sunset"
-      >
-        <IconSunset />
-      </button>
       <button
         id="canvas-clear"
         type="button"

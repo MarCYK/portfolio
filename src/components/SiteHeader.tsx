@@ -12,6 +12,7 @@ import ThemeToggle from './header/ThemeToggle';
 import { useSound } from './header/SoundToggle';
 import SoundToggle from './header/SoundToggle';
 import CanvasToolbar from './header/CanvasToolbar';
+import SunsetToggle from './header/SunsetToggle';
 
 export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolean }) {
   const pathname = usePathname();
@@ -56,6 +57,7 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
       )}
 
       {isHomePage && <CanvasToolbar />}
+      <SunsetToggle />
       <SoundToggle enabled={soundEnabled} onToggle={toggleSound} />
       <ThemeToggle isDark={isDark} onToggle={handleThemeToggle} disabled={sunsetActive} />
     </>

@@ -31,7 +31,7 @@ describe("CanvasToolbar", () => {
     expect(paintToggle?.getAttribute("data-tooltip")).toBe("Paint");
   });
 
-  test("music, sunset, and canvas-clear each show a tooltip", () => {
+  test("music and canvas-clear each show a tooltip, sunset toggle is gone", () => {
     render(
       <CanvasProvider>
         <CanvasToolbar />
@@ -40,7 +40,6 @@ describe("CanvasToolbar", () => {
 
     const cases: Array<[string, string]> = [
       ["music-toggle", "Music"],
-      ["sunset-toggle", "Sunset"],
       ["canvas-clear", "Clear canvas"],
     ];
     for (const [id, label] of cases) {
@@ -49,6 +48,7 @@ describe("CanvasToolbar", () => {
       expect(btn?.className).toMatch(/has-tooltip/);
       expect(btn?.getAttribute("data-tooltip")).toBe(label);
     }
+    expect(document.getElementById("sunset-toggle")).toBeNull();
   });
 
   test("palette swatches match exact colors", () => {
