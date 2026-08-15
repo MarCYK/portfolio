@@ -24,7 +24,7 @@ export default function ArticleShell({ title, meta, backHref, backLabel, childre
             </h1>
 
             <div
-              className="mb-12 flex flex-wrap items-center gap-x-3 text-sm"
+              className="mb-12 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm"
               style={{ color: 'var(--text-tertiary)' }}
             >
               {meta}
