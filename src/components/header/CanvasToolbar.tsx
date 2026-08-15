@@ -119,15 +119,6 @@ export default function CanvasToolbar() {
     };
   }, [songListOpen, currentSongId]);
 
-  const ensureSoundOn = () => {
-    emit('soundToggle', { enabled: true });
-    try {
-      localStorage.setItem('sound', 'on');
-    } catch {
-      // Ignore persistence failures; event bus still updates in-memory state.
-    }
-  };
-
   const toggleMusic = () => {
     const next = !songListOpen;
     setSongListOpen(next);
