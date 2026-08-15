@@ -23,6 +23,8 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
   const [sunsetActive, setSunsetActive] = useState(false);
 
   useEffect(() => {
+    setSunsetActive(document.body.classList.contains('sunset-active'));
+
     const unsubMusic = on('musicToggle', (detail) => {
       setMusicActive(detail.active);
     });
