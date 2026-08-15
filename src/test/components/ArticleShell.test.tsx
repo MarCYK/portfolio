@@ -1,5 +1,5 @@
 import { expect, test, describe, mock } from 'bun:test';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import ArticleShell from '@/components/ArticleShell';
 
 mock.module('@/components/PageShell', () => ({
@@ -14,7 +14,7 @@ mock.module('next/link', () => ({
 
 describe('ArticleShell', () => {
   test('renders title in an h1, meta content, back link, and children', () => {
-    render(
+    const { getByRole, getByText } = render(
       <ArticleShell
         title="Shell Title"
         meta={<span>meta-content</span>}
@@ -25,11 +25,11 @@ describe('ArticleShell', () => {
       </ArticleShell>
     );
 
-    expect(screen.getByRole('heading', { level: 1, name: 'Shell Title' })).not.toBeNull();
-    expect(screen.getByText('meta-content')).not.toBeNull();
-    expect(screen.getByText('child-content')).not.toBeNull();
+    expect(getByRole('heading', { level: 1, name: 'Shell Title' })).not.toBeNull();
+    expect(getByText('meta-content')).not.toBeNull();
+    expect(getByText('child-content')).not.toBeNull();
 
-    const backLink = screen.getByRole('link', { name: 'Back to words' });
+    const backLink = getByRole('link', { name: 'Back to words' });
     expect(backLink.getAttribute('href')).toBe('/words');
   });
 });
