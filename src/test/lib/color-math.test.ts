@@ -1,5 +1,17 @@
 import { test, expect } from 'bun:test';
-import { lerp, tryParseHex, sampleGradient, mixRgb, toRgba } from '../../lib/color-math';
+import { clamp, lerp, tryParseHex, sampleGradient, mixRgb, toRgba } from '../../lib/color-math';
+
+test('clamp: clamps below range to min', () => {
+  expect(clamp(-5, 0, 1)).toBe(0);
+});
+
+test('clamp: passes through in-range value', () => {
+  expect(clamp(0.5, 0, 1)).toBe(0.5);
+});
+
+test('clamp: clamps above range to max', () => {
+  expect(clamp(2, 0, 1)).toBe(1);
+});
 
 test('lerp: interpolates linearly', () => {
   expect(lerp(0, 10, 0.5)).toBe(5);
