@@ -3,6 +3,7 @@
 // that depend on the currently selected song's bpm and pitch range.
 import type { Song } from './songs';
 import { shapeVolume } from './song-data';
+import { clamp } from './color-math';
 
 export type SongNote = [number, number, number, number];
 
@@ -29,7 +30,7 @@ export function convertSongNote(
 // low pitch near the bottom margin, high pitch near the top margin.
 export function rowForMidi(song: Pick<Song, 'midiLo' | 'midiHi'>, midi: number, totalRows: number): number {
   const t = (midi - song.midiLo) / (song.midiHi - song.midiLo);
-  const clamped = Math.max(0, Math.min(1, t));
+  const clamped = clamp(t, 0, 1);
   const margin = Math.floor(totalRows * 0.12);
   const usable = totalRows - 1 - margin * 2;
   return margin + Math.round((1 - clamped) * usable);

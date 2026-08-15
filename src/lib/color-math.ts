@@ -4,6 +4,10 @@ export function lerp(a: number, b: number, t: number): number {
   return a + (b - a) * t;
 }
 
+export function clamp(value: number, min: number, max: number): number {
+  return Math.min(max, Math.max(min, value));
+}
+
 export function tryParseHex(color: string): Rgb | null {
   const normalized = color.replace('#', '');
   const value = normalized.length === 3
@@ -18,7 +22,7 @@ export function tryParseHex(color: string): Rgb | null {
 }
 
 export function sampleGradient(stops: string[], t: number): Rgb {
-  const clamped = Math.min(1, Math.max(0, t));
+  const clamped = clamp(t, 0, 1);
   const scaled = clamped * (stops.length - 1);
   const index = Math.floor(scaled);
   const localT = scaled - index;
@@ -33,7 +37,7 @@ export function sampleGradient(stops: string[], t: number): Rgb {
 }
 
 export function mixRgb(base: Rgb, highlight: Rgb, amount: number): Rgb {
-  const clamped = Math.min(1, Math.max(0, amount));
+  const clamped = clamp(amount, 0, 1);
   return {
     r: Math.round(lerp(base.r, highlight.r, clamped)),
     g: Math.round(lerp(base.g, highlight.g, clamped)),

@@ -6,7 +6,7 @@ import {
 import { buildSongRuntime, rowForMidi, type SongNote } from './song-runtime';
 import { SONGS, DEFAULT_SONG_ID, getSongById, type Song } from './songs';
 import type { AudioState } from './audio';
-import { mixRgb, toRgba, tryParseHex, type Rgb } from './color-math';
+import { clamp, mixRgb, toRgba, tryParseHex } from './color-math';
 import { computeNoise } from './wave-noise';
 import { sunsetRowColor } from './sunset-color';
 import { musicNoteColor } from './note-color';
@@ -209,10 +209,6 @@ function getEdgePow(width: number): number {
   return 5;
 }
 
-function rgbaTuple(rgb: Rgb, alpha: number): string {
-  return `rgba(${rgb.r},${rgb.g},${rgb.b},${alpha.toFixed(3)})`;
-}
-
 // drawFrame draw() function. The caller passes the
 // current performance.now() so time advances at real-time rate (0.0003x),
 // independent of frame rate. Reference values are reproduced exactly.
@@ -386,24 +382,24 @@ export function drawFrame(
       if (paintColor) {
         const rgb = tryParseHex(paintColor);
         if (rgb) {
-          ctx.strokeStyle = rgbaTuple(rgb, 0.8 * topFade);
+          ctx.strokeStyle = toRgba(rgb, 0.8 * topFade);
         } else {
-          ctx.strokeStyle = isDark ? rgbaTuple({ r: 255, g: 255, b: 255 }, 0.9 * topFade)
-                                   : rgbaTuple({ r: 0, g: 0, b: 0 }, 0.9 * topFade);
+          ctx.strokeStyle = isDark ? toRgba({ r: 255, g: 255, b: 255 }, 0.9 * topFade)
+                                   : toRgba({ r: 0, g: 0, b: 0 }, 0.9 * topFade);
         }
       } else {
-        ctx.strokeStyle = isDark ? rgbaTuple({ r: 255, g: 255, b: 255 }, 0.9 * topFade)
-                                 : rgbaTuple({ r: 0, g: 0, b: 0 }, 0.9 * topFade);
+        ctx.strokeStyle = isDark ? toRgba({ r: 255, g: 255, b: 255 }, 0.9 * topFade)
+                                 : toRgba({ r: 0, g: 0, b: 0 }, 0.9 * topFade);
       }
       ctx.lineWidth = HOVER_STROKE_WIDTH;
     } else if (isHover || isChordRow) {
-      ctx.strokeStyle = isDark ? rgbaTuple({ r: 255, g: 255, b: 255 }, 0.9 * topFade)
-                               : rgbaTuple({ r: 0, g: 0, b: 0 }, 0.9 * topFade);
+      ctx.strokeStyle = isDark ? toRgba({ r: 255, g: 255, b: 255 }, 0.9 * topFade)
+                               : toRgba({ r: 0, g: 0, b: 0 }, 0.9 * topFade);
       ctx.lineWidth = HOVER_STROKE_WIDTH;
     } else {
       ctx.strokeStyle = isDark
-        ? rgbaTuple({ r: 255, g: 255, b: 255 }, topFade)
-        : rgbaTuple({ r: 0, g: 0, b: 0 }, topFade);
+        ? toRgba({ r: 255, g: 255, b: 255 }, topFade)
+        : toRgba({ r: 0, g: 0, b: 0 }, topFade);
       ctx.lineWidth = LINE_STROKE_WIDTH;
     }
 
@@ -423,7 +419,7 @@ export function getRowAtY(canvasHeight: number, clientY: number, rows: number): 
   const rowSpacing = canvasHeight / rows;
   if (rowSpacing <= 0) return -1;
   const mapped = Math.floor(clientY / rowSpacing);
-  return Math.min(rows - 1, Math.max(0, mapped));
+  return clamp(mapped, 0, rows - 1);
 }
 
 // Re-exports for callers that previously imported these from canvas-engine.

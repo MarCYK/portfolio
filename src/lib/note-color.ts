@@ -2,6 +2,7 @@
 // 7-stop palette per theme; midi clamped to [first, last] stop midi.
 
 import type { RgbTuple } from './sunset-color';
+import { clamp, lerp } from './color-math';
 
 export const MUSIC_NOTE_DARK_STOPS: ReadonlyArray<readonly [number, number, number, number]> = [
   [37, 35, 12, 44],
@@ -25,16 +26,16 @@ export const MUSIC_NOTE_LIGHT_STOPS: ReadonlyArray<readonly [number, number, num
 
 export function musicNoteColor(midi: number, isDark: boolean): RgbTuple {
   const stops = isDark ? MUSIC_NOTE_DARK_STOPS : MUSIC_NOTE_LIGHT_STOPS;
-  const note = Math.max(stops[0][0], Math.min(stops[stops.length - 1][0], midi));
+  const note = clamp(midi, stops[0][0], stops[stops.length - 1][0]);
   for (let i = 0; i < stops.length - 1; i += 1) {
     const a = stops[i];
     const b = stops[i + 1];
     if (note >= a[0] && note <= b[0]) {
       const p = (note - a[0]) / (b[0] - a[0]);
       return [
-        Math.round(a[1] + (b[1] - a[1]) * p),
-        Math.round(a[2] + (b[2] - a[2]) * p),
-        Math.round(a[3] + (b[3] - a[3]) * p),
+        Math.round(lerp(a[1], b[1], p)),
+        Math.round(lerp(a[2], b[2], p)),
+        Math.round(lerp(a[3], b[3], p)),
       ];
     }
   }
