@@ -2,7 +2,7 @@ import { ArrowUpRight } from 'lucide-react';
 import type { Project } from '@/types';
 import { PROJECT_ICONS } from './MarCYKIcons';
 
-export default function ProjectCard({ title, description, date, href, external, icon }: Project) {
+export default function ProjectCard({ title, description, date, status, href, external, icon }: Project) {
   const iconNode = PROJECT_ICONS[icon] ?? null;
 
   return (
@@ -28,7 +28,7 @@ export default function ProjectCard({ title, description, date, href, external, 
           {description}
         </p>
         <p className="mt-auto text-xs" style={{ color: 'var(--text-tertiary)' }}>
-          {date}
+          {status ? `${date} · ${status}` : date}
         </p>
       </div>
     </a>

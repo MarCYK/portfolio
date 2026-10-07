@@ -1,6 +1,6 @@
 ---
-title: I Know Nothing
-date: 'Oct 15, 2023'
+title: Hello
+date: 'Oct 15, 2025'
 type: archive
 ---
 

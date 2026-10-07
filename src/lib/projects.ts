@@ -1,7 +1,7 @@
 import type { InternalProject, Project } from '@/types';
-import { currentProjects, archiveProjects } from '@/data/projects';
+import { workProjects, personalProjects } from '@/data/projects';
 
-const allProjects = [...currentProjects, ...archiveProjects];
+const allProjects = [...workProjects, ...personalProjects];
 
 function isInternalProject(project: Project): project is InternalProject {
   return project.external === false && Array.isArray(project.content);

@@ -728,6 +728,34 @@ body.sunset-active .song-nav-btn:hover {
   border-color: var(--border-visible);
 }
 
+.project-grid-ghost {
+  padding: 40px;
+  border-left: 1px solid var(--border);
+  align-items: flex-end;
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+.project-card:has(+ .project-grid-ghost) {
+  border-right: none;
+}
+
+@media (max-width: 1023px) {
+  .project-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .project-grid[data-stretch-md] .project-card:last-of-type {
+    grid-column: span 2 / span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .project-grid[data-stretch-lg] .project-card:last-of-type {
+    grid-column: span 3 / span 3;
+  }
+}
+
 .words-row-header {
   display: grid;
   grid-template-columns: 6rem 1fr;
@@ -987,7 +1015,12 @@ body.sunset-active {
     padding: 24px;
   }
 
-  .project-card:last-child {
+  .project-card:last-child,
+  .project-card:last-of-type {
     border-bottom: none;
+  }
+
+  .project-grid-ghost {
+    padding: 24px;
   }
 }
