@@ -17,7 +17,7 @@ export default function AboutPage() {
               About
             </h1>
             <p className="about-prose" style={{ marginBottom: '32px' }}>
-              Real stupidity beats artificial intelligence every time.
+              A retard in motion stays in motion
             </p>
 
             <div className="space-y-6">
@@ -37,7 +37,7 @@ export default function AboutPage() {
                 <ul className="tree-children">
                   <li>
                     <a
-                      href="https://github.com/marcyk"
+                      href="https://github.com/marcyk1413"
                       className="about-link transition-colors duration-200 hover:text-[var(--text-primary)]"
                       target="_blank"
                       rel="noopener noreferrer"
@@ -75,7 +75,7 @@ export default function AboutPage() {
                   I&apos;m an AI solutions developer at Mettler Toledo, working across AIOps, UI/UX, and automation — full stack TypeScript and Python, proficient with AWS and Azure, with Terraform and CI/CD pipelines.
                 </p>
                 <p style={{ marginTop: '12px' }}>
-                  Always curious, always learning, trying to make sense of it all. Taking things apart, finding the pattern, and putting it back together better.
+                  Always curious, always learning, tryingz to make sense of it all. Taking things apart, finding the pattern, and putting it back together better.
                 </p>
               </section>
 

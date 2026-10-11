@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import PageShell from '@/components/PageShell';
 import { ArrowRight } from 'lucide-react';
-import { getRecentPosts, getArchivePosts, type ExtendedPost } from '@/data/posts';
+import { getAllPosts, type ExtendedPost } from '@/data/posts';
 
 export const metadata: Metadata = {
   title: 'marcyk - Words',
@@ -30,8 +30,7 @@ function WordsRow({ date, title, href }: ExtendedPost) {
 }
 
 export default function WordsPage() {
-  const recentPosts = getRecentPosts();
-  const archivePosts = getArchivePosts();
+  const posts = getAllPosts();
   return (
     <PageShell>
         <div className="mx-auto flex w-full flex-1 flex-col px-6 sm:px-8" style={{ maxWidth: '80rem' }}>
@@ -52,28 +51,9 @@ export default function WordsPage() {
                   <span>Title</span>
                 </div>
 
-                {recentPosts.map((post) => (
+                {posts.map((post) => (
                   <WordsRow key={post.href} {...post} />
                 ))}
-
-                <div className="mt-12">
-                  <h2
-                    className="mb-4 flex flex-col gap-1 text-lg font-semibold tracking-tight sm:flex-row sm:items-baseline sm:gap-3"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Archive
-                    <span className="text-xs font-normal" style={{ color: 'var(--text-tertiary)' }}>
-                      (Older thoughts preserved for posterity)
-                    </span>
-                  </h2>
-                  <div className="words-row-header">
-                    <span>Date</span>
-                    <span>Title</span>
-                  </div>
-                  {archivePosts.map((post) => (
-                    <WordsRow key={post.href} {...post} />
-                  ))}
-                </div>
               </div>
             </div>
           </div>

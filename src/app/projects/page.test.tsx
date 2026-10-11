@@ -52,9 +52,10 @@ describe('ProjectsPage', () => {
 
   test('renders the ChatMT Agent footer as date and status', () => {
     const { container } = render(<ProjectsPage />);
-    const card = container.querySelector('a.project-card[href="#"]');
+    const card = container.querySelector('a.project-card[href="/projects/chatmt-agent"]');
     const text = card?.textContent ?? '';
 
+    expect(text).toContain('ChatMT Agent');
     expect(text).toContain('Present · Mettler Toledo');
   });
 
@@ -63,7 +64,7 @@ describe('ProjectsPage', () => {
     const card = container.querySelector('a.project-card[href="/projects/zcode-model-router"]');
     const text = card?.textContent ?? '';
 
-    expect(text).toContain('2026 · GPL-3.0 · adapted from opencode-model-router v1.3');
+    expect(text).toContain('2026 · adapted from opencode-model-router');
   });
 
   test('contains no stale MSL card copy', () => {
@@ -90,6 +91,24 @@ describe('ProjectsPage', () => {
     expect(hrefs).toContain('/projects/zcode-model-router');
     expect(hrefs).toContain('/projects/mysignmate');
     expect(hrefs.indexOf('/projects/zcode-model-router')).toBeLessThan(hrefs.indexOf('/projects/mysignmate'));
+  });
+
+  test('renders placeholder cards as href-less anchors', () => {
+    const { container } = render(<ProjectsPage />);
+
+    expect(container.querySelector('a.project-card[href="#"]')).toBeNull();
+    expect(container.querySelector('a[href="#"]')).toBeNull();
+
+    const cards = container.querySelectorAll('.project-card');
+    expect(cards).toHaveLength(6);
+
+    const placeholderCards = container.querySelectorAll('a.project-card:not([href])');
+    expect(placeholderCards).toHaveLength(2);
+    for (const title of ['MT Translate', 'Compliance, Finance, and Content Hub']) {
+      expect(Array.from(placeholderCards).some((card) => card.textContent?.includes(title))).toBe(true);
+    }
+
+    expect(container.querySelector('a.project-card[href="/projects/mysignmate"]')).not.toBeNull();
   });
 });
 

@@ -5,13 +5,8 @@ import { PROJECT_ICONS } from './MarCYKIcons';
 export default function ProjectCard({ title, description, date, status, href, external, icon }: Project) {
   const iconNode = PROJECT_ICONS[icon] ?? null;
 
-  return (
-    <a
-      href={href}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
-      className="project-card group"
-    >
+  const content = (
+    <>
       <div className="card-icon">{iconNode}</div>
       <div className="flex flex-1 flex-col">
         <div className="mb-2 flex items-center gap-2">
@@ -31,6 +26,21 @@ export default function ProjectCard({ title, description, date, status, href, ex
           {status ? `${date} · ${status}` : date}
         </p>
       </div>
+    </>
+  );
+
+  if (href === '#') {
+    return <a className="project-card group">{content}</a>;
+  }
+
+  return (
+    <a
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+      className="project-card group"
+    >
+      {content}
     </a>
   );
 }

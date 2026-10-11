@@ -5,24 +5,21 @@ mock.module('@/data/words-index', () => ({
     'post-b': `---
 title: Post B
 date: 'Mar 1, 2026'
-type: recent
 ---
 Body B`,
     'post-a': `---
 title: Post A
 date: 'Jan 1, 2026'
-type: archive
 ---
 Body A`,
     'untitled-post': `---
 date: 'Feb 1, 2026'
-type: archive
 ---
 Body without title`,
   },
 }));
 
-const { getAllPosts, getRecentPosts, getArchivePosts, getPostBySlug } = await import('@/data/posts');
+const { getAllPosts, getPostBySlug } = await import('@/data/posts');
 
 describe('posts data layer', () => {
   test('getAllPosts returns all entries sorted by date descending', () => {
@@ -33,16 +30,10 @@ describe('posts data layer', () => {
     expect(posts[2].title).toBe('Post A');
   });
 
-  test('getRecentPosts filters to type recent', () => {
-    const recent = getRecentPosts();
-    expect(recent).toHaveLength(1);
-    expect(recent[0].title).toBe('Post B');
-  });
-
-  test('getArchivePosts filters to type archive', () => {
-    const archive = getArchivePosts();
-    expect(archive).toHaveLength(2);
-    expect(archive.map(p => p.title)).toEqual(['untitled-post', 'Post A']);
+  test('parsed posts carry no recent/archive type', () => {
+    for (const post of getAllPosts()) {
+      expect('type' in post).toBe(false);
+    }
   });
 
   test('getPostBySlug returns parsed post with rendered html', () => {

@@ -378,6 +378,14 @@ body.sunset-active .marcyk-logo {
     min-width: 0;
   }
 
+  /* The palette is anchored to the paint button's right edge; a single
+     8-swatch row overflows the left screen edge on phones, so wrap the
+     swatches into a 4-wide grid (~112px wide panel). */
+  .mobile-icon-bar #color-palette .color-palette-inner {
+    display: grid;
+    grid-template-columns: repeat(4, 20px);
+  }
+
   #scroll-root {
     padding-bottom: 3.25rem;
   }
@@ -740,6 +748,10 @@ body.sunset-active .song-nav-btn:hover {
   border-right: none;
 }
 
+.project-card:nth-child(n + 4) {
+  border-top: 1px solid var(--border);
+}
+
 @media (max-width: 1023px) {
   .project-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -747,6 +759,10 @@ body.sunset-active .song-nav-btn:hover {
 
   .project-grid[data-stretch-md] .project-card:last-of-type {
     grid-column: span 2 / span 2;
+  }
+
+  .project-card:nth-child(n + 3) {
+    border-top: 1px solid var(--border);
   }
 }
 
@@ -1018,6 +1034,14 @@ body.sunset-active {
   .project-card:last-child,
   .project-card:last-of-type {
     border-bottom: none;
+  }
+
+  .project-card:nth-child(n + 3) {
+    border-top: none;
+  }
+
+  .project-grid[data-stretch-md] .project-card:last-of-type {
+    grid-column: auto;
   }
 
   .project-grid-ghost {

@@ -117,7 +117,7 @@ describe('ProjectPage', () => {
 
     for (const expected of [
       'MySignMate',
-      'Universiti Malaya · Malaysian Federation of the Deaf',
+      'Universiti Malaya · MFD',
       '2024',
       '95.8%',
       '7,098',
@@ -138,7 +138,7 @@ describe('ProjectPage', () => {
     for (const expected of [
       'ZCode Model Router',
       '2026',
-      'GPL-3.0 · adapted from opencode-model-router v1.3',
+      'adapted from opencode-model-router',
       'ZCode plugin that routes each coding task to the right model',
       'my API bill got stupid',
       'measure twice, cut once',
@@ -155,6 +155,38 @@ describe('ProjectPage', () => {
 
     expect(container.querySelector(`a[href="${ROUTER_URL}"]`)).not.toBeNull();
     expect(text).toContain('MarCYK/zcode-model-router');
+  });
+
+  test('renders the approved ChatMT Agent copy', async () => {
+    stubFetch({}, () => Promise.reject(new Error('unexpected fetch')));
+    const jsx = await ProjectPage({ params: Promise.resolve({ slug: 'chatmt-agent' }) });
+    const { container } = render(jsx);
+    const text = container.textContent ?? '';
+
+    for (const expected of ['My corner is the agent harness', 'older history gets squashed into a summary']) {
+      expect(text).toContain(expected);
+    }
+  });
+
+  test('renders the approved SAP & M365 Integrations copy', async () => {
+    stubFetch({}, () => Promise.reject(new Error('unexpected fetch')));
+    const jsx = await ProjectPage({ params: Promise.resolve({ slug: 'sap-m365-integrations' }) });
+    const { container } = render(jsx);
+    const text = container.textContent ?? '';
+
+    for (const expected of [
+      'work in SAP and Microsoft 365 every day',
+      'connector over OData',
+      'on-behalf-of',
+      'detects tables heuristically',
+      'about 40 minutes',
+    ]) {
+      expect(text).toContain(expected);
+    }
+
+    for (const gone of ['I built both', 'shipped in June']) {
+      expect(text).not.toContain(gone);
+    }
   });
 
   test('renders no icon chip, even when the project data carries an icon key', async () => {

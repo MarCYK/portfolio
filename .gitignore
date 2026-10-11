@@ -70,3 +70,4 @@ issues/
 *.backup.*
 midi/
 design/
+.mimosa/

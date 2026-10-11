@@ -13,7 +13,7 @@ describe('AboutPage', () => {
     const text = container.textContent ?? '';
 
     for (const expected of [
-      'Real stupidity beats artificial intelligence every time.',
+      'A retard in motion stays in motion',
       'NOW',
       'Mettler Toledo',
       'PSR B1919+21',
