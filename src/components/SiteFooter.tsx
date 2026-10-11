@@ -11,7 +11,7 @@ export default function SiteFooter() {
         </Link>
         <div className="flex items-center gap-3" style={{ fontSize: '12px' }}>
           <a
-            href="https://www.linkedin.com/in/marcyk/"
+            href="https://www.linkedin.com/in/marcyk1413/"
             target="_blank"
             rel="noopener noreferrer"
             className="hover:underline"

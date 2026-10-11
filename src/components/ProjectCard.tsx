@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
 import type { Project } from '@/types';
 import { PROJECT_ICONS } from './MarCYKIcons';
@@ -33,11 +34,19 @@ export default function ProjectCard({ title, description, date, status, href, ex
     return <a className="project-card group">{content}</a>;
   }
 
+  if (!external) {
+    return (
+      <Link href={href} className="project-card group">
+        {content}
+      </Link>
+    );
+  }
+
   return (
     <a
       href={href}
-      target={external ? '_blank' : undefined}
-      rel={external ? 'noopener noreferrer' : undefined}
+      target="_blank"
+      rel="noopener noreferrer"
       className="project-card group"
     >
       {content}

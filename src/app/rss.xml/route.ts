@@ -8,7 +8,7 @@ export async function GET() {
 
   const feed = new Feed({
     title: "MarCYK - Words",
-    description: "Thoughts and things.",
+    description: "If you ask me...",
     id: site_url,
     link: site_url,
     language: "en",
