@@ -50,4 +50,19 @@ describe("SiteHeader", () => {
     expect(btn === null).toBe(false);
     expect(btn.disabled || btn.getAttribute("aria-disabled") === "true").toBe(false);
   });
+
+  test("logo link is the MK monogram only, no wordmark span", () => {
+    const { container } = render(
+      <CanvasProvider>
+        <SiteHeader />
+      </CanvasProvider>
+    );
+
+    const link = container.querySelector('a[href="/"]')!;
+    expect(link.getAttribute("aria-label")).toBe("MarCYK — home");
+    const svg = link.querySelector("svg")!;
+    expect(svg.getAttribute("class")).toContain("marcyk-mark");
+    expect(link.querySelector("path") === null).toBe(false);
+    expect(link.querySelector("span")).toBe(null);
+  });
 });

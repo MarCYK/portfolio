@@ -31,8 +31,8 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
             <Calendar className="h-3.5 w-3.5" />
             {post.date}
           </span>
-          <span aria-hidden="true">&middot;</span>
-          <LinkIcon className="h-3.5 w-3.5" />
+          {/* <span aria-hidden="true">&middot;</span> */}
+          {/* <LinkIcon className="h-3.5 w-3.5" /> */}
         </>
       }
       backHref="/words"

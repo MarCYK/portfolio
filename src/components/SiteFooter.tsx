@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { LogoDiamond } from './MarCYKIcons';
+import { IconMarCYKLogo } from './MarCYKIcons';
 
 export default function SiteFooter() {
   return (
@@ -7,7 +7,7 @@ export default function SiteFooter() {
       <div className="mx-auto flex w-full items-center justify-between px-6 sm:px-8" style={{ maxWidth: '80rem' }}>
         <span style={{ color: 'var(--text-secondary)', fontSize: '12px' }}>© 2026 marcyk</span>
         <Link href="/" className="hidden sm:block">
-          <LogoDiamond style={{ height: '12px', width: 'auto' }} />
+          <IconMarCYKLogo className="marcyk-mark" style={{ height: '18px', width: 'auto' }} aria-hidden="true" />
         </Link>
         <div className="flex items-center gap-3" style={{ fontSize: '12px' }}>
           <a

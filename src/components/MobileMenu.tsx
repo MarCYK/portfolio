@@ -33,9 +33,8 @@ export default function MobileMenu() {
   return (
     <div id="mobile-menu" className={`mobile-menu ${isOpen ? 'open' : ''}`}>
       <div className="mobile-menu-header">
-        <Link href="/" onClick={close} className="flex items-center gap-2">
-          <span className="marcyk-logo text-base font-semibold tracking-tight">MarCYK</span>
-          <IconMarCYKLogo className="h-4" />
+        <Link href="/" onClick={close} aria-label="MarCYK — home" className="flex items-center">
+          <IconMarCYKLogo className="h-6 marcyk-mark" />
         </Link>
         <button id="menu-close" className="header-icon" onClick={close} aria-label="Close menu">
           <IconMenuClose />

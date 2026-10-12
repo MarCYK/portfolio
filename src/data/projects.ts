@@ -11,12 +11,12 @@ export const workProjects: Project[] = [
     icon: 'brain',
     status: 'Mettler Toledo',
     content: [
-      'ChatMT Agent is Mettler Toledo\'s internal platform for building AI agents: over a thousand agents, around 6000 conversations a day. My corner is the agent harness, the runtime the agents run in, plus maintaining the platform itself. This includes cost management, tools, connectors, system prompt, context management and agent orchestration.',
+      'ChatMT Agent is Mettler Toledo\'s internal platform for building AI agents: over a thousand agents, around 6000 conversations a day. I focus on the UI/UX, agent harness, and maintaining the platform itself. This includes cost management, tools, connectors, system prompt, context management and agent orchestration.',
       'With this platform, any department can build an agent, no code needed: pick a model, pick tools, write the instructions. I also build the connectors that let agents reach other systems, like ServiceNow, Salesforce, SAP, and MCP servers.',
       'Context management is the hardest part, by far. It\'s controlling what enters the context window each turn, to prevent context rot and token explosion on longer tasks. Tool outputs can be huge, and a model that gets everything at once can hallucinate or miss the record that mattered. I improved the existing system: newer messages stay verbatim, older history gets squashed into a summary, oversized tool outputs get summarized automatically, and important info is saved as user memory.',
       'I also added skills, same idea as Claude Code: a team packages a workflow once, and any agent can load it, even with a different owner, model, or tools. Nobody builds the same workflow twice.',
       'The platform now sits at 1200 daily users, and the departments built all thousand-plus agents themselves. Not us.',
-      'Right now I\'m on subagent orchestration: splitting a workflow across multiple agents so each one holds only its own context and can handle long-running workflows better.',
+      'Right now I\'m on subagent orchestration: splitting a workflow across multiple agents so each one holds only its own context and can handle long-running workflows better; and improving user experience.',
     ],
   },
   {

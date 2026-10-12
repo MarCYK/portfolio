@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import PageShell from '@/components/PageShell';
-import { GithubIcon, LinkedinIcon, IconEmail } from '@/components/MarCYKIcons';
+import { GithubIcon, LinkedinIcon, ResumeIcon, IconEmail } from '@/components/MarCYKIcons';
 import { EMAIL } from '@/data/constants';
 
 export const metadata: Metadata = {
@@ -55,6 +55,16 @@ export default function AboutPage() {
                     >
                       <LinkedinIcon style={{ width: 14, height: 14, flexShrink: 0 }} />
                       LinkedIn
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/Marvin_Chin_AI_Engineer.pdf"
+                      className="about-link transition-colors duration-200 hover:text-[var(--text-primary)]"
+                      download
+                    >
+                      <ResumeIcon style={{ width: 14, height: 14, flexShrink: 0 }} />
+                      Resume
                     </a>
                   </li>
                 </ul>

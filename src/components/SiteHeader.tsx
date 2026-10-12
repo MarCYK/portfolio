@@ -72,9 +72,8 @@ export default function SiteHeader({ isHomePage = false }: { isHomePage?: boolea
         style={{ paddingTop: '10px', paddingBottom: '10px' }}
       >
         <div className="flex items-center gap-5">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="marcyk-logo text-base font-semibold tracking-tight">MarCYK</span>
-            <IconMarCYKLogo className="h-4" />
+          <Link href="/" aria-label="MarCYK — home" className="flex items-center">
+            <IconMarCYKLogo className="h-6 marcyk-mark" />
           </Link>
           <nav className="desktop-nav items-center gap-4 text-sm">
             {NAV_LINKS.map(({ href, label }) => (

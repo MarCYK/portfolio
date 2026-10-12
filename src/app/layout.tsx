@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   title: 'marcyk',
   description: 'portfolio of MarCYK',
   icons: {
-    icon: '/favicon.png',
+    icon: '/favicon.png?v=3',
   },
 };
 

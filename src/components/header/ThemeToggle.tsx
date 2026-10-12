@@ -11,12 +11,13 @@ export { type ThemeMode };
 
 export function useTheme() {
   const { emit } = useCanvas();
-  const [isDark, setIsDark] = useState(() => {
-    if (typeof window === 'undefined') {
-      return true;
-    }
-    return readPreference('theme') !== 'light';
-  });
+  // Server and client must hydrate with the same default; the stored
+  // preference is applied in the mount effect below.
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
+    setIsDark(readPreference('theme') !== 'light');
+  }, []);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', isDark);

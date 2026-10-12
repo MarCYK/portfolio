@@ -1,17 +1,13 @@
-import type { CSSProperties, ReactNode, SVGProps } from 'react';
-import Image from 'next/image';
-import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, Languages, PenTool, Smile, Files, House } from 'lucide-react';
+import type { ReactNode, SVGProps } from 'react';
+import { Atom, BookOpen, Brain, Camera, Compass, FlaskConical, Globe, Languages, PenTool, Smile, Files, House, FileUser } from 'lucide-react';
 
 type IconProps = SVGProps<SVGSVGElement>;
 
 export function IconMarCYKLogo(props: SVGProps<SVGSVGElement>) {
   return (
-    <svg viewBox="0 0 512 464" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
-      <rect width="295.603" height="295.603" transform="matrix(0.866025 0.5 -0.866025 0.5 256 167.508)" fill="#FF0000" />
-      <path d="M256 167.508L0 315.31L256 0V167.508Z" fill="#FF0000" />
-      <path d="M256 167.508L512 315.31L256 0V167.508Z" fill="#FF8181" />
-      <path d="M256 463.111L0 315.31L256 0V463.111Z" fill="#FF8181" />
-      <path d="M256 463.111L512 315.31L256 0V463.111Z" fill="#FF0000" />
+    <svg viewBox="55.123 66.651 61.519 30.48" xmlns="http://www.w3.org/2000/svg" fill="currentColor" {...props}>
+      <path d="M 55.122883,97.130508 V 66.650509 h 10.16 l 5.08,5.08 5.08,-5.08 h 10.159999 v 30.479999 Z" />
+      <path d="M 86.161686,97.130508 V 66.650509 h 15.240004 v 5.08 l 5.08,-5.08 h 10.16 v 10.16 l -5.08,5.08 5.08,5.08 v 10.159999 h -10.16 l -5.08,-5.08 v 5.08 Z" />
     </svg>
   );
 }
@@ -111,27 +107,6 @@ export function IconNavCaret(props: IconProps) {
   );
 }
 
-export function LogoDiamond({ className, style }: { className?: string; style?: CSSProperties }) {
-  return (
-    <Image
-      src="/favicon.png"
-      alt=""
-      aria-hidden="true"
-      className={className}
-      style={{
-        display: 'inline-block',
-        flexShrink: 0,
-        verticalAlign: 'middle',
-        objectFit: 'contain',
-        ...style,
-      }}
-      draggable={false}
-      width={24}
-      height={24}
-    />
-  );
-}
-
 export const PROJECT_ICONS: Record<string, ReactNode> = {
   atom: <Atom className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
   flask: <FlaskConical className="h-7 w-7" style={{ color: 'var(--text-secondary)' }} />,
@@ -193,4 +168,8 @@ export function LinkedinIcon(props: IconProps) {
       <path d="M216,24H40A16,16,0,0,0,24,40V216a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V40A16,16,0,0,0,216,24Zm0,192H40V40H216V216ZM96,112v64a8,8,0,0,1-16,0V112a8,8,0,0,1,16,0Zm88,28v36a8,8,0,0,1-16,0V140a20,20,0,0,0-40,0v36a8,8,0,0,1-16,0V112a8,8,0,0,1,15.79-1.78A36,36,0,0,1,184,140ZM100,84A12,12,0,1,1,88,72,12,12,0,0,1,100,84Z"></path>
     </svg>
   );
+}
+
+export function ResumeIcon(props: IconProps) {
+  return <FileUser {...props} />;
 }
